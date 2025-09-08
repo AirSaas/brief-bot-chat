@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Markdown from "react-markdown";
 
 export function MessageBubble({
@@ -7,13 +7,16 @@ export function MessageBubble({
   isAudio = false,
   audioFile,
   audioStatus,
+  showCopyButton = false,
 }: {
   role: "user" | "assistant";
   children: React.ReactNode;
   isAudio?: boolean;
   audioFile?: File;
   audioStatus?: 'uploading' | 'uploaded' | 'error';
+  showCopyButton?: boolean;
 }) {
+  const [copied, setCopied] = useState(false);
   const base = "rounded-xl2 px-5 py-4 shadow-lg max-w-[80%] font-bold transition-all duration-200";
   const userClasses = "ml-auto text-white shadow-brand-200/50";
   const botClasses = "mr-auto bg-white text-gray-800 border border-brand-200 shadow-brand-100/30 hover:shadow-brand-200/40";
@@ -46,6 +49,17 @@ export function MessageBubble({
     }
     return null;
   };
+
+  const copyToClipboard = async () => {
+    try {
+      const text = String(children).trim();
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // Hide after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
   
   return (
     <div className={`flex items-start gap-3 ${role === "user" ? "flex-row-reverse" : ""}`}>
@@ -62,7 +76,7 @@ export function MessageBubble({
       
       {/* Message bubble */}
       <div 
-        className={`${base} ${role === "user" ? userClasses : botClasses} ${isAudio ? 'flex flex-col gap-2' : ''}`}
+        className={`${base} ${role === "user" ? userClasses : botClasses} ${isAudio ? 'flex flex-col gap-2' : ''} ${role === "assistant" ? 'group relative' : ''}`}
         style={role === "user" ? userStyle : undefined}
       >
         {isAudio && audioFile ? (
@@ -137,6 +151,27 @@ export function MessageBubble({
                 {String(children)}
               </Markdown>
             )}
+          </div>
+        )}
+        
+        {/* Copy button for assistant messages */}
+        {role === "assistant" && showCopyButton && !isAudio && (
+          <button
+            onClick={copyToClipboard}
+            className="absolute bottom-0.5 right-0.5 p-1 text-gray-400 hover:text-gray-600 transition-colors duration-200 opacity-0 group-hover:opacity-100 cursor-pointer"
+            title="Copy message"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+        )}
+        
+        {/* Copy feedback */}
+        {copied && (
+          <div className="absolute bottom-0.5 right-2 px-2 py-1 bg-green-500 text-white text-xs rounded-md shadow-lg animate-fade-in-out">
+            Copied to Clipboard
           </div>
         )}
       </div>

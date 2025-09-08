@@ -3,11 +3,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { sendToChat, uploadAudio, type ChatMessage } from "../lib/api";
 import AudioRecorder from "./AudioRecorder";
 import { MessageBubble } from "./MessageBubble";
+import QuickAnswers from "./QuickAnswers";
 
 export default function ChatWindow() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
+  const [isQuickAnswersClosing, setIsQuickAnswersClosing] = useState(false);
   const sessionId = useMemo(() => {
     const existing = localStorage.getItem("sessionId");
     if (existing) return existing;
@@ -39,6 +41,34 @@ export default function ChatWindow() {
     } finally {
       setIsThinking(false);
     }
+  }
+
+  function sendQuickAnswer(answer: string) {
+    if (isThinking || isQuickAnswersClosing) return;
+    
+    // Start closing animation
+    setIsQuickAnswersClosing(true);
+    
+    // Create user message after animation delay
+    setTimeout(() => {
+      const userMsg: ChatMessage = { role: "user", content: answer };
+      setMessages((m) => [...m, userMsg]);
+      setIsThinking(true);
+      
+      // Send to chat
+      sendToChat({ message: answer, sessionId })
+        .then((json) => {
+          const text = json?.output ?? json?.data ?? JSON.stringify(json);
+          setMessages((m) => [...m, { role: "assistant", content: String(text) }]);
+        })
+        .catch((error) => {
+          console.error(error);
+          setMessages((m) => [...m, { role: "assistant", content: "❌ Error processing your message." }]);
+        })
+        .finally(() => {
+          setIsThinking(false);
+        });
+    }, 400); // Wait for closing animation to start
   }
 
   async function sendAudioFile(file: File) {
@@ -109,13 +139,13 @@ export default function ChatWindow() {
 
       <div
         ref={listRef}
-        className="flex-1 overflow-y-auto p-6 space-y-4 relative"
+        className="flex-1 overflow-y-auto p-6 space-y-4 relative z-10"
         style={{
           background: "linear-gradient(to bottom, #F0F2FF 0%, #FFFFFF 100%)",
         }}
       >
-        {/* Background logo */}
-        <div className="absolute left-6 top-6 opacity-5 pointer-events-none">
+        {/* Background logo - Fixed position */}
+        <div className="fixed left-6 top-20 opacity-5 pointer-events-none z-0">
           <img
             src="/logo-air.svg"
             alt="AirSaas Background Logo"
@@ -129,6 +159,7 @@ export default function ChatWindow() {
              isAudio={!!(m.audioFile || m.audioUrl)}
              audioFile={m.audioFile}
              audioStatus={m.audioStatus}
+             showCopyButton={m.role === "assistant"}
            >
              {m.content}
            </MessageBubble>
@@ -142,6 +173,15 @@ export default function ChatWindow() {
          )}
          
       </div>
+
+      {/* Quick Answers Section */}
+      {messages.length === 0 && !isThinking && (
+        <QuickAnswers 
+          onAnswerClick={sendQuickAnswer} 
+          disabled={isThinking || isQuickAnswersClosing}
+          isClosing={isQuickAnswersClosing}
+        />
+      )}
 
       <footer className="p-6 bg-white border-t border-brand-200 shadow-lg">
         <div className="flex items-center gap-3">
@@ -162,17 +202,31 @@ export default function ChatWindow() {
             }}
             disabled={isThinking}
           />
-          <button
-            onClick={sendText}
-            disabled={isThinking}
-            className={`px-6 py-3 bg-brand-500 text-white font-bold shadow-lg hover:bg-brand-600 transition-all duration-300 ${
-              isThinking ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-            style={{ color: "white", backgroundColor: "#3C51E2" }}
+          <div 
+            className={`flex rounded-xl2 overflow-hidden button-group-container ${isThinking ? 'opacity-50' : ''}`}
+            style={{ 
+              backgroundColor: 'transparent',
+              background: 'transparent',
+              backgroundImage: 'none',
+              border: 'none',
+              borderColor: 'transparent',
+              outline: 'none',
+              boxShadow: 'none'
+            }}
           >
-            {isThinking ? "Thinking..." : "Send"}
-          </button>
-          <AudioRecorder onRecorded={sendAudioFile} disabled={isThinking} />
+            <button
+              onClick={sendText}
+              disabled={isThinking}
+              className={`px-6 py-3 bg-brand-500 text-white font-bold hover:bg-brand-600 transition-all duration-300 send-button ${
+                isThinking ? 'cursor-not-allowed' : ''
+              }`}
+              style={{ color: "white", backgroundColor: "#3C51E2" }}
+            >
+              {isThinking ? "Thinking..." : "Send"}
+            </button>
+            <div className="w-px bg-white opacity-30"></div>
+            <AudioRecorder onRecorded={sendAudioFile} disabled={isThinking} />
+          </div>
         </div>
       </footer>
     </div>

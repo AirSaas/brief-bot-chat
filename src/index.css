@@ -251,6 +251,154 @@ audio::-webkit-media-controls-fullscreen-button {
   }
 }
 
+/* Quick Answers Drawer Animation */
+.quick-answers-container {
+  animation: drawerSlideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  transform: translateY(100%);
+  opacity: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.quick-answers-title {
+  opacity: 1;
+}
+
+.quick-answers-buttons {
+  opacity: 1;
+}
+
+.quick-answers-button {
+  opacity: 1;
+}
+
+/* Closing Animation */
+.quick-answers-closing {
+  animation: drawerSlideDown 0.8s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards !important;
+}
+
+@keyframes drawerSlideUp {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes drawerSlideDown {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* Button Group Styles */
+.send-button {
+  border-radius: 0 !important;
+  border-right: none !important;
+  background-color: #3C51E2 !important;
+  transition: background-color 0.3s ease-in-out !important;
+}
+
+.send-button:first-child {
+  border-top-left-radius: 30px !important;
+  border-bottom-left-radius: 30px !important;
+}
+
+/* AudioRecorder button styles */
+.audio-recorder-button {
+  border-radius: 0 !important;
+  border-left: none !important;
+  background-color: #3C51E2 !important;
+  transition: background-color 0.3s ease-in-out !important;
+}
+
+.audio-recorder-button:last-child {
+  border-top-right-radius: 30px !important;
+  border-bottom-right-radius: 30px !important;
+}
+
+/* Specific style for stop button */
+.audio-recorder-stop {
+  background-color: #EF4444 !important;
+  animation: recordingPulse 1.5s ease-in-out infinite !important;
+}
+
+/* Recording pulse animation */
+@keyframes recordingPulse {
+  0% {
+    background-color: #EF4444 !important;
+    box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3), 0 4px 6px -2px rgba(239, 68, 68, 0.1) !important;
+    transform: scale(1) !important;
+  }
+  50% {
+    background-color: #DC2626 !important;
+    box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.6), 0 4px 6px -2px rgba(239, 68, 68, 0.3) !important;
+    transform: scale(1.02) !important;
+  }
+  100% {
+    background-color: #EF4444 !important;
+    box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3), 0 4px 6px -2px rgba(239, 68, 68, 0.1) !important;
+    transform: scale(1) !important;
+  }
+}
+
+/* Remove white background from button container */
+.button-group-container {
+  background-color: transparent !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+.flex.rounded-xl2.overflow-hidden.shadow-lg {
+  background-color: transparent !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+/* Additional specificity for button group */
+div.button-group-container {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  background-clip: border-box !important;
+  border: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove any white borders or outlines */
+.button-group-container,
+.flex.rounded-xl2.overflow-hidden.shadow-lg {
+  border: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+/* Keep shadow only on individual buttons */
+.send-button,
+.audio-recorder-button {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Disabled state for both buttons when thinking */
+.button-group-container.opacity-50 .send-button,
+.button-group-container.opacity-50 .audio-recorder-button {
+  background-color: #9CA3AF !important; /* Gray color when disabled */
+  opacity: 0.6 !important;
+}
+
+/* Specific disabled state for stop button */
+.button-group-container.opacity-50 .audio-recorder-stop {
+  background-color: #9CA3AF !important; /* Gray color when disabled */
+  opacity: 0.6 !important;
+}
+
 /* Make all control buttons white */
 audio::-webkit-media-controls-overlay-play-button {
   filter: brightness(0) invert(1) !important;
@@ -266,4 +414,28 @@ audio::-webkit-media-controls-return-to-realtime-button {
 
 audio::-webkit-media-controls-toggle-closed-captions-button {
   filter: brightness(0) invert(1) !important;
+}
+
+/* Copy feedback animation */
+@keyframes fade-in-out {
+  0% {
+    opacity: 0;
+    transform: translateY(5px) scale(0.95);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.95);
+  }
+}
+
+.animate-fade-in-out {
+  animation: fade-in-out 2s ease-in-out forwards;
 }

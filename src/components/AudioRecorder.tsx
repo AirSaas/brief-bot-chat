@@ -31,12 +31,12 @@ export default function AudioRecorder({ onRecorded, disabled }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <>
       {!isRec ? (
         <button 
           disabled={disabled} 
           onClick={start} 
-          className="px-5 py-3 bg-brand-500 text-white font-bold shadow-lg hover:bg-brand-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-5 py-3 bg-brand-500 text-white font-bold shadow-lg hover:bg-brand-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed audio-recorder-button"
           style={{ color: 'white', backgroundColor: '#3C51E2' }}
         >
           🎙️ Record
@@ -44,12 +44,12 @@ export default function AudioRecorder({ onRecorded, disabled }: Props) {
       ) : (
         <button 
           onClick={stop} 
-          className="px-5 py-3 bg-red-500 text-white font-bold shadow-lg hover:bg-red-600 transition-all duration-300"
-          style={{ color: 'white', backgroundColor: '#EF4444' }}
+          className="px-5 py-3 text-white font-bold audio-recorder-button audio-recorder-stop"
+          style={{ color: 'white' }}
         >
           ⏹ Stop
         </button>
       )}
-    </div>
+    </>
   );
 }
