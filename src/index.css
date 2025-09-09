@@ -633,3 +633,52 @@ audio::-webkit-media-controls-toggle-closed-captions-button {
   animation: suggestionsFadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   opacity: 0;
 }
+
+/* Mobile input adjustments */
+@media (max-width: 640px) {
+  /* Ensure input takes full available space on mobile */
+  .flex-1.relative {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  
+  /* Input field mobile optimization */
+  .flex-1.relative input {
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+  
+  /* Position suggestions above input on mobile */
+  .suggestions-container {
+    top: -20px !important; /* Position well above the input */
+    right: -113px !important; /* Move much more to the right */
+    left: auto !important; /* Remove left positioning */
+    transform: translateY(-50%) !important; /* Center vertically */
+    flex-wrap: wrap !important; /* Allow wrapping */
+    justify-content: flex-end !important; /* Align to right */
+    gap: 0.5rem !important; /* Spacing between buttons */
+    padding: 0.5rem !important; /* Padding around container */
+    background: rgba(255, 255, 255, 0.95) !important; /* Semi-transparent background */
+    backdrop-filter: blur(8px) !important; /* Blur effect */
+    border-radius: 0.75rem !important; /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important; /* Shadow for depth */
+    z-index: 40 !important; /* High z-index to appear above everything */
+    width: auto !important; /* Let content determine width */
+    max-width: none !important; /* Remove width restrictions */
+  }
+  
+  /* Style suggestion buttons for mobile */
+  .suggestions-button {
+    padding: 0.75rem 1rem !important; /* Larger padding for touch */
+    font-size: 0.75rem !important; /* Slightly larger text */
+    min-height: 36px !important; /* Better touch target */
+    max-width: none !important; /* Remove width restrictions */
+    white-space: nowrap !important; /* Prevent text wrapping */
+    overflow: visible !important; /* Allow content to extend */
+    text-overflow: unset !important; /* Remove ellipsis restriction */
+    flex-shrink: 0 !important; /* Prevent buttons from shrinking */
+  }
+}
