@@ -17,7 +17,7 @@ export function MessageBubble({
   showCopyButton?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
-  const base = "rounded-xl2 px-5 py-4 shadow-lg max-w-[80%] font-bold transition-all duration-200";
+  const base = "rounded-xl2 px-3 sm:px-5 py-3 sm:py-4 shadow-lg max-w-[90%] sm:max-w-[80%] font-bold transition-all duration-200";
   const userClasses = "ml-auto text-white shadow-brand-200/50";
   const botClasses = "mr-auto bg-white text-gray-800 border border-brand-200 shadow-brand-100/30 hover:shadow-brand-200/40";
   
@@ -62,14 +62,14 @@ export function MessageBubble({
   };
   
   return (
-    <div className={`flex items-start gap-3 ${role === "user" ? "flex-row-reverse" : ""}`}>
+    <div className={`flex items-start gap-2 sm:gap-3 ${role === "user" ? "flex-row-reverse" : ""}`}>
       {/* Bot profile picture */}
       {role === "assistant" && (
         <div className="flex-shrink-0">
           <img 
             src="/mini.png" 
             alt="AirSaas Bot" 
-            className="w-9 h-9 rounded-full border-brand-200 shadow-sm"
+            className="w-7 h-7 sm:w-9 sm:h-9 rounded-full border-brand-200 shadow-sm"
           />
         </div>
       )}

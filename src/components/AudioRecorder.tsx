@@ -36,18 +36,20 @@ export default function AudioRecorder({ onRecorded, disabled }: Props) {
         <button 
           disabled={disabled} 
           onClick={start} 
-          className="px-5 py-3 bg-brand-500 text-white font-bold shadow-lg hover:bg-brand-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed audio-recorder-button"
+          className="px-3 sm:px-5 py-2 sm:py-3 bg-brand-500 text-white font-bold shadow-lg hover:bg-brand-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed audio-recorder-button text-sm sm:text-base touch-manipulation"
           style={{ color: 'white', backgroundColor: '#3C51E2' }}
         >
-          🎙️ Record
+          <span className="sm:hidden">🎙️</span>
+          <span className="hidden sm:inline">🎙️ Record</span>
         </button>
       ) : (
         <button 
           onClick={stop} 
-          className="px-5 py-3 text-white font-bold audio-recorder-button audio-recorder-stop"
+          className="px-3 sm:px-5 py-2 sm:py-3 text-white font-bold audio-recorder-button audio-recorder-stop text-sm sm:text-base touch-manipulation"
           style={{ color: 'white' }}
         >
-          ⏹ Stop
+          <span className="sm:hidden">⏹</span>
+          <span className="hidden sm:inline">⏹ Stop</span>
         </button>
       )}
     </>

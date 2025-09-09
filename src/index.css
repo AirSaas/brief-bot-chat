@@ -439,3 +439,165 @@ audio::-webkit-media-controls-toggle-closed-captions-button {
 .animate-fade-in-out {
   animation: fade-in-out 2s ease-in-out forwards;
 }
+
+/* Mobile responsiveness improvements */
+@media (max-width: 640px) {
+  /* Improve touch targets for Send/Record buttons */
+  .send-button,
+  .audio-recorder-button {
+    min-height: 44px !important; /* Slightly smaller for more input space */
+    min-width: 50px !important; /* Smaller minimum width */
+    padding: 10px 12px !important; /* More compact padding */
+    font-size: 13px !important; /* Slightly smaller text */
+    font-weight: 600 !important; /* Bolder text for better visibility */
+    display: flex !important; /* Ensure proper display */
+    align-items: center !important; /* Center content vertically */
+    justify-content: center !important; /* Center content horizontally */
+    flex-shrink: 0 !important; /* Prevent shrinking */
+  }
+  
+  /* Make icon-only buttons more compact on mobile */
+  .audio-recorder-button .sm\\:hidden {
+    font-size: 18px !important; /* Larger icon for better visibility in wider button */
+    display: flex !important; /* Ensure flex display */
+    align-items: center !important; /* Center vertically */
+    justify-content: center !important; /* Center horizontally */
+    width: 100% !important; /* Take full button width */
+    height: 100% !important; /* Take full button height */
+  }
+  
+  /* Adjust button width for icon-only mode */
+  .audio-recorder-button {
+    min-width: 60px !important; /* Even wider button for better touch target */
+    padding: 12px !important; /* More padding for better touch area */
+    display: flex !important; /* Ensure flex display */
+    align-items: center !important; /* Center vertically */
+    justify-content: center !important; /* Center horizontally */
+  }
+  
+  /* Reduce padding for Send button too */
+  .send-button {
+    padding: 8px 12px !important; /* Reduced padding */
+  }
+  
+  /* Button group container adjustments */
+  .button-group-container {
+    min-height: 44px !important; /* Match button height */
+    border-radius: 22px !important; /* More rounded for mobile */
+    display: flex !important; /* Ensure flex display */
+    align-items: stretch !important; /* Stretch buttons to full height */
+    width: auto !important; /* Allow natural width */
+    flex-shrink: 0 !important; /* Prevent shrinking */
+  }
+  
+  /* Separator line adjustments */
+  .button-group-container .w-px {
+    height: 28px !important; /* Shorter separator line */
+    margin: 8px 0 !important; /* Center the line */
+    width: 0.5px !important; /* Thinner separator line */
+  }
+  
+  /* Better spacing for mobile */
+  .quick-answers-container {
+    padding: 12px 16px !important;
+  }
+  
+  /* Adjust copy button for mobile */
+  .group:hover .opacity-0 {
+    opacity: 1 !important; /* Always show copy button on mobile */
+  }
+  
+  /* Better text sizing for mobile */
+  .markdown-content {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* Improve audio player for mobile */
+  audio {
+    width: 100% !important;
+    max-width: 280px !important;
+  }
+  
+  /* Footer adjustments for mobile */
+  footer .flex {
+    gap: 4px !important; /* Minimal gap between input and buttons */
+    align-items: center !important; /* Center align items */
+    flex-wrap: nowrap !important; /* Prevent wrapping */
+  }
+  
+  /* Ensure footer input takes more space on mobile */
+  footer input {
+    flex: 1 !important; /* Take available space */
+    min-width: 0 !important; /* Allow shrinking */
+    max-width: calc(100% - 130px) !important; /* Adjust space for wider Record button */
+  }
+  
+  /* Make button group smaller on mobile */
+  .button-group-container {
+    flex-shrink: 0 !important; /* Prevent shrinking */
+    width: auto !important; /* Natural width */
+    max-width: 120px !important; /* Wider to accommodate larger Record button */
+  }
+  
+  /* Input field adjustments */
+  footer input {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    padding: 12px 16px !important; /* Match button padding */
+    width: 100% !important; /* Take full available width */
+    flex-grow: 1 !important; /* Grow to fill space */
+  }
+  
+  /* Additional mobile input optimizations */
+  footer {
+    padding: 12px 16px !important; /* Reduce footer padding */
+  }
+  
+  /* Ensure input gets maximum space */
+  footer .flex > input {
+    flex: 1 1 auto !important; /* Grow and shrink as needed */
+    min-width: 200px !important; /* Minimum usable width */
+  }
+  
+  /* Touch feedback improvements */
+  .send-button:active,
+  .audio-recorder-button:active {
+    transform: scale(0.95) !important; /* Visual feedback on touch */
+    transition: transform 0.1s ease !important;
+  }
+  
+  /* Better button group visual feedback */
+  .button-group-container:active {
+    transform: scale(0.98) !important;
+    transition: transform 0.1s ease !important;
+  }
+  
+  /* Improve button text readability */
+  .send-button,
+  .audio-recorder-button {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    letter-spacing: 0.025em !important;
+  }
+  
+  /* Better disabled state for mobile */
+  .button-group-container.opacity-50 .send-button,
+  .button-group-container.opacity-50 .audio-recorder-button {
+    transform: none !important; /* Disable touch feedback when disabled */
+  }
+  
+  /* Debug styles to ensure visibility */
+  .send-button,
+  .audio-recorder-button {
+    background-color: #3C51E2 !important; /* Force background color */
+    color: white !important; /* Force text color */
+    border: none !important; /* Remove any borders */
+    outline: none !important; /* Remove outline */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important; /* Add shadow for visibility */
+  }
+  
+  /* Ensure button group is visible */
+  .button-group-container {
+    background-color: transparent !important;
+    border: 1px solid rgba(60, 81, 226, 0.2) !important; /* Subtle border for visibility */
+  }
+}

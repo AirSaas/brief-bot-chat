@@ -122,34 +122,34 @@ export default function ChatWindow() {
 
   return (
     <div className="h-full flex flex-col bg-brand-50">
-      <header className="px-6 py-4 border-b border-brand-200 bg-white shadow-sm flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <header className="px-4 sm:px-6 py-3 sm:py-4 border-b border-brand-200 bg-white shadow-sm flex items-center justify-between">
+        <div className="flex items-center gap-2 sm:gap-3">
           <div
-            className="w-3 h-8 rounded-lg shadow-md"
+            className="w-2 h-6 sm:w-3 sm:h-8 rounded-lg shadow-md"
             style={{
               background: "linear-gradient(135deg, #3C51E2 0%, #3041B5 100%)",
             }}
           />
-          <div className="font-display font-bold text-brand-800 text-lg">
+          <div className="font-display font-bold text-brand-800 text-sm sm:text-lg">
             AirSaas Brief Project Assistant
           </div>
         </div>
-        <img src="/mini.png" alt="AirSaas Logo" className="w-8 h-8" />
+        <img src="/mini.png" alt="AirSaas Logo" className="w-6 h-6 sm:w-8 sm:h-8" />
       </header>
 
       <div
         ref={listRef}
-        className="flex-1 overflow-y-auto p-6 space-y-4 relative z-10"
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4 relative z-10"
         style={{
           background: "linear-gradient(to bottom, #F0F2FF 0%, #FFFFFF 100%)",
         }}
       >
         {/* Background logo - Fixed position */}
-        <div className="fixed left-6 top-20 opacity-5 pointer-events-none z-0">
+        <div className="fixed left-3 sm:left-6 top-16 sm:top-20 opacity-5 pointer-events-none z-0">
           <img
             src="/logo-air.svg"
             alt="AirSaas Background Logo"
-            className="w-32 h-32"
+            className="w-20 h-20 sm:w-32 sm:h-32"
           />
         </div>
          {messages.map((m, i) => (
@@ -183,10 +183,10 @@ export default function ChatWindow() {
         />
       )}
 
-      <footer className="p-6 bg-white border-t border-brand-200 shadow-lg">
-        <div className="flex items-center gap-3">
+      <footer className="p-4 sm:p-6 bg-white border-t border-brand-200 shadow-lg">
+        <div className="flex items-center gap-2 sm:gap-3">
           <input
-            className={`flex-1 px-4 py-3 rounded-xl2 border border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-500 bg-white shadow-sm font-bold text-gray-700 placeholder-gray-400 transition-all duration-300 ${
+            className={`flex-1 px-3 sm:px-4 py-2 sm:py-3 rounded-xl2 border border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-500 bg-white shadow-sm font-bold text-gray-700 placeholder-gray-400 transition-all duration-300 text-sm sm:text-base ${
               isThinking ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             placeholder={isThinking ? "Bot is responding..." : "Type a message...   :-)"}
@@ -217,7 +217,7 @@ export default function ChatWindow() {
             <button
               onClick={sendText}
               disabled={isThinking}
-              className={`px-6 py-3 bg-brand-500 text-white font-bold hover:bg-brand-600 transition-all duration-300 send-button ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 bg-brand-500 text-white font-bold hover:bg-brand-600 transition-all duration-300 send-button text-sm sm:text-base touch-manipulation ${
                 isThinking ? 'cursor-not-allowed' : ''
               }`}
               style={{ color: "white", backgroundColor: "#3C51E2" }}
