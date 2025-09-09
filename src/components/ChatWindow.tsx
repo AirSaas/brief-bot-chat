@@ -4,6 +4,7 @@ import { sendToChat, uploadAudio, type ChatMessage } from "../lib/api";
 import AudioRecorder from "./AudioRecorder";
 import { MessageBubble } from "./MessageBubble";
 import QuickAnswers from "./QuickAnswers";
+import InputWithSuggestions from "./InputWithSuggestions";
 
 export default function ChatWindow() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -23,10 +24,10 @@ export default function ChatWindow() {
     listRef.current?.scrollTo(0, listRef.current.scrollHeight);
   }, [messages.length]);
 
-
-  async function sendText() {
-    if (!input.trim()) return;
-    const userMsg: ChatMessage = { role: "user", content: input.trim() };
+  // Función para enviar mensaje directamente con texto
+  const sendMessageDirectly = async (messageText: string) => {
+    if (!messageText.trim()) return;
+    const userMsg: ChatMessage = { role: "user", content: messageText.trim() };
     setMessages((m) => [...m, userMsg]);
     setInput("");
     setIsThinking(true);
@@ -41,6 +42,11 @@ export default function ChatWindow() {
     } finally {
       setIsThinking(false);
     }
+  };
+
+  async function sendText() {
+    if (!input.trim()) return;
+    await sendMessageDirectly(input);
   }
 
   function sendQuickAnswer(answer: string) {
@@ -185,22 +191,15 @@ export default function ChatWindow() {
 
       <footer className="p-4 sm:p-6 bg-white border-t border-brand-200 shadow-lg">
         <div className="flex items-center gap-2 sm:gap-3">
-          <input
-            className={`flex-1 px-3 sm:px-4 py-2 sm:py-3 rounded-xl2 border border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-500 bg-white shadow-sm font-bold text-gray-700 placeholder-gray-400 transition-all duration-300 text-sm sm:text-base ${
-              isThinking ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-            placeholder={isThinking ? "Bot is responding..." : "Type a message...   :-)"}
+          <InputWithSuggestions
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                if (!isThinking) {
-                  sendText();
-                }
-              }
-            }}
+            onChange={setInput}
+            onSend={sendText}
+            onSendDirectly={sendMessageDirectly}
+            placeholder={isThinking ? "Bot is responding..." : "Type a message...   :-)"}
             disabled={isThinking}
+            isThinking={isThinking}
+            suggestions={["Donnez-moi des exemples", "Sauter cette question"]}
           />
           <div 
             className={`flex rounded-xl2 overflow-hidden button-group-container ${isThinking ? 'opacity-50' : ''}`}
