@@ -5,7 +5,7 @@ interface QuickAnswersProps {
 }
 
 const QUICK_ANSWERS = [
-  "Let's start!",
+  "Go",
   "Start a Basic Story Telling",
   "Start an Emotional Story Telling",
 ];
