@@ -19,7 +19,7 @@ export type ChatPayload = {
 export async function sendToChat(payload: ChatPayload) {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000); // 30s
+    const timeout = setTimeout(() => controller.abort(), 600000); // 10 minutes
     const url = `${BASE}/webhook/${CHAT_ID}/chat`;
     const r = await fetch(url, {
       method: "POST",
