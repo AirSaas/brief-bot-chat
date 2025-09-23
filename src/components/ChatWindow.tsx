@@ -11,6 +11,7 @@ export default function ChatWindow() {
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [isQuickAnswersClosing, setIsQuickAnswersClosing] = useState(false);
+  const [currentQuickAnswers, setCurrentQuickAnswers] = useState<string[]>([]);
   const sessionId = useMemo(() => {
     const existing = localStorage.getItem("sessionId");
     if (existing) return existing;
@@ -21,10 +22,66 @@ export default function ChatWindow() {
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    listRef.current?.scrollTo(0, listRef.current.scrollHeight);
-  }, [messages.length]);
+    // Do not scroll if there are no messages
+    if (messages.length > 0) {
+      // Delay to ensure the content has been rendered
+      setTimeout(() => {
+        listRef.current?.scrollTo(0, listRef.current.scrollHeight);
+      }, 100);
+    }
+  }, [messages, currentQuickAnswers]);
 
-  // Función para enviar mensaje directamente con texto
+  // Additional scroll when the quick answers are updated
+  useEffect(() => {
+    // Scroll when the quick answers are updated (both when they appear and disappear)
+    setTimeout(() => {
+      listRef.current?.scrollTo(0, listRef.current.scrollHeight);
+    }, 500);
+  }, [currentQuickAnswers]);
+
+  // Function to extract quick_answers from the message content
+  const extractQuickAnswers = (content: string): { cleanContent: string; quickAnswers: string[] } => {
+    try {
+      // Search for the complete markdown code block with JSON
+      const markdownMatch = content.match(/```json\s*\{[\s\S]*"quick_answers"[\s\S]*?\}\s*```/);
+      
+      if (markdownMatch) {
+        // Extract only the JSON from the markdown block
+        const jsonMatch = markdownMatch[0].match(/\{[\s\S]*"quick_answers"[\s\S]*?\}/);
+        
+        if (jsonMatch) {
+          const jsonStr = jsonMatch[0];
+          const parsed = JSON.parse(jsonStr);
+          
+          if (parsed.quick_answers && Array.isArray(parsed.quick_answers)) {
+            // Remove the entire markdown block from the content
+            const cleanContent = content.replace(markdownMatch[0], '').trim();
+            return { cleanContent, quickAnswers: parsed.quick_answers };
+          }
+        }
+      }
+      
+      // If the markdown block is not found, search for the JSON alone
+      const jsonMatch = content.match(/\{[\s\S]*"quick_answers"[\s\S]*?\}/);
+      
+      if (jsonMatch) {
+        const jsonStr = jsonMatch[0];
+        const parsed = JSON.parse(jsonStr);
+        
+        if (parsed.quick_answers && Array.isArray(parsed.quick_answers)) {
+          // Remove the JSON from the content
+          const cleanContent = content.replace(jsonMatch[0], '').trim();
+          return { cleanContent, quickAnswers: parsed.quick_answers };
+        }
+      }
+    } catch {
+      // Silence parsing errors
+    }
+    
+    return { cleanContent: content, quickAnswers: [] };
+  };
+
+  // Function to send message directly with text
   const sendMessageDirectly = async (messageText: string) => {
     if (!messageText.trim()) return;
     const userMsg: ChatMessage = { role: "user", content: messageText.trim() };
@@ -35,7 +92,18 @@ export default function ChatWindow() {
     try {
       const json = await sendToChat({ message: userMsg.content, sessionId });
       const text = json?.output ?? json?.data ?? JSON.stringify(json);
-      setMessages((m) => [...m, { role: "assistant", content: String(text) }]);
+      
+      // Extract quick_answers from the message content
+      const { cleanContent, quickAnswers } = extractQuickAnswers(String(text));
+      
+      setMessages((m) => [...m, { 
+        role: "assistant", 
+        content: cleanContent,
+        quickAnswers: quickAnswers
+      }]);
+      
+      // Update the current quick answers
+      setCurrentQuickAnswers(quickAnswers);
     } catch (error) {
       console.error(error);
       setMessages((m) => [...m, { role: "assistant", content: "❌ Error processing your message." }]);
@@ -52,7 +120,7 @@ export default function ChatWindow() {
   function sendQuickAnswer(answer: string) {
     if (isThinking || isQuickAnswersClosing) return;
     
-    // Start closing animation
+    // Start the closing animation
     setIsQuickAnswersClosing(true);
     
     // Create user message after animation delay
@@ -65,7 +133,18 @@ export default function ChatWindow() {
       sendToChat({ message: answer, sessionId })
         .then((json) => {
           const text = json?.output ?? json?.data ?? JSON.stringify(json);
-          setMessages((m) => [...m, { role: "assistant", content: String(text) }]);
+          
+          // Extract quick_answers from the message content
+          const { cleanContent, quickAnswers } = extractQuickAnswers(String(text));
+          
+          setMessages((m) => [...m, { 
+            role: "assistant", 
+            content: cleanContent,
+            quickAnswers: quickAnswers
+          }]);
+          
+          // Update the current quick answers
+          setCurrentQuickAnswers(quickAnswers);
         })
         .catch((error) => {
           console.error(error);
@@ -73,6 +152,10 @@ export default function ChatWindow() {
         })
         .finally(() => {
           setIsThinking(false);
+          // Reset the closing state after a time
+          setTimeout(() => {
+            setIsQuickAnswersClosing(false);
+          }, 500);
         });
     }, 400); // Wait for closing animation to start
   }
@@ -110,7 +193,18 @@ export default function ChatWindow() {
        });
 
        const text = json?.output ?? json?.data ?? JSON.stringify(json);
-       setMessages((m) => [...m, { role: "assistant", content: String(text) }]);
+       
+       // Extract quick_answers from the message content
+       const { cleanContent, quickAnswers } = extractQuickAnswers(String(text));
+       
+       setMessages((m) => [...m, { 
+         role: "assistant", 
+         content: cleanContent,
+         quickAnswers: quickAnswers
+       }]);
+       
+       // Update the current quick answers
+       setCurrentQuickAnswers(quickAnswers);
        setIsThinking(false);
     } catch (err: any) {
       console.error(err);
@@ -181,11 +275,13 @@ export default function ChatWindow() {
       </div>
 
       {/* Quick Answers Section */}
-      {messages.length === 0 && !isThinking && (
+      {!isThinking && !isQuickAnswersClosing && (
         <QuickAnswers 
           onAnswerClick={sendQuickAnswer} 
           disabled={isThinking || isQuickAnswersClosing}
           isClosing={isQuickAnswersClosing}
+          answers={currentQuickAnswers}
+          isFirstMessage={messages.length === 0}
         />
       )}
 

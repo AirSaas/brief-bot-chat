@@ -8,6 +8,7 @@ export type ChatMessage = {
   audioUrl?: string;
   audioFile?: File;
   audioStatus?: "uploading" | "uploaded" | "error";
+  quickAnswers?: string[];
 };
 export type ChatPayload = {
   message?: string;
@@ -30,7 +31,7 @@ export async function sendToChat(payload: ChatPayload) {
     clearTimeout(timeout);
 
     if (!r.ok) throw new Error(`Chat error ${r.status}`);
-    return r.json() as Promise<{ output?: string; [key: string]: any }>;
+    return r.json() as Promise<{ output?: string; quick_answers?: string[]; [key: string]: any }>;
   } catch (err) {
     console.error("sendToChat failed:", err);
     throw err;
