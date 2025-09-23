@@ -35,10 +35,7 @@ html, body, #root {
   transition-duration: 150ms;
 }
 
-/* Global button styles */
-button {
-  border-radius: 30px !important;
-}
+
 
 /* Focus styles for accessibility */
 button:focus-visible {
@@ -94,56 +91,20 @@ button:focus-visible {
   animation: thinking-dots 1.4s ease-in-out infinite;
 }
 
-/* Audio player custom styling - Integrated with message */
+/* Default audio player styling */
 audio {
   border-radius: 8px !important;
-  background: transparent !important;
+  background: white !important;
   border: none !important;
 }
 
+/* Force white background for audio controls */
 audio::-webkit-media-controls-panel {
-  background: transparent !important;
-  border-radius: 8px !important;
-  border: none !important;
-  box-shadow: none !important;
+  background-color: white !important;
 }
 
-audio::-webkit-media-controls-play-button {
-  background-color: transparent !important;
-  border-radius: 50% !important;
-  border: none !important;
-  filter: brightness(0) invert(1) !important;
-}
-
-audio::-webkit-media-controls-current-time-display,
-audio::-webkit-media-controls-time-remaining-display {
-  color: white !important;
-  font-weight: 600 !important;
-  opacity: 1 !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
-}
-
-audio::-webkit-media-controls-volume-slider {
-  background: rgba(255, 255, 255, 0.6) !important;
-  border: none !important;
-}
-
-audio::-webkit-media-controls-mute-button {
-  opacity: 1 !important;
-  border: none !important;
-  filter: brightness(0) invert(1) !important;
-}
-
-/* Remove all white backgrounds and borders */
 audio::-webkit-media-controls-enclosure {
-  background: transparent !important;
-  border: none !important;
-}
-
-audio::-webkit-media-controls-fullscreen-button {
-  background: transparent !important;
-  border: none !important;
-  filter: brightness(0) invert(1) !important;
+  background-color: white !important;
 }
 
 /* Markdown styling for chat messages */
@@ -399,22 +360,6 @@ div.button-group-container {
   opacity: 0.6 !important;
 }
 
-/* Make all control buttons white */
-audio::-webkit-media-controls-overlay-play-button {
-  filter: brightness(0) invert(1) !important;
-}
-
-audio::-webkit-media-controls-rewind-button {
-  filter: brightness(0) invert(1) !important;
-}
-
-audio::-webkit-media-controls-return-to-realtime-button {
-  filter: brightness(0) invert(1) !important;
-}
-
-audio::-webkit-media-controls-toggle-closed-captions-button {
-  filter: brightness(0) invert(1) !important;
-}
 
 /* Copy feedback animation */
 @keyframes fade-in-out {
@@ -682,3 +627,29 @@ audio::-webkit-media-controls-toggle-closed-captions-button {
     flex-shrink: 0 !important; /* Prevent buttons from shrinking */
   }
 }
+
+/* Bot message bubbles - no rounded corners */
+.bot-message-no-radius {
+  border-radius: 0 !important;
+}
+
+/* Override any global rounded styles for bot messages */
+div.bot-message-no-radius {
+  border-radius: 0 !important;
+}
+
+/* Force no border radius for bot message containers */
+div.bot-message-no-radius,
+div.bot-message-no-radius * {
+  border-radius: 0 !important;
+}
+
+/* Ultra specific rule to override any rounded corners */
+div[class*="bot-message-no-radius"] {
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+

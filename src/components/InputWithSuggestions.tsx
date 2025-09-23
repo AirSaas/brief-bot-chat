@@ -23,6 +23,9 @@ export default function InputWithSuggestions({
 }: InputWithSuggestionsProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
+  
+  // Disable suggestions for now
+  const suggestionsEnabled = false;
 
   // Function to handle input debounce
   const handleInputChange = (inputValue: string) => {
@@ -33,20 +36,22 @@ export default function InputWithSuggestions({
       clearTimeout(inputTimeout);
     }
     
-    // If there's text, show suggestions after 1 second of pause
-    if (inputValue.trim().length > 0) {
+    // If suggestions are enabled and there's text, show suggestions after 1 second of pause
+    if (suggestionsEnabled && inputValue.trim().length > 0) {
       const timeout = setTimeout(() => {
         setShowSuggestions(true);
       }, 1000);
       setInputTimeout(timeout);
     } else {
-      // If no text, hide suggestions immediately
+      // If no text or suggestions disabled, hide suggestions immediately
       setShowSuggestions(false);
     }
   };
 
   // Function to show suggestions after 4 seconds of inactivity
   const startInactivityTimer = () => {
+    if (!suggestionsEnabled) return;
+    
     if (inputTimeout) {
       clearTimeout(inputTimeout);
     }
@@ -87,43 +92,57 @@ export default function InputWithSuggestions({
 
   return (
     <div className="flex-1 relative">
-      <input
-        className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-xl2 border border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-500 bg-white shadow-sm font-bold text-gray-700 placeholder-gray-400 transition-all duration-300 text-sm sm:text-base ${
-          isThinking ? 'opacity-50 cursor-not-allowed' : ''
-        }`}
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => handleInputChange(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            if (!isThinking) {
-              onSend();
+      <div className="relative">
+        <input
+          className={`w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 bg-white shadow-sm text-gray-700 placeholder-gray-400 transition-all duration-300 text-sm ${
+            isThinking ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => handleInputChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              if (!isThinking) {
+                onSend();
+              }
             }
-          }
-          if (e.key === "Escape") {
-            hideSuggestions();
-          }
-        }}
-        onFocus={() => {
-          if (value.trim().length > 0) {
-            setShowSuggestions(true);
-          } else {
-            // Start inactivity timer when user focuses
-            startInactivityTimer();
-          }
-        }}
-        onBlur={() => {
-          // Small delay to allow clicking on suggestions
-          setTimeout(() => {
-            setShowSuggestions(false);
-          }, 200);
-        }}
-        disabled={disabled}
-      />
+            if (e.key === "Escape") {
+              hideSuggestions();
+            }
+          }}
+          onFocus={() => {
+            if (suggestionsEnabled && value.trim().length > 0) {
+              setShowSuggestions(true);
+            } else if (suggestionsEnabled) {
+              // Start inactivity timer when user focuses
+              startInactivityTimer();
+            }
+          }}
+          onBlur={() => {
+            // Small delay to allow clicking on suggestions
+            setTimeout(() => {
+              setShowSuggestions(false);
+            }, 200);
+          }}
+          disabled={disabled}
+        />
+        
+        {/* Send button icon */}
+        <button
+          onClick={onSend}
+          disabled={isThinking || !value.trim()}
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-gray-500 hover:text-gray-700 transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="rotate-45">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22,2 15,22 11,13 2,9"></polygon>
+          </svg>
+        </button>
+      </div>
       
       {/* Help suggestions */}
-      {showSuggestions && !isThinking && suggestions.length > 0 && (
+      {suggestionsEnabled && showSuggestions && !isThinking && suggestions.length > 0 && (
         <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1 z-20 suggestions-container">
           {suggestions.map((suggestion, index) => (
             <button

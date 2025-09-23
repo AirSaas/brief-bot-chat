@@ -3,15 +3,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { sendToChat, uploadAudio, type ChatMessage } from "../lib/api";
 import AudioRecorder from "./AudioRecorder";
 import { MessageBubble } from "./MessageBubble";
-import QuickAnswers from "./QuickAnswers";
 import InputWithSuggestions from "./InputWithSuggestions";
+import InitialBotMessage from "./InitialBotMessage";
 
 export default function ChatWindow() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
-  const [isQuickAnswersClosing, setIsQuickAnswersClosing] = useState(false);
-  const [currentQuickAnswers, setCurrentQuickAnswers] = useState<string[]>([]);
   const sessionId = useMemo(() => {
     const existing = localStorage.getItem("sessionId");
     if (existing) return existing;
@@ -29,15 +27,7 @@ export default function ChatWindow() {
         listRef.current?.scrollTo(0, listRef.current.scrollHeight);
       }, 100);
     }
-  }, [messages, currentQuickAnswers]);
-
-  // Additional scroll when the quick answers are updated
-  useEffect(() => {
-    // Scroll when the quick answers are updated (both when they appear and disappear)
-    setTimeout(() => {
-      listRef.current?.scrollTo(0, listRef.current.scrollHeight);
-    }, 500);
-  }, [currentQuickAnswers]);
+  }, [messages]);
 
   // Function to extract quick_answers from the message content
   const extractQuickAnswers = (content: string): { cleanContent: string; quickAnswers: string[] } => {
@@ -102,8 +92,6 @@ export default function ChatWindow() {
         quickAnswers: quickAnswers
       }]);
       
-      // Update the current quick answers
-      setCurrentQuickAnswers(quickAnswers);
     } catch (error) {
       console.error(error);
       setMessages((m) => [...m, { role: "assistant", content: "❌ Error processing your message." }]);
@@ -117,47 +105,66 @@ export default function ChatWindow() {
     await sendMessageDirectly(input);
   }
 
+  function handleTemplateSelect(template: string) {
+    if (isThinking) return;
+    
+    // Create user message with selected template
+    const userMsg: ChatMessage = { role: "user", content: template };
+    setMessages((m) => [...m, userMsg]);
+    setIsThinking(true);
+    
+    // Send template selection to chat
+    sendToChat({ message: template, sessionId })
+      .then((json) => {
+        const text = json?.output ?? json?.data ?? JSON.stringify(json);
+        
+        // Extract quick_answers from message content
+        const { cleanContent, quickAnswers } = extractQuickAnswers(String(text));
+        
+        setMessages((m) => [...m, { 
+          role: "assistant", 
+          content: cleanContent,
+          quickAnswers: quickAnswers
+        }]);
+      })
+      .catch((error) => {
+        console.error(error);
+        setMessages((m) => [...m, { role: "assistant", content: "❌ Error processing your message." }]);
+      })
+      .finally(() => {
+        setIsThinking(false);
+      });
+  }
+
   function sendQuickAnswer(answer: string) {
-    if (isThinking || isQuickAnswersClosing) return;
+    if (isThinking) return;
     
-    // Start the closing animation
-    setIsQuickAnswersClosing(true);
+    // Create user message
+    const userMsg: ChatMessage = { role: "user", content: answer };
+    setMessages((m) => [...m, userMsg]);
+    setIsThinking(true);
     
-    // Create user message after animation delay
-    setTimeout(() => {
-      const userMsg: ChatMessage = { role: "user", content: answer };
-      setMessages((m) => [...m, userMsg]);
-      setIsThinking(true);
-      
-      // Send to chat
-      sendToChat({ message: answer, sessionId })
-        .then((json) => {
-          const text = json?.output ?? json?.data ?? JSON.stringify(json);
-          
-          // Extract quick_answers from the message content
-          const { cleanContent, quickAnswers } = extractQuickAnswers(String(text));
-          
-          setMessages((m) => [...m, { 
-            role: "assistant", 
-            content: cleanContent,
-            quickAnswers: quickAnswers
-          }]);
-          
-          // Update the current quick answers
-          setCurrentQuickAnswers(quickAnswers);
-        })
-        .catch((error) => {
-          console.error(error);
-          setMessages((m) => [...m, { role: "assistant", content: "❌ Error processing your message." }]);
-        })
-        .finally(() => {
-          setIsThinking(false);
-          // Reset the closing state after a time
-          setTimeout(() => {
-            setIsQuickAnswersClosing(false);
-          }, 500);
-        });
-    }, 400); // Wait for closing animation to start
+    // Send to chat
+    sendToChat({ message: answer, sessionId })
+      .then((json) => {
+        const text = json?.output ?? json?.data ?? JSON.stringify(json);
+        
+        // Extract quick_answers from the message content
+        const { cleanContent, quickAnswers } = extractQuickAnswers(String(text));
+        
+        setMessages((m) => [...m, { 
+          role: "assistant", 
+          content: cleanContent,
+          quickAnswers: quickAnswers
+        }]);
+      })
+      .catch((error) => {
+        console.error(error);
+        setMessages((m) => [...m, { role: "assistant", content: "❌ Error processing your message." }]);
+      })
+      .finally(() => {
+        setIsThinking(false);
+      });
   }
 
   async function sendAudioFile(file: File) {
@@ -203,8 +210,6 @@ export default function ChatWindow() {
          quickAnswers: quickAnswers
        }]);
        
-       // Update the current quick answers
-       setCurrentQuickAnswers(quickAnswers);
        setIsThinking(false);
     } catch (err: any) {
       console.error(err);
@@ -221,106 +226,98 @@ export default function ChatWindow() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-brand-50">
-      <header className="px-4 sm:px-6 py-3 sm:py-4 border-b border-brand-200 bg-white shadow-sm flex items-center justify-between">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div
-            className="w-2 h-6 sm:w-3 sm:h-8 rounded-lg shadow-md"
-            style={{
-              background: "linear-gradient(135deg, #3C51E2 0%, #3041B5 100%)",
-            }}
-          />
-          <div className="font-display font-bold text-brand-800 text-sm sm:text-lg">
-            AirSaas Brief Project Assistant
+    <div className="h-full flex flex-col bg-white">
+      <header className="px-4 sm:px-6 py-3 sm:py-4 bg-white flex items-center gap-3">
+        {/* Logo with bot image*/}
+        <div className="relative">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden">
+            <img 
+              src="/mini.png" 
+              alt="AirSaas Bot" 
+              className="w-10 h-10 rounded-lg"
+            />
           </div>
         </div>
-        <img src="/mini.png" alt="AirSaas Logo" className="w-6 h-6 sm:w-8 sm:h-8" />
+        
+        {/* Title */}
+        <div className="font-bold text-gray-800 text-lg">
+          AirSaas AI assistant
+        </div>
       </header>
 
       <div
         ref={listRef}
-        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4 relative z-10"
-        style={{
-          background: "linear-gradient(to bottom, #F0F2FF 0%, #FFFFFF 100%)",
-        }}
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4 relative z-10 bg-white"
       >
         {/* Background logo - Fixed position */}
-        <div className="fixed left-3 sm:left-6 top-16 sm:top-20 opacity-5 pointer-events-none z-0">
+        <div className="fixed right-6 sm:right-6 bottom-16 sm:bottom-50 opacity-5 pointer-events-none z-0">
           <img
             src="/logo-air.svg"
             alt="AirSaas Background Logo"
             className="w-20 h-20 sm:w-32 sm:h-32"
           />
         </div>
-         {messages.map((m, i) => (
-           <MessageBubble
-             key={i}
-             role={m.role}
-             isAudio={!!(m.audioFile || m.audioUrl)}
-             audioFile={m.audioFile}
-             audioStatus={m.audioStatus}
-             showCopyButton={m.role === "assistant"}
-           >
-             {m.content}
-           </MessageBubble>
-         ))}
+         {/* Initial bot message with template selection */}
+         {messages.length === 0 && (
+           <InitialBotMessage onTemplateSelect={handleTemplateSelect} />
+         )}
+         
+         {messages.map((m, i) => {
+           // Only show quick answers for the last assistant message
+           const isLastAssistantMessage = m.role === "assistant" && 
+             i === messages.length - 1;
+           
+           return (
+             <MessageBubble
+               key={i}
+               role={m.role}
+               isAudio={!!(m.audioFile || m.audioUrl)}
+               audioFile={m.audioFile}
+               audioStatus={m.audioStatus}
+               showCopyButton={m.role === "assistant"}
+               quickAnswers={isLastAssistantMessage ? m.quickAnswers : []}
+               onQuickAnswerClick={isLastAssistantMessage ? sendQuickAnswer : undefined}
+             >
+               {m.content}
+             </MessageBubble>
+           );
+         })}
          
          {/* Thinking indicator */}
          {isThinking && (
-           <MessageBubble role="assistant">
+           <MessageBubble role="assistant" quickAnswers={[]} onQuickAnswerClick={undefined}>
              {""}
            </MessageBubble>
          )}
          
       </div>
 
-      {/* Quick Answers Section */}
-      {!isThinking && !isQuickAnswersClosing && (
-        <QuickAnswers 
-          onAnswerClick={sendQuickAnswer} 
-          disabled={isThinking || isQuickAnswersClosing}
-          isClosing={isQuickAnswersClosing}
-          answers={currentQuickAnswers}
-          isFirstMessage={messages.length === 0}
-        />
-      )}
-
-      <footer className="p-4 sm:p-6 bg-white border-t border-brand-200 shadow-lg">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <InputWithSuggestions
-            value={input}
-            onChange={setInput}
-            onSend={sendText}
-            onSendDirectly={sendMessageDirectly}
-            placeholder={isThinking ? "Bot is responding..." : "Type a message...   :-)"}
-            disabled={isThinking}
-            isThinking={isThinking}
-            suggestions={["Donnez-moi des exemples", "Sauter cette question"]}
-          />
-          <div 
-            className={`flex rounded-xl2 overflow-hidden button-group-container ${isThinking ? 'opacity-50' : ''}`}
-            style={{ 
-              backgroundColor: 'transparent',
-              background: 'transparent',
-              backgroundImage: 'none',
-              border: 'none',
-              borderColor: 'transparent',
-              outline: 'none',
-              boxShadow: 'none'
-            }}
-          >
-            <button
-              onClick={sendText}
-              disabled={isThinking}
-              className={`px-4 sm:px-6 py-2 sm:py-3 bg-brand-500 text-white font-bold hover:bg-brand-600 transition-all duration-300 send-button text-sm sm:text-base touch-manipulation ${
-                isThinking ? 'cursor-not-allowed' : ''
-              }`}
-              style={{ color: "white", backgroundColor: "#3C51E2" }}
-            >
-              {isThinking ? "Thinking..." : "Send"}
-            </button>
-            <div className="w-px bg-white opacity-30"></div>
+      <footer className="p-4 sm:p-6 bg-transparent">
+        <div className="space-y-4">
+          {/* Voice Recording Button */}
+          <div className="w-full">
             <AudioRecorder onRecorded={sendAudioFile} disabled={isThinking} />
+          </div>
+          
+          {/* Separator */}
+          <div className="flex items-center justify-center">
+            <div className="flex-1 h-px bg-gray-400"></div>
+            <span className="px-3 text-sm text-gray-500">Or</span>
+            <div className="flex-1 h-px bg-gray-400"></div>
+          </div>
+          
+          {/* Text Input */}
+          <div className="w-full">
+            <InputWithSuggestions
+              value={input}
+              onChange={setInput}
+              onSend={sendText}
+              onSendDirectly={sendMessageDirectly}
+              placeholder={isThinking ? "Bot is responding..." : "Type if necessary..."}
+              disabled={isThinking}
+              isThinking={isThinking}
+              suggestions={["Donnez-moi des exemples", "Sauter cette question"]}
+            />
           </div>
         </div>
       </footer>
