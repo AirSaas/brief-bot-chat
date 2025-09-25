@@ -23,6 +23,7 @@ export default function InputWithSuggestions({
 }: InputWithSuggestionsProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
   
   // Disable suggestions for now
   const suggestionsEnabled = false;
@@ -94,9 +95,10 @@ export default function InputWithSuggestions({
     <div className="flex-1 relative">
       <div className="relative">
         <input
-          className={`w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 bg-white shadow-sm text-gray-700 placeholder-gray-400 transition-all duration-300 text-sm ${
+          className={`w-full h-[42px] px-[15px] py-2 rounded-[10px] border-0 focus:outline-none bg-[#F8F9FF] focus:bg-white focus:border focus:border-[#3C51E2] text-gray-700 placeholder-[#8D94A3] transition-all duration-300 text-base ${
             isThinking ? 'opacity-50 cursor-not-allowed' : ''
           }`}
+          style={{ fontFamily: 'Product Sans Light, system-ui, sans-serif', fontWeight: 300, lineHeight: '1.213em' }}
           placeholder={placeholder}
           value={value}
           onChange={(e) => handleInputChange(e.target.value)}
@@ -112,6 +114,7 @@ export default function InputWithSuggestions({
             }
           }}
           onFocus={() => {
+            setIsFocused(true);
             if (suggestionsEnabled && value.trim().length > 0) {
               setShowSuggestions(true);
             } else if (suggestionsEnabled) {
@@ -120,6 +123,7 @@ export default function InputWithSuggestions({
             }
           }}
           onBlur={() => {
+            setIsFocused(false);
             // Small delay to allow clicking on suggestions
             setTimeout(() => {
               setShowSuggestions(false);
@@ -132,9 +136,13 @@ export default function InputWithSuggestions({
         <button
           onClick={onSend}
           disabled={isThinking || !value.trim()}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-gray-500 hover:text-gray-700 transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+          className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-[7px] rounded-full transition-all duration-200 disabled:cursor-not-allowed ${
+            isFocused && value.trim() 
+              ? 'bg-[#3C51E2] text-white' 
+              : 'bg-[#F3F3FC] text-[#8D94A3] hover:text-gray-700'
+          } disabled:opacity-30`}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="rotate-45">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="rotate-45">
             <line x1="22" y1="2" x2="11" y2="13"></line>
             <polygon points="22,2 15,22 11,13 2,9"></polygon>
           </svg>

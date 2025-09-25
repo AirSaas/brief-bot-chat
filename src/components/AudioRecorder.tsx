@@ -36,9 +36,10 @@ export default function AudioRecorder({ onRecorded, disabled }: Props) {
         <button 
           disabled={disabled} 
           onClick={start} 
-          className="w-full px-4 py-2 bg-blue-100/50 text-blue-500/70 font-normal rounded-xl border border-blue-200 hover:bg-blue-200/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-sm"
+          className="w-full px-[19px] py-2 bg-[#E8EBFE] text-[#3C51E2] font-light text-base rounded-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:bg-[#D8DCFE]"
+          style={{ fontFamily: 'Product Sans Light, system-ui, sans-serif', lineHeight: '1.213em' }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
             <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
           </svg>
@@ -47,9 +48,10 @@ export default function AudioRecorder({ onRecorded, disabled }: Props) {
       ) : (
         <button 
           onClick={stop} 
-          className="w-full px-4 py-2 bg-red-200/50 text-red-800 font-normal rounded-xl border border-red-300 hover:bg-red-300/50 transition-all duration-300 flex items-center justify-center gap-3 shadow-sm"
+          className="w-full px-[19px] py-2 bg-[#FEE8E8] text-[#E23C3C] font-light text-base rounded-full flex items-center justify-center gap-2 transition-all duration-300 hover:bg-[#FED8D8]"
+          style={{ fontFamily: 'Product Sans Light, system-ui, sans-serif', lineHeight: '1.213em' }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
             <rect x="6" y="6" width="12" height="12" rx="2"/>
           </svg>
           <span>Stop recording</span>
