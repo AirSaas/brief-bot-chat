@@ -19,6 +19,31 @@ export default function ChatWindow() {
   }, []);
   const listRef = useRef<HTMLDivElement>(null);
 
+  // send message to parent
+  const sendMessageToParent = (action: string, data?: any) => {
+    const message = {
+      type: 'CHAT_WINDOW_ACTION',
+      action,
+      data: data || {},
+      timestamp: Date.now(),
+      sessionId
+    };
+
+    // send message using postMessage (for iframes)
+    if (window.parent !== window) {
+      window.parent.postMessage(message, '*');
+    }
+
+    // also dispatch custom event for pages that don't use iframe
+    const customEvent = new CustomEvent('chatWindowAction', {
+      detail: message
+    });
+    window.dispatchEvent(customEvent);
+
+    // debugging log
+    console.log('ChatWindow action:', message);
+  };
+
   useEffect(() => {
     // Do not scroll if there are no messages
     if (messages.length > 0) {
@@ -235,6 +260,7 @@ export default function ChatWindow() {
             {/* See all conversations button */}
             <div className="flex justify-start items-end" style={{ padding: '8px 19px 8px 0px' }}>
               <button 
+                onClick={() => sendMessageToParent('SEE_ALL_CONVERSATIONS', { messageCount: messages.length })}
                 className="flex items-center rounded-full bg-transparent text-[#3C51E2] hover:bg-gray-50 transition-colors duration-200"
                 style={{ 
                   fontFamily: 'Product Sans Light, system-ui, sans-serif', 
@@ -285,6 +311,7 @@ export default function ChatWindow() {
           <div className="flex items-center" style={{ gap: '5px' }}>
             {/* Expand button */}
             <button 
+              onClick={() => sendMessageToParent('EXPAND_CHAT', { isExpanded: true })}
               className="rounded-full bg-transparent text-[#3C51E2] hover:bg-gray-50 transition-colors duration-200"
               style={{ padding: '8px' }}
             >
@@ -295,6 +322,7 @@ export default function ChatWindow() {
             
             {/* Close button */}
             <button 
+              onClick={() => sendMessageToParent('CLOSE_CHAT', { messageCount: messages.length, sessionId })}
               className="rounded-full bg-transparent text-[#061333] hover:bg-gray-50 transition-colors duration-200"
               style={{ padding: '8px' }}
             >
