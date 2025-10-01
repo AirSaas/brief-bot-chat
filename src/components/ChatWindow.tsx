@@ -6,7 +6,11 @@ import { MessageBubble } from "./MessageBubble";
 import InputWithSuggestions from "./InputWithSuggestions";
 import InitialBotMessage from "./InitialBotMessage";
 
-export default function ChatWindow() {
+interface ChatWindowProps {
+  onBackToHomepage?: () => void;
+}
+
+export default function ChatWindow({ onBackToHomepage }: ChatWindowProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
@@ -257,10 +261,10 @@ export default function ChatWindow() {
         <div className="flex items-center justify-between w-full">
           {/* Left section */}
           <div className="flex flex-col justify-center" style={{ gap: '10px' }}>
-            {/* See all conversations button */}
+            {/* Back to Homepage button */}
             <div className="flex justify-start items-end" style={{ padding: '8px 19px 8px 0px' }}>
               <button 
-                onClick={() => sendMessageToParent('SEE_ALL_CONVERSATIONS', { messageCount: messages.length })}
+                onClick={() => onBackToHomepage?.()}
                 className="flex items-center rounded-full bg-transparent text-[#3C51E2] hover:bg-gray-50 transition-colors duration-200"
                 style={{ 
                   fontFamily: 'Product Sans Light, system-ui, sans-serif', 
