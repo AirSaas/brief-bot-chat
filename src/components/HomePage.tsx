@@ -5,7 +5,7 @@ interface HomePageProps {
 export default function HomePage({ onStartChat }: HomePageProps) {
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-brand-50 to-brand-100 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-white via-brand-50 to-brand-100 flex flex-col animate-fade-in">
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-6 py-12">
@@ -24,21 +24,33 @@ export default function HomePage({ onStartChat }: HomePageProps) {
             </div>
             
             <h1
-              className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight"
-              style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
+              className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight animate-slide-up opacity-0"
+              style={{ 
+                fontFamily: "Google Sans, system-ui, sans-serif",
+                animationDelay: "0.2s",
+                animationFillMode: "forwards"
+              }}
             >
               Vous avez une fiche projet à faire ?
             </h1>
             <h2
-              className="text-3xl md:text-4xl font-medium text-brand-600 mb-8 leading-tight"
-              style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
+              className="text-3xl md:text-4xl font-medium text-brand-600 mb-8 leading-tight animate-slide-up opacity-0"
+              style={{ 
+                fontFamily: "Google Sans, system-ui, sans-serif",
+                animationDelay: "0.4s",
+                animationFillMode: "forwards"
+              }}
             >
               Laissez notre assistant IA vous aider
             </h2>
 
             <p
-              className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed"
-              style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
+              className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed animate-slide-up opacity-0"
+              style={{ 
+                fontFamily: "Google Sans, system-ui, sans-serif",
+                animationDelay: "0.6s",
+                animationFillMode: "forwards"
+              }}
             >
               Brief Project transforme vos notes et échanges en une fiche projet
               claire, structurée et prête à partager en quelques secondes.
@@ -47,13 +59,15 @@ export default function HomePage({ onStartChat }: HomePageProps) {
             {/* CTA Button */}
             <button
               onClick={onStartChat}
-              className="group inline-flex items-center gap-3 bg-brand-500 hover:bg-brand-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 relative overflow-hidden"
+              className="group inline-flex items-center gap-3 bg-brand-500 hover:bg-brand-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 relative overflow-hidden animate-slide-up opacity-0"
               style={{
                 fontFamily: "Google Sans, system-ui, sans-serif",
                 color: "#FFFFFF",
                 fontWeight: "500",
                 background: "linear-gradient(135deg, #3C51E2 0%, #3041B5 100%)",
                 boxShadow: "0 10px 25px rgba(60, 81, 226, 0.4), 0 4px 12px rgba(60, 81, 226, 0.2)",
+                animationDelay: "0.8s",
+                animationFillMode: "forwards"
               }}
             >
               {/* Rainbow Shine effect */}
@@ -81,7 +95,7 @@ export default function HomePage({ onStartChat }: HomePageProps) {
 
           {/* Features Section */}
           <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-white/50">
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-white/50 animate-slide-in-left opacity-0" style={{ animationDelay: "1s", animationFillMode: "forwards" }}>
               <div className="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mb-6 mx-auto">
                 <svg
                   className="w-8 h-8 text-brand-600"
@@ -112,7 +126,7 @@ export default function HomePage({ onStartChat }: HomePageProps) {
               </p>
             </div>
 
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-white/50">
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-white/50 animate-slide-in-up opacity-0" style={{ animationDelay: "1.2s", animationFillMode: "forwards" }}>
               <div className="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mb-6 mx-auto">
                 <svg
                   className="w-8 h-8 text-brand-600"
@@ -143,7 +157,7 @@ export default function HomePage({ onStartChat }: HomePageProps) {
               </p>
             </div>
 
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-white/50">
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-white/50 animate-slide-in-right opacity-0" style={{ animationDelay: "1.4s", animationFillMode: "forwards" }}>
               <div className="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mb-6 mx-auto">
                 <svg
                   className="w-8 h-8 text-brand-600"
@@ -176,7 +190,7 @@ export default function HomePage({ onStartChat }: HomePageProps) {
           </div>
 
           {/* Additional CTA */}
-          <div className="bg-gradient-to-r from-brand-500 to-brand-600 rounded-3xl p-8 text-white">
+          <div className="bg-gradient-to-r from-brand-500 to-brand-600 rounded-3xl p-8 text-white animate-fade-in-up opacity-0" style={{ animationDelay: "1.6s", animationFillMode: "forwards" }}>
             <h3
               className="text-2xl font-bold mb-4 text-gray-900"
               style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
