@@ -1,5 +1,6 @@
 interface QuickAnswersProps {
   onAnswerClick: (answer: string) => void;
+  onDownloadPDF?: () => void;
   disabled?: boolean;
   isClosing?: boolean;
   answers?: string[];
@@ -12,7 +13,15 @@ const DEFAULT_QUICK_ANSWERS = [
   "Start an Emotional Story Telling",
 ];
 
-export default function QuickAnswers({ onAnswerClick, disabled = false, isClosing = false, answers, isFirstMessage = false }: QuickAnswersProps) {
+export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = false, isClosing = false, answers, isFirstMessage = false }: QuickAnswersProps) {
+  const handleAnswerClick = (answer: string) => {
+    if (answer === "Download as PDF" && onDownloadPDF) {
+      onDownloadPDF();
+    } else {
+      onAnswerClick(answer);
+    }
+  };
+
   // If there are no bot responses and it is not the first message, don't show anything
   if (!answers || answers.length === 0) {
     if (!isFirstMessage) {
@@ -26,11 +35,13 @@ export default function QuickAnswers({ onAnswerClick, disabled = false, isClosin
           {DEFAULT_QUICK_ANSWERS.map((answer, index) => (
             <button
               key={index}
-              onClick={() => onAnswerClick(answer)}
+              onClick={() => handleAnswerClick(answer)}
               disabled={disabled}
               className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
                 disabled
                   ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                  : answer === "Download as PDF"
+                  ? 'bg-[#3C51E2] hover:bg-[#3041B5] text-white'
                   : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
               }`}
             >
@@ -50,11 +61,13 @@ export default function QuickAnswers({ onAnswerClick, disabled = false, isClosin
         {answers.map((answer, index) => (
           <button
             key={index}
-            onClick={() => onAnswerClick(answer)}
+            onClick={() => handleAnswerClick(answer)}
             disabled={disabled}
             className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
               disabled
                 ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                : answer === "Download as PDF"
+                ? 'bg-[#3C51E2] hover:bg-[#3041B5] text-white'
                 : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
             }`}
           >

@@ -5,6 +5,7 @@ import AudioRecorder from "./AudioRecorder";
 import { MessageBubble } from "./MessageBubble";
 import InputWithSuggestions from "./InputWithSuggestions";
 import InitialBotMessage from "./InitialBotMessage";
+import DownloadPDFModal from "./DownloadPDFModal";
 
 interface ChatWindowProps {
   onBackToHomepage?: () => void;
@@ -14,6 +15,7 @@ export default function ChatWindow({ onBackToHomepage }: ChatWindowProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
   const sessionId = useMemo(() => {
     const existing = localStorage.getItem("sessionId");
     if (existing) return existing;
@@ -56,6 +58,9 @@ export default function ChatWindow({ onBackToHomepage }: ChatWindowProps) {
         listRef.current?.scrollTo(0, listRef.current.scrollHeight);
       }, 100);
     }
+    
+    // Guardar mensajes en localStorage para el PDF
+    localStorage.setItem('chatMessages', JSON.stringify(messages));
   }, [messages]);
 
   // Function to extract quick_answers from the message content
@@ -194,6 +199,10 @@ export default function ChatWindow({ onBackToHomepage }: ChatWindowProps) {
       .finally(() => {
         setIsThinking(false);
       });
+  }
+
+  function handleDownloadPDF() {
+    setShowDownloadModal(true);
   }
 
   async function sendAudioFile(file: File) {
@@ -370,6 +379,7 @@ export default function ChatWindow({ onBackToHomepage }: ChatWindowProps) {
                showCopyButton={m.role === "assistant"}
                quickAnswers={isLastAssistantMessage ? m.quickAnswers : []}
                onQuickAnswerClick={isLastAssistantMessage ? sendQuickAnswer : undefined}
+               onDownloadPDF={handleDownloadPDF}
              >
                {m.content}
              </MessageBubble>
@@ -426,6 +436,12 @@ export default function ChatWindow({ onBackToHomepage }: ChatWindowProps) {
           </div>
         </div>
       </footer>
+
+      {/* Download PDF Modal */}
+      <DownloadPDFModal 
+        isOpen={showDownloadModal}
+        onClose={() => setShowDownloadModal(false)}
+      />
     </div>
   );
 }

@@ -9,6 +9,7 @@ export function MessageBubble({
   showCopyButton = false,
   quickAnswers = [],
   onQuickAnswerClick,
+  onDownloadPDF,
 }: {
   role: "user" | "assistant";
   children: React.ReactNode;
@@ -17,6 +18,7 @@ export function MessageBubble({
   showCopyButton?: boolean;
   quickAnswers?: string[];
   onQuickAnswerClick?: (answer: string) => void;
+  onDownloadPDF?: () => void;
 }) {
   const [copied, setCopied] = useState(false);
   const base =
@@ -319,12 +321,23 @@ export function MessageBubble({
                 Skip this question
               </button>
 
+
               {/* Dynamic quick answers from bot */}
               {quickAnswers.map((answer, index) => (
                 <button
                   key={index}
-                  onClick={() => onQuickAnswerClick(answer)}
-                  className="px-3 py-1.5 text-xs font-medium transition-colors duration-200 bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
+                  onClick={() => {
+                    if (answer === "Download as PDF" && onDownloadPDF) {
+                      onDownloadPDF();
+                    } else {
+                      onQuickAnswerClick(answer);
+                    }
+                  }}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
+                    answer === "Download as PDF"
+                      ? 'bg-[#3C51E2] text-white hover:bg-[#3041B5]'
+                      : 'bg-white border border-gray-300 text-gray-600 hover:bg-gray-50'
+                  }`}
                   style={{ borderRadius: "3px" }}
                 >
                   {answer}
