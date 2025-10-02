@@ -9,9 +9,12 @@ import DownloadPDFModal from "./DownloadPDFModal";
 
 interface ChatWindowProps {
   onBackToHomepage?: () => void;
+  onToggleChat?: () => void;
+  onCloseChat?: () => void;
+  isPanel?: boolean;
 }
 
-export default function ChatWindow({ onBackToHomepage }: ChatWindowProps) {
+export default function ChatWindow({ onBackToHomepage, onToggleChat, onCloseChat, isPanel = false }: ChatWindowProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
@@ -25,30 +28,6 @@ export default function ChatWindow({ onBackToHomepage }: ChatWindowProps) {
   }, []);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // send message to parent
-  const sendMessageToParent = (action: string, data?: any) => {
-    const message = {
-      type: 'CHAT_WINDOW_ACTION',
-      action,
-      data: data || {},
-      timestamp: Date.now(),
-      sessionId
-    };
-
-    // send message using postMessage (for iframes)
-    if (window.parent !== window) {
-      window.parent.postMessage(message, '*');
-    }
-
-    // also dispatch custom event for pages that don't use iframe
-    const customEvent = new CustomEvent('chatWindowAction', {
-      detail: message
-    });
-    window.dispatchEvent(customEvent);
-
-    // debugging log
-    console.log('ChatWindow action:', message);
-  };
 
   useEffect(() => {
     // Do not scroll if there are no messages
@@ -322,22 +301,30 @@ export default function ChatWindow({ onBackToHomepage }: ChatWindowProps) {
           
           {/* Right section - Action buttons */}
           <div className="flex items-center" style={{ gap: '5px' }}>
-            {/* Expand button */}
+            {/* Expand/Collapse button */}
             <button 
-              onClick={() => sendMessageToParent('EXPAND_CHAT', { isExpanded: true })}
+              onClick={onToggleChat}
               className="rounded-full bg-transparent text-[#3C51E2] hover:bg-gray-50 transition-colors duration-200"
               style={{ padding: '8px' }}
+              title={isPanel ? "Expand to fullscreen" : "Go back to home"}
             >
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-              </svg>
+              {isPanel ? (
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                </svg>
+              ) : (
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                </svg>
+              )}
             </button>
             
             {/* Close button */}
             <button 
-              onClick={() => sendMessageToParent('CLOSE_CHAT', { messageCount: messages.length, sessionId })}
+              onClick={onCloseChat}
               className="rounded-full bg-transparent text-[#061333] hover:bg-gray-50 transition-colors duration-200"
               style={{ padding: '8px' }}
+              title="Close chat"
             >
               <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -349,7 +336,7 @@ export default function ChatWindow({ onBackToHomepage }: ChatWindowProps) {
 
       <div
         ref={listRef}
-        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4 relative z-10 bg-white"
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4 relative z-10 bg-white chat-scrollbar"
       >
         {/* Background logo - Fixed position */}
         {/*<div className="fixed right-6 sm:right-6 bottom-16 sm:bottom-50 opacity-5 pointer-events-none z-0">

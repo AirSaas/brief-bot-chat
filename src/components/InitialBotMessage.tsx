@@ -19,12 +19,12 @@ export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessag
   return (
     <div className="space-y-6">
       {/* Bot Message */}
-      <div className="flex items-start gap-3">
-        <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-sm">
+      <div className="flex items-start gap-2 sm:gap-3">
+        <div className="flex-shrink-0">
           <img 
             src="/mini.png" 
             alt="AirSaas Bot" 
-            className="w-8 h-8 rounded-full"
+            className="w-7 h-7 sm:w-9 sm:h-9"
           />
         </div>
         <div className="max-w-2xl">
@@ -37,7 +37,7 @@ export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessag
       </div>
 
       {/* Template Selection Buttons */}
-      <div className="space-y-3 ml-11">
+      <div className="space-y-3 ml-11 sm:ml-12">
         {TEMPLATES.map((template) => (
           <button
             key={template.id}

@@ -71,10 +71,10 @@ export default function HomePage({ onStartChat }: HomePageProps) {
               }}
             >
               {/* Rainbow Shine effect */}
-              <div className="absolute inset-0 -top-2 -left-2 w-full h-full bg-gradient-to-r from-transparent via-cyan-300/40 via-yellow-300/40 via-pink-300/40 to-transparent opacity-40 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1200"></div>
+              <div className="absolute inset-0 -top-2 -left-2 w-full h-full bg-gradient-to-r from-transparent via-cyan-300/40 to-transparent opacity-40 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1200"></div>
               
               {/* Multi-color Glow effect */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/30 via-purple-400/40 via-pink-400/30 to-yellow-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-400 blur-sm"></div>
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/30 via-purple-400/40 to-yellow-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-400 blur-sm"></div>
               
               {/* Colorful Sparkles */}
               <div className="absolute top-2 right-4 w-3 h-3 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full opacity-0 group-hover:opacity-90 transition-all duration-300 animate-pulse shadow-lg shadow-cyan-400/50"></div>

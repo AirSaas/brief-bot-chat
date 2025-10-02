@@ -304,7 +304,7 @@ export function MessageBubble({
 
           {/* Quick Answers for bot messages */}
           {quickAnswers && quickAnswers.length > 0 && onQuickAnswerClick && (
-            <div className="ml-11 flex flex-wrap gap-2">
+            <div className="ml-12 sm:ml-14 flex flex-wrap gap-2">
               {/* Default options */}
               <button
                 onClick={() => onQuickAnswerClick("Give me examples")}
