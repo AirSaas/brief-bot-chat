@@ -14,7 +14,7 @@ interface ChatWindowProps {
   isPanel?: boolean;
 }
 
-export default function ChatWindow({ onBackToHomepage, onToggleChat, onCloseChat, isPanel = false }: ChatWindowProps) {
+export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false }: ChatWindowProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
@@ -251,7 +251,7 @@ export default function ChatWindow({ onBackToHomepage, onToggleChat, onCloseChat
           <div className="flex flex-col justify-center" style={{ gap: '10px' }}>
             {/* Back to Homepage button */}
             <div className="flex justify-start items-end" style={{ padding: '8px 19px 8px 0px' }}>
-              <button 
+              {/* <button 
                 onClick={() => onBackToHomepage?.()}
                 className="flex items-center rounded-full bg-transparent text-[#3C51E2] hover:bg-gray-50 transition-colors duration-200"
                 style={{ 
@@ -266,7 +266,7 @@ export default function ChatWindow({ onBackToHomepage, onToggleChat, onCloseChat
                   <path d="M14.5 6.5C14.5 6.78125 14.25 7 13.9688 7H2.1875L6.5625 11.6875C6.75 11.875 6.75 12.1875 6.53125 12.375C6.4375 12.4688 6.3125 12.5 6.1875 12.5C6.03125 12.5 5.90625 12.4688 5.8125 12.3438L0.625 6.84375C0.4375 6.65625 0.4375 6.375 0.625 6.1875L5.8125 0.6875C6 0.46875 6.3125 0.46875 6.53125 0.65625C6.75 0.84375 6.75 1.15625 6.5625 1.34375L2.1875 6H13.9688C14.25 6 14.5 6.25 14.5 6.5Z" fill="#3C51E2"/>
                 </svg>
                 <span>See all conversations</span>
-              </button>
+              </button> */}
             </div>
             
             {/* Logo and title group */}
