@@ -8,7 +8,7 @@ export default function App() {
   const [chatMode, setChatMode] = useState<ChatMode>("hidden");
 
   const handleStartChat = () => {
-    setChatMode("fullscreen");
+    setChatMode("panel");
   };
 
   const handleToggleChat = () => {
