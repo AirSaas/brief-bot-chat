@@ -353,9 +353,16 @@ export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false 
          )}
          
          {messages.map((m, i) => {
-           // Only show quick answers for the last assistant message
+           // Only show quick answers for the last assistant message, but never for the first assistant message
            const isLastAssistantMessage = m.role === "assistant" && 
              i === messages.length - 1;
+           
+           // Check if this is the first assistant message
+           const isFirstAssistantMessage = m.role === "assistant" && 
+             messages.findIndex(msg => msg.role === "assistant") === i;
+           
+           // Show quick answers only if it's the last assistant message AND not the first assistant message
+           const shouldShowQuickAnswers = isLastAssistantMessage && !isFirstAssistantMessage;
            
            return (
              <MessageBubble
@@ -364,8 +371,8 @@ export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false 
                isAudio={!!(m.audioFile || m.audioUrl)}
                audioFile={m.audioFile}
                showCopyButton={m.role === "assistant"}
-               quickAnswers={isLastAssistantMessage ? m.quickAnswers : []}
-               onQuickAnswerClick={isLastAssistantMessage ? sendQuickAnswer : undefined}
+               quickAnswers={shouldShowQuickAnswers ? m.quickAnswers : []}
+               onQuickAnswerClick={shouldShowQuickAnswers ? sendQuickAnswer : undefined}
                onDownloadPDF={handleDownloadPDF}
              >
                {m.content}
