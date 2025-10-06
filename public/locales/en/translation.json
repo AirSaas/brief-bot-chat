@@ -1,0 +1,62 @@
+{
+  "homepage": {
+    "title": "Do you have a project brief to create?",
+    "subtitle": "Let our AI assistant help you",
+    "description": "Brief Project transforms your notes and exchanges into a clear, structured project brief ready to share in seconds.",
+    "cta_button": "Test Our Brief Project AI Assistant for free",
+    "features": {
+      "question_title": "Ask the right questions",
+      "question_description": "Our AI guides you to frame objectives, risks, deliverables and stakeholders.",
+      "time_title": "Time saving",
+      "time_description": "No more back and forth and briefs written at the last minute.",
+      "quality_title": "Professional level result",
+      "quality_description": "A clear, homogeneous brief directly usable by your teams."
+    },
+    "additional_cta": {
+      "title": "Ready to create your perfect project brief?",
+      "description": "Start your conversation with our AI assistant now and discover the power of automated project brief creation."
+    },
+    "footer": "© {{year}} AirSaas. Made with Love in France 🇫🇷"
+  },
+  "chat": {
+    "title": "AirSaas AI Assistant",
+    "placeholder": "Type if necessary...",
+    "placeholder_thinking": "Bot is responding...",
+    "or": "Or",
+    "suggestions": [
+      "Give me examples",
+      "Skip this question"
+    ],
+    "error_message": "❌ Error processing your message.",
+    "audio_error": "I couldn't process your audio, could you write it instead?",
+    "voice_message": "🎙️ Voice message"
+  },
+  "initial_message": {
+    "greeting": "Hello, I'm here to assist you to create a well-structured project. Let's take it step by step.",
+    "template_question": "Which template of project brief do you want to use?",
+    "templates": {
+      "basic_storytelling": {
+        "title": "Basic Story Telling",
+        "description": "This template focuses on presenting your project in a straightforward narrative format. It emphasizes the project's context, objectives, and expected outcomes, making it easy to understand the overall purpose and direction."
+      },
+      "emotional_storytelling": {
+        "title": "Emotional Story Telling",
+        "description": "This template takes a more engaging approach by incorporating emotional elements into the narrative. It aims to connect with the audience on a deeper level, highlighting the human impact of the project and inspiring action through storytelling."
+      }
+    }
+  },
+  "pdf_modal": {
+    "title": "Thank you for using this tool!",
+    "description": "This tool is free. If it helped you, share it on LinkedIn!",
+    "share_linkedin": "Share on LinkedIn",
+    "download_pdf": "Download as PDF",
+    "downloading": "Downloading...",
+    "pdf_title": "Project Plan - AirSaas AI Assistant",
+    "generated_on": "Generated on: {{date}}",
+    "no_content": "No content generated yet.",
+    "page_footer": "Page {{current}} of {{total}}",
+    "pdf_footer": "AirSaas AI Assistant",
+    "error_message": "Error generating PDF. Please try again.",
+    "share_text": "I just used this amazing free tool to create my project plan! Check it out:"
+  }
+}

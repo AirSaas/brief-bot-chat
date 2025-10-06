@@ -1,21 +1,24 @@
+import { useTranslation } from 'react-i18next';
+
 interface InitialBotMessageProps {
   onTemplateSelect: (template: string) => void;
 }
 
-const TEMPLATES = [
-  {
-    id: "basic-storytelling",
-    title: "Basic Story Telling",
-    description: "This template focuses on presenting your project in a straightforward narrative format. It emphasizes the project's context, objectives, and expected outcomes, making it easy to understand the overall purpose and direction."
-  },
-  {
-    id: "emotional-storytelling", 
-    title: "Emotional Story Telling",
-    description: "This template takes a more engaging approach by incorporating emotional elements into the narrative. It aims to connect with the audience on a deeper level, highlighting the human impact of the project and inspiring action through storytelling."
-  }
-];
-
 export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessageProps) {
+  const { t } = useTranslation();
+
+  const TEMPLATES = [
+    {
+      id: "basic-storytelling",
+      title: t('initial_message.templates.basic_storytelling.title'),
+      description: t('initial_message.templates.basic_storytelling.description')
+    },
+    {
+      id: "emotional-storytelling", 
+      title: t('initial_message.templates.emotional_storytelling.title'),
+      description: t('initial_message.templates.emotional_storytelling.description')
+    }
+  ];
   return (
     <div className="space-y-6">
       {/* Bot Message */}
@@ -29,9 +32,9 @@ export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessag
         </div>
         <div className="max-w-2xl">
           <p className="text-gray-800 leading-relaxed">
-            Hello, I'm here to assist you to create a well-structured project. Let's take it step by step.
+            {t('initial_message.greeting')}
             <br /><br />
-            Which template of project brief do you want to use?
+            {t('initial_message.template_question')}
           </p>
         </div>
       </div>

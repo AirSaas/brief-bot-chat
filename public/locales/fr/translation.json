@@ -1,0 +1,62 @@
+{
+  "homepage": {
+    "title": "Vous avez une fiche projet à faire ?",
+    "subtitle": "Laissez notre assistant IA vous aider",
+    "description": "Brief Project transforme vos notes et échanges en une fiche projet claire, structurée et prête à partager en quelques secondes.",
+    "cta_button": "Tester Notre Assistant IA Brief Project gratuitement",
+    "features": {
+      "question_title": "Se poser les bonnes questions",
+      "question_description": "Notre IA vous guide pour cadrer objectifs, risques, livrables et parties prenantes.",
+      "time_title": "Gain de temps",
+      "time_description": "Finis les allers-retours et les fiches rédigées à la dernière minute.",
+      "quality_title": "Résultat de niveau professionnel",
+      "quality_description": "Une fiche claire, homogène et directement exploitable par vos équipes."
+    },
+    "additional_cta": {
+      "title": "Prêt à créer votre fiche projet parfaite ?",
+      "description": "Commencez votre conversation avec notre assistant IA maintenant et découvrez la puissance de la création automatisée de fiches projet."
+    },
+    "footer": "© {{year}} AirSaas. Made with Love in France 🇫🇷"
+  },
+  "chat": {
+    "title": "Assistant IA AirSaas",
+    "placeholder": "Tapez si nécessaire...",
+    "placeholder_thinking": "Le bot répond...",
+    "or": "Ou",
+    "suggestions": [
+      "Donnez-moi des exemples",
+      "Sauter cette question"
+    ],
+    "error_message": "❌ Erreur lors du traitement de votre message.",
+    "audio_error": "Je n'ai pas pu traiter votre audio, pourriez-vous l'écrire à la place ?",
+    "voice_message": "🎙️ Message vocal"
+  },
+  "initial_message": {
+    "greeting": "Bonjour, je suis là pour vous aider à créer un projet bien structuré. Procédons étape par étape.",
+    "template_question": "Quel modèle de fiche projet souhaitez-vous utiliser ?",
+    "templates": {
+      "basic_storytelling": {
+        "title": "Récit de Base",
+        "description": "Ce modèle se concentre sur la présentation de votre projet dans un format narratif simple. Il met l'accent sur le contexte, les objectifs et les résultats attendus du projet, facilitant la compréhension de l'objectif et de la direction globale."
+      },
+      "emotional_storytelling": {
+        "title": "Récit Émotionnel",
+        "description": "Ce modèle adopte une approche plus engageante en incorporant des éléments émotionnels dans la narration. Il vise à connecter avec l'audience sur un niveau plus profond, mettant en évidence l'impact humain du projet et inspirant l'action à travers la narration."
+      }
+    }
+  },
+  "pdf_modal": {
+    "title": "Merci d'avoir utilisé cet outil !",
+    "description": "Cet outil est gratuit. Si cela vous a aidé, partagez-le sur LinkedIn!",
+    "share_linkedin": "Partager sur LinkedIn",
+    "download_pdf": "Télécharger en PDF",
+    "downloading": "Téléchargement...",
+    "pdf_title": "Plan de Projet - Assistant IA AirSaas",
+    "generated_on": "Généré le : {{date}}",
+    "no_content": "Aucun contenu généré pour le moment.",
+    "page_footer": "Page {{current}} sur {{total}}",
+    "pdf_footer": "Assistant IA AirSaas",
+    "error_message": "Erreur lors de la génération du PDF. Veuillez réessayer.",
+    "share_text": "Je viens d'utiliser cet outil gratuit incroyable pour créer mon plan de projet ! Découvrez-le :"
+  }
+}

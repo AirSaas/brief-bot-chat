@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { sendToChat, uploadAudio, type ChatMessage } from "../lib/api";
 import AudioRecorder from "./AudioRecorder";
 import { MessageBubble } from "./MessageBubble";
 import InputWithSuggestions from "./InputWithSuggestions";
 import InitialBotMessage from "./InitialBotMessage";
 import DownloadPDFModal from "./DownloadPDFModal";
+import LanguageSelector from "./LanguageSelector";
 
 interface ChatWindowProps {
   onBackToHomepage?: () => void;
@@ -15,19 +17,22 @@ interface ChatWindowProps {
 }
 
 export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false }: ChatWindowProps) {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const sessionId = useMemo(() => {
-    const existing = localStorage.getItem("sessionId");
-    if (existing) return existing;
+    // Always generate a new session ID for each page load
     const id = crypto.randomUUID();
-    localStorage.setItem("sessionId", id);
     return id;
   }, []);
   const listRef = useRef<HTMLDivElement>(null);
 
+  // Clear any previous chat messages from localStorage when component mounts
+  useEffect(() => {
+    localStorage.removeItem('chatMessages');
+  }, []);
 
   useEffect(() => {
     // Do not scroll if there are no messages
@@ -38,7 +43,7 @@ export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false 
       }, 100);
     }
     
-    // Guardar mensajes en localStorage para el PDF
+    // Save messages to localStorage for PDF generation (only during current session)
     localStorage.setItem('chatMessages', JSON.stringify(messages));
   }, [messages]);
 
@@ -107,7 +112,7 @@ export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false 
       
     } catch (error) {
       console.error(error);
-      setMessages((m) => [...m, { role: "assistant", content: "❌ Error processing your message." }]);
+      setMessages((m) => [...m, { role: "assistant", content: t('chat.error_message') }]);
     } finally {
       setIsThinking(false);
     }
@@ -142,7 +147,7 @@ export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false 
       })
       .catch((error) => {
         console.error(error);
-        setMessages((m) => [...m, { role: "assistant", content: "❌ Error processing your message." }]);
+        setMessages((m) => [...m, { role: "assistant", content: t('chat.error_message') }]);
       })
       .finally(() => {
         setIsThinking(false);
@@ -173,7 +178,7 @@ export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false 
       })
       .catch((error) => {
         console.error(error);
-        setMessages((m) => [...m, { role: "assistant", content: "❌ Error processing your message." }]);
+        setMessages((m) => [...m, { role: "assistant", content: t('chat.error_message') }]);
       })
       .finally(() => {
         setIsThinking(false);
@@ -188,7 +193,7 @@ export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false 
     // Show initial message in "uploading" state
     const userMsg: ChatMessage = {
       role: "user",
-      content: "🎙️ Voice message",
+      content: t('chat.voice_message'),
       audioFile: file,
       audioStatus: "uploading",
     };
@@ -201,7 +206,7 @@ export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false 
       // Update state to "uploaded"
       const updatedMsg: ChatMessage = {
         role: "user",
-        content: "🎙️ Voice message",
+        content: t('chat.voice_message'),
         audioFile: file,
         audioUrl: audio_url,
         audioStatus: "uploaded",
@@ -232,12 +237,12 @@ export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false 
       console.error(err);
       const errorMsg: ChatMessage = {
         role: "user",
-        content: "🎙️ Voice message",
+        content: t('chat.voice_message'),
         audioFile: file,
         audioStatus: "error",
       };
       setMessages((m) => m.slice(0, -1).concat(errorMsg));
-      setMessages((m) => [...m, { role: "assistant", content: "I couldn't process your audio, could you write it instead?" }]);
+      setMessages((m) => [...m, { role: "assistant", content: t('chat.audio_error') }]);
       setIsThinking(false);
     }
   }
@@ -294,13 +299,16 @@ export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false 
                   paddingLeft: '5px'
                 }}
               >
-                AirSaas AI assistant
+                {t('chat.title')}
               </div>
             </div>
           </div>
           
           {/* Right section - Action buttons */}
           <div className="flex items-center" style={{ gap: '5px' }}>
+            {/* Language Selector - Only show when not in panel mode */}
+            {!isPanel && <LanguageSelector className="mr-2" />}
+            
             {/* Expand/Collapse button */}
             <button 
               onClick={onToggleChat}
@@ -410,7 +418,7 @@ export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false 
                 paddingRight: '16px'
               }}
             >
-              Or
+              {t('chat.or')}
             </span>
             <div className="flex-1 h-px bg-[#A6AAB6]"></div>
           </div>
@@ -422,10 +430,10 @@ export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false 
               onChange={setInput}
               onSend={sendText}
               onSendDirectly={sendMessageDirectly}
-              placeholder={isThinking ? "Bot is responding..." : "Type if necessary..."}
+              placeholder={isThinking ? t('chat.placeholder_thinking') : t('chat.placeholder')}
               disabled={isThinking}
               isThinking={isThinking}
-              suggestions={["Donnez-moi des exemples", "Sauter cette question"]}
+              suggestions={t('chat.suggestions', { returnObjects: true }) as string[]}
             />
           </div>
         </div>

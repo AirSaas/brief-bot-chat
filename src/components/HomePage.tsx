@@ -1,11 +1,20 @@
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from './LanguageSelector';
+
 interface HomePageProps {
   onStartChat: () => void;
 }
 
 export default function HomePage({ onStartChat }: HomePageProps) {
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-brand-50 to-brand-100 flex flex-col animate-fade-in">
+      
+      {/* Language Selector */}
+      <div className="absolute top-4 right-4 z-10">
+        <LanguageSelector />
+      </div>
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-6 py-12">
@@ -31,7 +40,7 @@ export default function HomePage({ onStartChat }: HomePageProps) {
                 animationFillMode: "forwards"
               }}
             >
-              Vous avez une fiche projet à faire ?
+              {t('homepage.title')}
             </h1>
             <h2
               className="text-3xl md:text-4xl font-medium text-brand-600 mb-8 leading-tight animate-slide-up opacity-0"
@@ -41,7 +50,7 @@ export default function HomePage({ onStartChat }: HomePageProps) {
                 animationFillMode: "forwards"
               }}
             >
-              Laissez notre assistant IA vous aider
+              {t('homepage.subtitle')}
             </h2>
 
             <p
@@ -52,8 +61,7 @@ export default function HomePage({ onStartChat }: HomePageProps) {
                 animationFillMode: "forwards"
               }}
             >
-              Brief Project transforme vos notes et échanges en une fiche projet
-              claire, structurée et prête à partager en quelques secondes.
+              {t('homepage.description')}
             </p>
 
             {/* CTA Button */}
@@ -88,7 +96,7 @@ export default function HomePage({ onStartChat }: HomePageProps) {
               
               <span>👉</span>
               <span className="relative z-10 text-white">
-                Tester Notre Assistant IA Brief Project gratuitement
+                {t('homepage.cta_button')}
               </span>
             </button>
           </div>
@@ -115,14 +123,13 @@ export default function HomePage({ onStartChat }: HomePageProps) {
                 className="text-xl font-bold text-gray-900 mb-4"
                 style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
               >
-                Se poser les bonnes questions
+                {t('homepage.features.question_title')}
               </h3>
               <p
                 className="text-gray-600 leading-relaxed"
                 style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
               >
-                Notre IA vous guide pour cadrer objectifs, risques, livrables et
-                parties prenantes.
+                {t('homepage.features.question_description')}
               </p>
             </div>
 
@@ -146,14 +153,13 @@ export default function HomePage({ onStartChat }: HomePageProps) {
                 className="text-xl font-bold text-gray-900 mb-4"
                 style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
               >
-                Gain de temps
+                {t('homepage.features.time_title')}
               </h3>
               <p
                 className="text-gray-600 leading-relaxed"
                 style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
               >
-                Finis les allers-retours et les fiches rédigées à la dernière
-                minute.
+                {t('homepage.features.time_description')}
               </p>
             </div>
 
@@ -177,14 +183,13 @@ export default function HomePage({ onStartChat }: HomePageProps) {
                 className="text-xl font-bold text-gray-900 mb-4"
                 style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
               >
-                Résultat de niveau professionnel
+                {t('homepage.features.quality_title')}
               </h3>
               <p
                 className="text-gray-600 leading-relaxed"
                 style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
               >
-                Une fiche claire, homogène et directement exploitable par vos
-                équipes.
+                {t('homepage.features.quality_description')}
               </p>
             </div>
           </div>
@@ -195,15 +200,13 @@ export default function HomePage({ onStartChat }: HomePageProps) {
               className="text-2xl font-bold mb-4 text-gray-900"
               style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
             >
-              Prêt à créer votre fiche projet parfaite ?
+              {t('homepage.additional_cta.title')}
             </h3>
             <p
               className="text-brand-100 text-gray-900 mb-4"
               style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
             >
-              Commencez votre conversation avec notre assistant IA maintenant et
-              découvrez la puissance de la création automatisée de fiches
-              projet.
+              {t('homepage.additional_cta.description')}
             </p>
 
             {/* AirSaas AI Logo */}
@@ -234,7 +237,7 @@ export default function HomePage({ onStartChat }: HomePageProps) {
             className="text-white text-sm"
             style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
           >
-            © {new Date().getFullYear()} AirSaas. Made with Love in France 🇫🇷
+            {t('homepage.footer', { year: new Date().getFullYear() })}
           </p>
         </div>
       </footer>
