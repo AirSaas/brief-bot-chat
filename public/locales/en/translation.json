@@ -27,6 +27,10 @@
       "Give me examples",
       "Skip this question"
     ],
+    "quick_answers": {
+      "give_examples": "Give me examples",
+      "skip_question": "Skip this question"
+    },
     "error_message": "❌ Error processing your message.",
     "audio_error": "I couldn't process your audio, could you write it instead?",
     "voice_message": "🎙️ Voice message"

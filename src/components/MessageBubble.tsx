@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import Markdown from "react-markdown";
 
 export function MessageBubble({
@@ -20,6 +21,7 @@ export function MessageBubble({
   onQuickAnswerClick?: (answer: string) => void;
   onDownloadPDF?: () => void;
 }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const base =
     "px-3 sm:px-5 py-3 sm:py-4 max-w-[90%] sm:max-w-[80%] transition-all duration-200";
@@ -82,7 +84,11 @@ export function MessageBubble({
                 }}
               >
                 {String(children).trim() === "" ? (
-                  <span></span>
+                  <div className="thinking-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
                 ) : (
                   <Markdown
                     components={{
@@ -194,7 +200,11 @@ export function MessageBubble({
                   }`}
                 >
                   {String(children).trim() === "" ? (
-                    <span></span>
+                    <div className="thinking-dots">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
                   ) : (
                     <Markdown
                       components={{
@@ -307,18 +317,18 @@ export function MessageBubble({
             <div className="ml-12 sm:ml-14 flex flex-wrap gap-2">
               {/* Default options */}
               <button
-                onClick={() => onQuickAnswerClick("Give me examples")}
+                onClick={() => onQuickAnswerClick(t('chat.quick_answers.give_examples'))}
                 className="px-3 py-1.5 text-xs font-medium transition-colors duration-200 bg-gray-200 border border-gray-300 text-gray-800 hover:bg-gray-300"
                 style={{ borderRadius: "3px" }}
               >
-                Give me examples
+                {t('chat.quick_answers.give_examples')}
               </button>
               <button
-                onClick={() => onQuickAnswerClick("Skip this question")}
+                onClick={() => onQuickAnswerClick(t('chat.quick_answers.skip_question'))}
                 className="px-3 py-1.5 text-xs font-normal transition-colors duration-200 bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
                 style={{ borderRadius: "3px" }}
               >
-                Skip this question
+                {t('chat.quick_answers.skip_question')}
               </button>
 
 

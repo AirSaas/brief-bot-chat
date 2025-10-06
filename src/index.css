@@ -206,32 +206,28 @@ audio::-webkit-media-controls-time-remaining-display {
   padding: 0.5rem 0;
 }
 
-.thinking-message::before,
-.thinking-message::after {
-  content: "";
+.thinking-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.thinking-dots span {
   width: 0.375rem;
   height: 0.375rem;
   background-color: currentColor;
   border-radius: 50%;
   display: inline-block;
-}
-
-.thinking-message::before {
   animation: thinking-bounce 1.4s ease-in-out infinite;
 }
 
-.thinking-message::after {
-  animation: thinking-bounce 1.4s ease-in-out infinite 0.2s;
+.thinking-dots span:nth-child(2) {
+  animation-delay: 0.2s;
 }
 
-/* Add a third dot using a span */
-.thinking-message span {
-  width: 0.375rem;
-  height: 0.375rem;
-  background-color: currentColor;
-  border-radius: 50%;
-  display: inline-block;
-  animation: thinking-bounce 1.4s ease-in-out infinite 0.4s;
+.thinking-dots span:nth-child(3) {
+  animation-delay: 0.4s;
 }
 
 /* Bouncing dots animation */

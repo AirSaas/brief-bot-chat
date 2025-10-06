@@ -27,6 +27,10 @@
       "Donnez-moi des exemples",
       "Sauter cette question"
     ],
+    "quick_answers": {
+      "give_examples": "Donnez-moi des exemples",
+      "skip_question": "Sauter cette question"
+    },
     "error_message": "❌ Erreur lors du traitement de votre message.",
     "audio_error": "Je n'ai pas pu traiter votre audio, pourriez-vous l'écrire à la place ?",
     "voice_message": "🎙️ Message vocal"
