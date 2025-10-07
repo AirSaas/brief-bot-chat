@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { sendToChat, uploadAudio, type ChatMessage } from "../lib/api";
 import AudioRecorder from "./AudioRecorder";
@@ -14,25 +14,45 @@ interface ChatWindowProps {
   onToggleChat?: () => void;
   onCloseChat?: () => void;
   isPanel?: boolean;
+  messages?: ChatMessage[];
+  setMessages?: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  input?: string;
+  setInput?: React.Dispatch<React.SetStateAction<string>>;
+  sessionId?: string;
+  isThinking?: boolean;
+  setIsThinking?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false }: ChatWindowProps) {
+export default function ChatWindow({ 
+  onToggleChat, 
+  onCloseChat, 
+  isPanel = false,
+  messages: externalMessages,
+  setMessages: externalSetMessages,
+  input: externalInput,
+  setInput: externalSetInput,
+  sessionId: externalSessionId,
+  isThinking: externalIsThinking,
+  setIsThinking: externalSetIsThinking
+}: ChatWindowProps) {
   const { t } = useTranslation();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState("");
-  const [isThinking, setIsThinking] = useState(false);
+  
+  // Use external state if provided, otherwise use local state (for backward compatibility)
+  const [localMessages, setLocalMessages] = useState<ChatMessage[]>([]);
+  const [localInput, setLocalInput] = useState("");
+  const [localSessionId] = useState(() => crypto.randomUUID());
+  const [localIsThinking, setLocalIsThinking] = useState(false);
+  
+  const messages = externalMessages ?? localMessages;
+  const setMessages = externalSetMessages ?? setLocalMessages;
+  const input = externalInput ?? localInput;
+  const setInput = externalSetInput ?? setLocalInput;
+  const sessionId = externalSessionId ?? localSessionId;
+  const isThinking = externalIsThinking ?? localIsThinking;
+  const setIsThinking = externalSetIsThinking ?? setLocalIsThinking;
+  
   const [showDownloadModal, setShowDownloadModal] = useState(false);
-  const sessionId = useMemo(() => {
-    // Always generate a new session ID for each page load
-    const id = crypto.randomUUID();
-    return id;
-  }, []);
   const listRef = useRef<HTMLDivElement>(null);
-
-  // Clear any previous chat messages from localStorage when component mounts
-  useEffect(() => {
-    localStorage.removeItem('chatMessages');
-  }, []);
 
   useEffect(() => {
     // Do not scroll if there are no messages
@@ -43,8 +63,12 @@ export default function ChatWindow({ onToggleChat, onCloseChat, isPanel = false 
       }, 100);
     }
     
-    // Save messages to localStorage for PDF generation (only during current session)
-    localStorage.setItem('chatMessages', JSON.stringify(messages));
+    // Save messages to localStorage for PDF generation
+    if (messages.length > 0) {
+      localStorage.setItem('chatMessages', JSON.stringify(messages));
+    } else {
+      localStorage.removeItem('chatMessages');
+    }
   }, [messages]);
 
   // Function to extract quick_answers from the message content

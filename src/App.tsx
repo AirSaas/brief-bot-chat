@@ -1,11 +1,20 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import ChatWindow from "./components/ChatWindow";
 import HomePage from "./components/HomePage";
+import type { ChatMessage } from "./lib/api";
 
 type ChatMode = "hidden" | "panel" | "fullscreen";
 
 export default function App() {
   const [chatMode, setChatMode] = useState<ChatMode>("hidden");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState("");
+  const [isThinking, setIsThinking] = useState(false);
+  
+  // Generate session ID once for the entire app session
+  const sessionId = useMemo(() => {
+    return crypto.randomUUID();
+  }, []);
 
   const handleStartChat = () => {
     setChatMode("panel");
@@ -30,10 +39,18 @@ export default function App() {
 
   const handleCloseChat = () => {
     setChatMode("hidden");
+    // Clear messages when closing chat
+    setMessages([]);
+    setInput("");
+    setIsThinking(false);
   };
 
   const handleBackToHomepage = () => {
     setChatMode("hidden");
+    // Clear messages when going back to homepage
+    setMessages([]);
+    setInput("");
+    setIsThinking(false);
   };
 
   return (
@@ -53,6 +70,13 @@ export default function App() {
               onToggleChat={handleToggleChat}
               onCloseChat={handleCloseChat}
               isPanel={true}
+              messages={messages}
+              setMessages={setMessages}
+              input={input}
+              setInput={setInput}
+              sessionId={sessionId}
+              isThinking={isThinking}
+              setIsThinking={setIsThinking}
             />
           </div>
         </div>
@@ -65,6 +89,13 @@ export default function App() {
             onToggleChat={handleToggleChat}
             onCloseChat={handleCloseChat}
             isPanel={false}
+            messages={messages}
+            setMessages={setMessages}
+            input={input}
+            setInput={setInput}
+            sessionId={sessionId}
+            isThinking={isThinking}
+            setIsThinking={setIsThinking}
           />
         </div>
       )}
