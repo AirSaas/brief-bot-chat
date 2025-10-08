@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { jsPDF } from 'jspdf';
 
 interface DownloadPDFModalProps {
   isOpen: boolean;
@@ -38,8 +39,7 @@ export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalPr
             content = match[1].trim();
           }
           
-      // Import jsPDF
-      const { jsPDF } = await import('jspdf');
+      // jsPDF is already imported at the top
       
       // Create PDF
       const pdf = new jsPDF('p', 'mm', 'a4');
