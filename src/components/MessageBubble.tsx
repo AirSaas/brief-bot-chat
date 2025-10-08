@@ -333,26 +333,34 @@ export function MessageBubble({
 
 
               {/* Dynamic quick answers from bot */}
-              {quickAnswers.map((answer, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    if (answer === "Download as PDF" && onDownloadPDF) {
-                      onDownloadPDF();
-                    } else {
-                      onQuickAnswerClick(answer);
-                    }
-                  }}
-                  className={`px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
-                    answer === "Download as PDF"
-                      ? 'bg-[#3C51E2] text-white hover:bg-[#3041B5]'
-                      : 'bg-white border border-gray-300 text-gray-600 hover:bg-gray-50'
-                  }`}
-                  style={{ borderRadius: "3px" }}
-                >
-                  {answer}
-                </button>
-              ))}
+              {quickAnswers.map((answer, index) => {
+                // Check if button is a PDF download button (English and French variations)
+                const isPDFButton = answer === "Download as PDF" || 
+                                   answer === "Télécharger en PDF" || 
+                                   answer === "Télécharger en tant que PDF" ||
+                                   answer === "Télécharger au format PDF" ||
+                                   answer === "Télécharger comme PDF";
+                return (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      if (isPDFButton && onDownloadPDF) {
+                        onDownloadPDF();
+                      } else {
+                        onQuickAnswerClick(answer);
+                      }
+                    }}
+                    className={`px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
+                      isPDFButton
+                        ? 'bg-[#3C51E2] text-white hover:bg-[#3041B5]'
+                        : 'bg-white border border-gray-300 text-gray-600 hover:bg-gray-50'
+                    }`}
+                    style={{ borderRadius: "3px" }}
+                  >
+                    {answer}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

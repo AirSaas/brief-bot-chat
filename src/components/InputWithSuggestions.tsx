@@ -95,7 +95,7 @@ export default function InputWithSuggestions({
     <div className="flex-1 relative">
       <div className="relative">
         <input
-          className={`w-full h-[42px] px-[15px] py-2 rounded-[10px] border-0 focus:outline-none bg-[#F8F9FF] focus:bg-white focus:border focus:border-[#3C51E2] text-gray-700 placeholder-[#8D94A3] transition-all duration-300 text-base ${
+          className={`w-full h-[42px] pl-[15px] pr-[45px] py-2 rounded-[10px] border-0 focus:outline-none bg-[#F8F9FF] focus:bg-white focus:border focus:border-[#3C51E2] text-gray-700 placeholder-[#8D94A3] transition-all duration-300 text-base ${
             isThinking ? 'opacity-50 cursor-not-allowed' : ''
           }`}
           style={{ fontFamily: 'Product Sans Light, system-ui, sans-serif', fontWeight: 300, lineHeight: '1.213em' }}
@@ -137,9 +137,9 @@ export default function InputWithSuggestions({
           onClick={onSend}
           disabled={isThinking || !value.trim()}
           className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-[7px] rounded-full transition-all duration-200 disabled:cursor-not-allowed ${
-            isFocused && value.trim() 
-              ? 'bg-[#3C51E2] text-white' 
-              : 'bg-[#F3F3FC] text-[#8D94A3] hover:text-gray-700'
+            value.trim() 
+              ? 'bg-[#3C51E2] text-white hover:bg-[#3041B5]' 
+              : 'bg-[#F3F3FC] text-[#8D94A3]'
           } disabled:opacity-30`}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="rotate-45">

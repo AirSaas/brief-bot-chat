@@ -188,35 +188,12 @@ export default function ChatWindow({
       });
   }
 
-  function sendQuickAnswer(answer: string) {
-    if (isThinking) return;
-    
-    // Create user message
-    const userMsg: ChatMessage = { role: "user", content: answer };
-    setMessages((m) => [...m, userMsg]);
-    setIsThinking(true);
-    
-    // Send to chat
-    sendToChat({ message: answer, sessionId })
-      .then((json) => {
-        const text = json?.output ?? json?.data ?? JSON.stringify(json);
-        
-        // Extract quick_answers from the message content
-        const { cleanContent, quickAnswers } = extractQuickAnswers(String(text));
-        
-        setMessages((m) => [...m, { 
-          role: "assistant", 
-          content: cleanContent,
-          quickAnswers: quickAnswers
-        }]);
-      })
-      .catch((error) => {
-        console.error(error);
-        setMessages((m) => [...m, { role: "assistant", content: t('chat.error_message') }]);
-      })
-      .finally(() => {
-        setIsThinking(false);
-      });
+  function handleQuickAnswerClick(answer: string) {
+    // Append the quick answer text to the existing input instead of replacing it
+    setInput(prevInput => {
+      // If there's already text, add a space before appending
+      return prevInput.trim() ? `${prevInput.trim()} ${answer}` : answer;
+    });
   }
 
   function handleDownloadPDF() {
@@ -407,19 +384,19 @@ export default function ChatWindow({
            const shouldShowQuickAnswers = isLastAssistantMessage && !isFirstAssistantMessage;
            
            return (
-             <MessageBubble
-               key={i}
-               role={m.role}
-               isAudio={!!(m.audioFile || m.audioUrl)}
-               audioFile={m.audioFile}
-               showCopyButton={m.role === "assistant"}
-               quickAnswers={shouldShowQuickAnswers ? m.quickAnswers : []}
-               onQuickAnswerClick={shouldShowQuickAnswers ? sendQuickAnswer : undefined}
-               onDownloadPDF={handleDownloadPDF}
-             >
-               {m.content}
-             </MessageBubble>
-           );
+            <MessageBubble
+              key={i}
+              role={m.role}
+              isAudio={!!(m.audioFile || m.audioUrl)}
+              audioFile={m.audioFile}
+              showCopyButton={m.role === "assistant"}
+              quickAnswers={shouldShowQuickAnswers ? m.quickAnswers : []}
+              onQuickAnswerClick={shouldShowQuickAnswers ? handleQuickAnswerClick : undefined}
+              onDownloadPDF={handleDownloadPDF}
+            >
+              {m.content}
+            </MessageBubble>
+          );
          })}
          
          {/* Thinking indicator */}
