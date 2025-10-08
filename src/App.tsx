@@ -10,6 +10,7 @@ export default function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
+  const [hasSelectedInitialOption, setHasSelectedInitialOption] = useState(false);
   
   // Generate session ID once for the entire app session
   const sessionId = useMemo(() => {
@@ -43,6 +44,7 @@ export default function App() {
     setMessages([]);
     setInput("");
     setIsThinking(false);
+    setHasSelectedInitialOption(false);
   };
 
   const handleBackToHomepage = () => {
@@ -51,6 +53,7 @@ export default function App() {
     setMessages([]);
     setInput("");
     setIsThinking(false);
+    setHasSelectedInitialOption(false);
   };
 
   return (
@@ -77,6 +80,8 @@ export default function App() {
               sessionId={sessionId}
               isThinking={isThinking}
               setIsThinking={setIsThinking}
+              hasSelectedInitialOption={hasSelectedInitialOption}
+              setHasSelectedInitialOption={setHasSelectedInitialOption}
             />
           </div>
         </div>
@@ -96,6 +101,8 @@ export default function App() {
             sessionId={sessionId}
             isThinking={isThinking}
             setIsThinking={setIsThinking}
+            hasSelectedInitialOption={hasSelectedInitialOption}
+            setHasSelectedInitialOption={setHasSelectedInitialOption}
           />
         </div>
       )}

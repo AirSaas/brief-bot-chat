@@ -21,6 +21,8 @@ interface ChatWindowProps {
   sessionId?: string;
   isThinking?: boolean;
   setIsThinking?: React.Dispatch<React.SetStateAction<boolean>>;
+  hasSelectedInitialOption?: boolean;
+  setHasSelectedInitialOption?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function ChatWindow({ 
@@ -33,7 +35,9 @@ export default function ChatWindow({
   setInput: externalSetInput,
   sessionId: externalSessionId,
   isThinking: externalIsThinking,
-  setIsThinking: externalSetIsThinking
+  setIsThinking: externalSetIsThinking,
+  hasSelectedInitialOption: externalHasSelectedInitialOption,
+  setHasSelectedInitialOption: externalSetHasSelectedInitialOption
 }: ChatWindowProps) {
   const { t } = useTranslation();
   
@@ -42,6 +46,7 @@ export default function ChatWindow({
   const [localInput, setLocalInput] = useState("");
   const [localSessionId] = useState(() => crypto.randomUUID());
   const [localIsThinking, setLocalIsThinking] = useState(false);
+  const [localHasSelectedInitialOption, setLocalHasSelectedInitialOption] = useState(false);
   
   const messages = externalMessages ?? localMessages;
   const setMessages = externalSetMessages ?? setLocalMessages;
@@ -50,6 +55,8 @@ export default function ChatWindow({
   const sessionId = externalSessionId ?? localSessionId;
   const isThinking = externalIsThinking ?? localIsThinking;
   const setIsThinking = externalSetIsThinking ?? setLocalIsThinking;
+  const hasSelectedInitialOption = externalHasSelectedInitialOption ?? localHasSelectedInitialOption;
+  const setHasSelectedInitialOption = externalSetHasSelectedInitialOption ?? setLocalHasSelectedInitialOption;
   
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
@@ -149,6 +156,9 @@ export default function ChatWindow({
 
   function handleTemplateSelect(template: string) {
     if (isThinking) return;
+    
+    // Mark that user has selected an initial option
+    setHasSelectedInitialOption(true);
     
     // Create user message with selected template
     const userMsg: ChatMessage = { role: "user", content: template };
@@ -425,7 +435,10 @@ export default function ChatWindow({
         <div className="space-y-4">
           {/* Voice Recording Button */}
           <div className="w-full">
-            <AudioRecorder onRecorded={sendAudioFile} disabled={isThinking} />
+            <AudioRecorder 
+              onRecorded={sendAudioFile} 
+              disabled={isThinking || !hasSelectedInitialOption} 
+            />
           </div>
           
           {/* Separator */}
@@ -455,7 +468,7 @@ export default function ChatWindow({
               onSend={sendText}
               onSendDirectly={sendMessageDirectly}
               placeholder={isThinking ? t('chat.placeholder_thinking') : t('chat.placeholder')}
-              disabled={isThinking}
+              disabled={isThinking || !hasSelectedInitialOption}
               isThinking={isThinking}
               suggestions={t('chat.suggestions', { returnObjects: true }) as string[]}
             />
