@@ -23,7 +23,6 @@ export default function InputWithSuggestions({
 }: InputWithSuggestionsProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
-  const [isFocused, setIsFocused] = useState(false);
   
   // Disable suggestions for now
   const suggestionsEnabled = false;
@@ -114,7 +113,6 @@ export default function InputWithSuggestions({
             }
           }}
           onFocus={() => {
-            setIsFocused(true);
             if (suggestionsEnabled && value.trim().length > 0) {
               setShowSuggestions(true);
             } else if (suggestionsEnabled) {
@@ -123,7 +121,6 @@ export default function InputWithSuggestions({
             }
           }}
           onBlur={() => {
-            setIsFocused(false);
             // Small delay to allow clicking on suggestions
             setTimeout(() => {
               setShowSuggestions(false);
