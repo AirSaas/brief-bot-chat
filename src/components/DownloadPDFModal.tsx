@@ -16,8 +16,8 @@ export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalPr
     setIsDownloading(true);
     
     try {
-        // Get messages from localStorage
-        const messages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+        // Get messages from sessionStorage
+        const messages = JSON.parse(sessionStorage.getItem('chatMessages') || '[]');
         
         // Get only the last assistant message
         const assistantMessages = messages.filter((message: any) => message.role === 'assistant');

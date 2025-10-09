@@ -70,11 +70,11 @@ export default function ChatWindow({
       }, 100);
     }
     
-    // Save messages to localStorage for PDF generation
+    // Save messages to sessionStorage for PDF generation
     if (messages.length > 0) {
-      localStorage.setItem('chatMessages', JSON.stringify(messages));
+      sessionStorage.setItem('chatMessages', JSON.stringify(messages));
     } else {
-      localStorage.removeItem('chatMessages');
+      sessionStorage.removeItem('chatMessages');
     }
   }, [messages]);
 
