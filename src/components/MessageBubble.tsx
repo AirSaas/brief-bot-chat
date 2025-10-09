@@ -23,6 +23,7 @@ export function MessageBubble({
 }) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
+  const [clickedAnswers, setClickedAnswers] = useState<Set<string>>(new Set());
   const base =
     "px-3 sm:px-5 py-3 sm:py-4 max-w-[90%] sm:max-w-[80%] transition-all duration-200";
   const userClasses =
@@ -315,7 +316,7 @@ export function MessageBubble({
           {/* Quick Answers for bot messages */}
           {quickAnswers && quickAnswers.length > 0 && onQuickAnswerClick && (
             <div className="ml-12 sm:ml-14 flex flex-wrap gap-2">
-              {/* Default options */}
+              {/* Default options - no feedback visual */}
               <button
                 onClick={() => onQuickAnswerClick(t('chat.quick_answers.give_examples'))}
                 className="px-3 py-1.5 text-xs font-medium transition-colors duration-200 bg-gray-200 border border-gray-300 text-gray-800 hover:bg-gray-300"
@@ -340,6 +341,7 @@ export function MessageBubble({
                                    answer === "Télécharger en tant que PDF" ||
                                    answer === "Télécharger au format PDF" ||
                                    answer === "Télécharger comme PDF";
+                const isClicked = clickedAnswers.has(answer);
                 return (
                   <button
                     key={index}
@@ -347,12 +349,15 @@ export function MessageBubble({
                       if (isPDFButton && onDownloadPDF) {
                         onDownloadPDF();
                       } else {
+                        setClickedAnswers(prev => new Set(prev).add(answer));
                         onQuickAnswerClick(answer);
                       }
                     }}
                     className={`px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
                       isPDFButton
                         ? 'bg-[#3C51E2] text-white hover:bg-[#3041B5]'
+                        : isClicked
+                        ? 'bg-gray-100 border border-gray-400 text-gray-500 cursor-default'
                         : 'bg-white border border-gray-300 text-gray-600 hover:bg-gray-50'
                     }`}
                     style={{ borderRadius: "3px" }}

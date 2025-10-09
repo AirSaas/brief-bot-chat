@@ -795,3 +795,28 @@ div[class*="bot-message-no-radius"] {
   animation: bounce-in 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
 
+/* Textarea auto-resize scrollbar styling */
+textarea.resize-none::-webkit-scrollbar {
+  width: 4px;
+}
+
+textarea.resize-none::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+textarea.resize-none::-webkit-scrollbar-thumb {
+  background: #CBD5E0;
+  border-radius: 10px;
+}
+
+textarea.resize-none::-webkit-scrollbar-thumb:hover {
+  background: #A0AEC0;
+}
+
+/* For Firefox */
+textarea.resize-none {
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E0 transparent;
+}
+

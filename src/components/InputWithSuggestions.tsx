@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface InputWithSuggestionsProps {
   value: string;
@@ -23,9 +23,35 @@ export default function InputWithSuggestions({
 }: InputWithSuggestionsProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   
   // Disable suggestions for now
   const suggestionsEnabled = false;
+
+  // Auto-resize textarea based on content
+  const adjustTextareaHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      // Reset height to auto to get the correct scrollHeight
+      textarea.style.height = 'auto';
+      // Set height to scrollHeight (content height)
+      const maxHeight = 120; // Max height 120px (~4 lines)
+      const newHeight = Math.min(textarea.scrollHeight, maxHeight);
+      textarea.style.height = `${newHeight}px`;
+      
+      // Enable scroll when content exceeds max height
+      if (textarea.scrollHeight > maxHeight) {
+        textarea.style.overflowY = 'auto';
+      } else {
+        textarea.style.overflowY = 'hidden';
+      }
+    }
+  };
+
+  // Adjust height when value changes
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [value]);
 
   // Function to handle input debounce
   const handleInputChange = (inputValue: string) => {
@@ -93,11 +119,20 @@ export default function InputWithSuggestions({
   return (
     <div className="flex-1 relative">
       <div className="relative">
-        <input
-          className={`w-full h-[42px] pl-[15px] pr-[45px] py-2 rounded-[10px] border-0 focus:outline-none bg-[#F8F9FF] focus:bg-white focus:border focus:border-[#3C51E2] text-gray-700 placeholder-[#8D94A3] transition-all duration-300 text-base ${
+        <textarea
+          ref={textareaRef}
+          rows={1}
+          className={`w-full min-h-[42px] max-h-[120px] pl-[15px] pr-[45px] py-[11px] rounded-[10px] border-0 focus:outline-none bg-[#F8F9FF] focus:bg-white focus:border focus:border-[#3C51E2] text-gray-700 placeholder-[#8D94A3] text-base resize-none ${
             isThinking ? 'opacity-50 cursor-not-allowed' : ''
           }`}
-          style={{ fontFamily: 'Product Sans Light, system-ui, sans-serif', fontWeight: 300, lineHeight: '1.213em' }}
+          style={{ 
+            fontFamily: 'Product Sans Light, system-ui, sans-serif', 
+            fontWeight: 300, 
+            lineHeight: '1.213em',
+            transition: 'height 0.2s ease-in-out',
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#CBD5E0 transparent'
+          }}
           placeholder={placeholder}
           value={value}
           onChange={(e) => handleInputChange(e.target.value)}
