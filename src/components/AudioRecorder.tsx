@@ -1,13 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 
-type Props = { onRecorded: (file: File) => Promise<void>; disabled?: boolean };
+type Props = { 
+  onRecorded: (file: File) => Promise<void>; 
+  disabled?: boolean;
+  onRecordingStateChange?: (isRecording: boolean) => void;
+};
 
-export default function AudioRecorder({ onRecorded, disabled }: Props) {
+export default function AudioRecorder({ onRecorded, disabled, onRecordingStateChange }: Props) {
   const [rec, setRec] = useState<MediaRecorder|null>(null);
   const [isRec, setIsRec] = useState(false);
   const chunks = useRef<BlobPart[]>([]);
 
   useEffect(() => () => { if (rec?.state === 'recording') rec.stop(); }, [rec]);
+
+  // Notify parent when recording state changes
+  useEffect(() => {
+    onRecordingStateChange?.(isRec);
+  }, [isRec, onRecordingStateChange]);
 
   async function start() {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });

@@ -59,6 +59,7 @@ export default function ChatWindow({
   const setHasSelectedInitialOption = externalSetHasSelectedInitialOption ?? setLocalHasSelectedInitialOption;
   
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -414,7 +415,8 @@ export default function ChatWindow({
           <div className="w-full">
             <AudioRecorder 
               onRecorded={sendAudioFile} 
-              disabled={isThinking || !hasSelectedInitialOption} 
+              disabled={isThinking || !hasSelectedInitialOption || input.trim().length > 0}
+              onRecordingStateChange={setIsRecording}
             />
           </div>
           
@@ -445,7 +447,7 @@ export default function ChatWindow({
               onSend={sendText}
               onSendDirectly={sendMessageDirectly}
               placeholder={isThinking ? t('chat.placeholder_thinking') : t('chat.placeholder')}
-              disabled={isThinking || !hasSelectedInitialOption}
+              disabled={isThinking || !hasSelectedInitialOption || isRecording}
               isThinking={isThinking}
               suggestions={t('chat.suggestions', { returnObjects: true }) as string[]}
             />

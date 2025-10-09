@@ -16,7 +16,7 @@ export default function App() {
   const sessionId = useMemo(() => {
     return crypto.randomUUID();
   }, []);
-
+console.log("sessionId", sessionId); 
   // Clear sessionStorage on page load to ensure a fresh chat
   useEffect(() => {
     sessionStorage.removeItem('chatMessages');

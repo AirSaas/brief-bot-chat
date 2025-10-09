@@ -44,7 +44,7 @@ export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessag
         {TEMPLATES.map((template) => (
           <button
             key={template.id}
-            onClick={() => onTemplateSelect(template.title)}
+            onClick={() => onTemplateSelect(t('initial_message.lets_start_template', { template: template.title }))}
             style={{ borderRadius: 3}}
             className="w-full text-left p-4 border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 group"
           >
