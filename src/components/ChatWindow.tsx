@@ -190,11 +190,25 @@ export default function ChatWindow({
   }
 
   function handleQuickAnswerClick(answer: string) {
-    // Append the quick answer text to the existing input instead of replacing it
-    setInput(prevInput => {
-      // If there's already text, add a space before appending
-      return prevInput.trim() ? `${prevInput.trim()} ${answer}` : answer;
-    });
+    // Check if it's a default button (give_examples or skip_question in both languages)
+    const isDefaultButton = 
+      answer === t('chat.quick_answers.give_examples') || 
+      answer === t('chat.quick_answers.skip_question') ||
+      answer === "Give me examples" ||
+      answer === "Skip this question" ||
+      answer === "Donnez-moi des exemples" ||
+      answer === "Sauter cette question";
+    
+    if (isDefaultButton) {
+      // Send message directly for default buttons
+      sendMessageDirectly(answer);
+    } else {
+      // Append the quick answer text to the existing input for other buttons
+      setInput(prevInput => {
+        // If there's already text, add a space before appending
+        return prevInput.trim() ? `${prevInput.trim()} ${answer}` : answer;
+      });
+    }
   }
 
   function handleDownloadPDF() {
