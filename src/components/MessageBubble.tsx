@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 import Markdown from "react-markdown";
 
@@ -24,11 +24,79 @@ export function MessageBubble({
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const [clickedAnswers, setClickedAnswers] = useState<Set<string>>(new Set());
+  const [currentThinkingMessage, setCurrentThinkingMessage] = useState("");
+  
   const base =
     "px-3 sm:px-5 py-3 sm:py-4 max-w-[90%] sm:max-w-[80%] transition-all duration-200";
   const userClasses =
     "ml-auto bg-[#F8F9FF] text-black rounded-[10px] p-5 max-w-[400px]";
   const botClasses = "mr-auto text-gray-800";
+
+  // Rotate thinking messages with rate limiting
+  useEffect(() => {
+    const isThinking = String(children).trim() === "";
+    if (!isThinking) {
+      setCurrentThinkingMessage("");
+      return;
+    }
+
+    // Get thinking messages from translations
+    const thinkingMessages = t('chat.thinking_messages', { returnObjects: true });
+    
+    // Default messages as fallback
+    const defaultMessages = [
+      "Analyzing your input...",
+      "Understanding your needs...",
+      "Thinking about your project...",
+      "Organizing ideas...",
+      "Structuring your brief...",
+      "Connecting the dots...",
+      "Polishing the details...",
+      "Assembling the brief..."
+    ];
+    
+    // Check if we got an array of messages and validate they're all strings
+    let messages: string[] = defaultMessages;
+    if (Array.isArray(thinkingMessages)) {
+      const validMessages = thinkingMessages.filter((msg): msg is string => typeof msg === 'string');
+      if (validMessages.length > 0) {
+        messages = validMessages;
+      }
+    }
+
+    // Set initial message
+    const initialIndex = Math.floor(Math.random() * messages.length);
+    setCurrentThinkingMessage(messages[initialIndex]);
+
+    // Random interval between 800ms and 2000ms (respects UX guidelines)
+    const getRandomInterval = () => Math.floor(Math.random() * (2000 - 800 + 1)) + 800;
+
+    let timeoutId: NodeJS.Timeout;
+    let currentIndex = initialIndex;
+
+    const rotateMessage = () => {
+      // Get next random index different from current
+      let nextIndex;
+      do {
+        nextIndex = Math.floor(Math.random() * messages.length);
+      } while (nextIndex === currentIndex && messages.length > 1);
+      
+      currentIndex = nextIndex;
+      setCurrentThinkingMessage(messages[nextIndex]);
+
+      // Schedule next rotation with new random interval
+      timeoutId = setTimeout(rotateMessage, getRandomInterval());
+    };
+
+    // Start first rotation after initial delay
+    timeoutId = setTimeout(rotateMessage, getRandomInterval());
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [children, t]);
 
   const getAudioUrl = () => {
     if (audioFile) {
@@ -85,10 +153,8 @@ export function MessageBubble({
                 }}
               >
                 {String(children).trim() === "" ? (
-                  <div className="thinking-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                  <div className="thinking-status-message">
+                    {currentThinkingMessage || "Processing..."}
                   </div>
                 ) : (
                   <Markdown
@@ -201,10 +267,8 @@ export function MessageBubble({
                   }`}
                 >
                   {String(children).trim() === "" ? (
-                    <div className="thinking-dots">
-                      <span></span>
-                      <span></span>
-                      <span></span>
+                    <div className="thinking-status-message">
+                      {currentThinkingMessage || "Processing..."}
                     </div>
                   ) : (
                     <Markdown
@@ -346,6 +410,11 @@ export function MessageBubble({
                   <button
                     key={index}
                     onClick={() => {
+                      // Prevent click if already clicked (except for PDF buttons)
+                      if (!isPDFButton && isClicked) {
+                        return;
+                      }
+                      
                       if (isPDFButton && onDownloadPDF) {
                         onDownloadPDF();
                       } else {
@@ -353,11 +422,12 @@ export function MessageBubble({
                         onQuickAnswerClick(answer);
                       }
                     }}
+                    disabled={!isPDFButton && isClicked}
                     className={`px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
                       isPDFButton
                         ? 'bg-[#3C51E2] text-white hover:bg-[#3041B5]'
                         : isClicked
-                        ? 'bg-gray-100 border border-gray-400 text-gray-500 cursor-default'
+                        ? 'bg-gray-100 border border-gray-400 text-gray-500 cursor-not-allowed'
                         : 'bg-white border border-gray-300 text-gray-600 hover:bg-gray-50'
                     }`}
                     style={{ borderRadius: "3px" }}

@@ -197,13 +197,35 @@ audio::-webkit-media-controls-time-remaining-display {
 
 /* Thinking animation for bot messages */
 .thinking-message {
-  animation: thinking-pulse 1.5s ease-in-out infinite;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.25rem;
   min-height: 2rem;
   padding: 0.5rem 0;
+}
+
+/* Thinking status message styles */
+.thinking-status-message {
+  color: #6B7280;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-style: italic;
+  animation: thinkingFadeInOut 1.5s ease-in-out infinite;
+  display: inline-block;
+}
+
+/* Fade animation for thinking messages */
+@keyframes thinkingFadeInOut {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.4;
+  }
 }
 
 .thinking-dots {
