@@ -89,8 +89,17 @@ export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalPr
           return;
         }
         
-        // Handle headers
-        if (trimmedLine.startsWith('###')) {
+        // Handle headers (check from most specific to least specific)
+        if (trimmedLine.startsWith('######')) {
+          const text = trimmedLine.replace(/^######\s*/, '').replace(/\*\*/g, '').replace(/\*/g, '');
+          addText(text, 10, true);
+        } else if (trimmedLine.startsWith('#####')) {
+          const text = trimmedLine.replace(/^#####\s*/, '').replace(/\*\*/g, '').replace(/\*/g, '');
+          addText(text, 11, true);
+        } else if (trimmedLine.startsWith('####')) {
+          const text = trimmedLine.replace(/^####\s*/, '').replace(/\*\*/g, '').replace(/\*/g, '');
+          addText(text, 12, true);
+        } else if (trimmedLine.startsWith('###')) {
           const text = trimmedLine.replace(/^###\s*/, '').replace(/\*\*/g, '').replace(/\*/g, '');
           addText(text, 14, true);
         } else if (trimmedLine.startsWith('##')) {

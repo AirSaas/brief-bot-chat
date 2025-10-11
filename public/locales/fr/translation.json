@@ -80,7 +80,7 @@
   "initial_message": {
     "greeting": "Bonjour, je suis là pour vous aider à créer un projet bien structuré. Procédons étape par étape.",
     "template_question": "Quel modèle de fiche projet souhaitez-vous utiliser ?",
-    "lets_start_template": "Commençons un {{template}}, commence ta première question !",
+    "lets_start_template": "Commençons un {{template}}, pose-moi ta première question pour guider le brief !",
     "templates": {
       "basic_storytelling": {
         "title": "Récit de Base",

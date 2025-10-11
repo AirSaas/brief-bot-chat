@@ -68,8 +68,8 @@ export function MessageBubble({
     const initialIndex = Math.floor(Math.random() * messages.length);
     setCurrentThinkingMessage(messages[initialIndex]);
 
-    // Random interval between 800ms and 2000ms (respects UX guidelines)
-    const getRandomInterval = () => Math.floor(Math.random() * (2000 - 800 + 1)) + 800;
+    // Random interval between 1500ms and 4000ms for more varied timing
+    const getRandomInterval = () => Math.floor(Math.random() * (2500 - 800 + 1)) + 800;
 
     let timeoutId: NodeJS.Timeout;
     let currentIndex = initialIndex;
