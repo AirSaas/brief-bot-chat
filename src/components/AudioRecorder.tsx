@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type Props = { 
   onRecorded: (file: File) => Promise<void>; 
@@ -7,6 +8,7 @@ type Props = {
 };
 
 export default function AudioRecorder({ onRecorded, disabled, onRecordingStateChange }: Props) {
+  const { t } = useTranslation();
   const [rec, setRec] = useState<MediaRecorder|null>(null);
   const [isRec, setIsRec] = useState(false);
   const chunks = useRef<BlobPart[]>([]);
@@ -52,7 +54,7 @@ export default function AudioRecorder({ onRecorded, disabled, onRecordingStateCh
             <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
             <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
           </svg>
-          <span>Click to start dictating</span>
+          <span>{t('chat.audio_button.start_dictating')}</span>
         </button>
       ) : (
         <button 
@@ -63,7 +65,7 @@ export default function AudioRecorder({ onRecorded, disabled, onRecordingStateCh
           <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
             <rect x="6" y="6" width="12" height="12" rx="2"/>
           </svg>
-          <span>Stop recording</span>
+          <span>{t('chat.audio_button.stop_recording')}</span>
         </button>
       )}
     </>

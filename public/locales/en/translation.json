@@ -34,6 +34,10 @@
     "error_message": "❌ Error processing your message.",
     "audio_error": "I couldn't process your audio, could you write it instead?",
     "voice_message": "🎙️ Voice message",
+    "audio_button": {
+      "start_dictating": "Click to start dictating",
+      "stop_recording": "Stop recording"
+    },
     "thinking_messages": [
       "Analyzing your input...",
       "Understanding your needs...",

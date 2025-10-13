@@ -34,6 +34,10 @@
     "error_message": "❌ Erreur lors du traitement de votre message.",
     "audio_error": "Je n'ai pas pu traiter votre audio, pourriez-vous l'écrire à la place ?",
     "voice_message": "🎙️ Message vocal",
+    "audio_button": {
+      "start_dictating": "Cliquez pour commencer la dictée",
+      "stop_recording": "Arrêter l'enregistrement"
+    },
     "thinking_messages": [
       "Analyse de votre réponse...",
       "Compréhension de vos besoins...",
