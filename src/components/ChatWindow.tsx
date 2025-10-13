@@ -79,6 +79,17 @@ export default function ChatWindow({
     }
   }, [messages]);
 
+  // Function to handle input height changes and scroll to bottom
+  const handleInputHeightChange = () => {
+    // Scroll to bottom when input grows
+    setTimeout(() => {
+      listRef.current?.scrollTo({
+        top: listRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }, 0);
+  };
+
   // Function to extract quick_answers from the message content
   const extractQuickAnswers = (content: string): { cleanContent: string; quickAnswers: string[] } => {
     try {
@@ -465,6 +476,7 @@ export default function ChatWindow({
               disabled={isThinking || !hasSelectedInitialOption || isRecording}
               isThinking={isThinking}
               suggestions={t('chat.suggestions', { returnObjects: true }) as string[]}
+              onHeightChange={handleInputHeightChange}
             />
           </div>
         </div>

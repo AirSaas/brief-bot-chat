@@ -46,7 +46,8 @@ export default function AudioRecorder({ onRecorded, disabled, onRecordingStateCh
       {!isRec ? (
         <button 
           disabled={disabled} 
-          onClick={start} 
+          onClick={start}
+          tabIndex={2}
           className="w-full px-[19px] py-2 bg-[#E8EBFE] text-[#3C51E2] font-light text-base rounded-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:bg-[#D8DCFE]"
           style={{ fontFamily: 'Product Sans Light, system-ui, sans-serif', lineHeight: '1.213em' }}
         >
@@ -58,7 +59,8 @@ export default function AudioRecorder({ onRecorded, disabled, onRecordingStateCh
         </button>
       ) : (
         <button 
-          onClick={stop} 
+          onClick={stop}
+          tabIndex={2}
           className="w-full px-[19px] py-2 bg-[#FEE8E8] text-[#E23C3C] font-light text-base rounded-full flex items-center justify-center gap-2 transition-all duration-300 hover:bg-[#FED8D8]"
           style={{ fontFamily: 'Product Sans Light, system-ui, sans-serif', lineHeight: '1.213em' }}
         >

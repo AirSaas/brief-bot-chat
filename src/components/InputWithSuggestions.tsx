@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 interface InputWithSuggestionsProps {
   value: string;
@@ -9,6 +9,7 @@ interface InputWithSuggestionsProps {
   disabled: boolean;
   isThinking: boolean;
   suggestions?: string[];
+  onHeightChange?: () => void;
 }
 
 export default function InputWithSuggestions({
@@ -19,7 +20,8 @@ export default function InputWithSuggestions({
   placeholder,
   disabled,
   isThinking,
-  suggestions = ["Donnez-moi des exemples", "Sauter cette question"]
+  suggestions = ["Donnez-moi des exemples", "Sauter cette question"],
+  onHeightChange
 }: InputWithSuggestionsProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -29,9 +31,10 @@ export default function InputWithSuggestions({
   const suggestionsEnabled = false;
 
   // Auto-resize textarea based on content
-  const adjustTextareaHeight = () => {
+  const adjustTextareaHeight = useCallback(() => {
     const textarea = textareaRef.current;
     if (textarea) {
+      const previousHeight = textarea.style.height;
       // Reset height to auto to get the correct scrollHeight
       textarea.style.height = 'auto';
       // Set height to scrollHeight (content height)
@@ -45,13 +48,18 @@ export default function InputWithSuggestions({
       } else {
         textarea.style.overflowY = 'hidden';
       }
+      
+      // Notify parent if height changed
+      if (previousHeight !== `${newHeight}px` && onHeightChange) {
+        onHeightChange();
+      }
     }
-  };
+  }, [onHeightChange]);
 
   // Adjust height when value changes
   useEffect(() => {
     adjustTextareaHeight();
-  }, [value]);
+  }, [value, adjustTextareaHeight]);
 
   // Function to handle input debounce
   const handleInputChange = (inputValue: string) => {
@@ -122,6 +130,7 @@ export default function InputWithSuggestions({
         <textarea
           ref={textareaRef}
           rows={1}
+          tabIndex={1}
           className={`w-full min-h-[42px] max-h-[120px] pl-[15px] pr-[45px] py-[11px] rounded-[10px] border-0 focus:outline-none bg-[#F8F9FF] focus:bg-white focus:border focus:border-[#3C51E2] text-gray-700 placeholder-[#8D94A3] text-base resize-none ${
             isThinking ? 'opacity-50 cursor-not-allowed' : ''
           }`}
@@ -168,6 +177,7 @@ export default function InputWithSuggestions({
         <button
           onClick={onSend}
           disabled={isThinking || !value.trim()}
+          tabIndex={3}
           className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-[7px] rounded-full transition-all duration-200 disabled:cursor-not-allowed ${
             value.trim() 
               ? 'bg-[#3C51E2] text-white hover:bg-[#3041B5]' 
