@@ -126,7 +126,6 @@ export default function ChatWindow({
     if (!messageText.trim()) return;
     const userMsg: ChatMessage = { role: "user", content: messageText.trim() };
     setMessages((m) => [...m, userMsg]);
-    setInput("");
     setIsThinking(true);
     
     try {
@@ -152,7 +151,9 @@ export default function ChatWindow({
 
   async function sendText() {
     if (!input.trim()) return;
-    await sendMessageDirectly(input);
+    const messageToSend = input;
+    setInput(""); // Clear input only when user actively clicks send button
+    await sendMessageDirectly(messageToSend);
   }
 
   function handleTemplateSelect(template: string) {
@@ -205,8 +206,8 @@ export default function ChatWindow({
     } else {
       // Append the quick answer text to the existing input for other buttons
       setInput(prevInput => {
-        // If there's already text, add a space before appending
-        return prevInput.trim() ? `${prevInput.trim()} ${answer}` : answer;
+        // If there's already text, add a line break with space before appending
+        return prevInput.trim() ? `${prevInput.trim()}\n\n${answer}` : answer;
       });
     }
   }
