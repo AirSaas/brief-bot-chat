@@ -60,6 +60,7 @@ export default function ChatWindow({
   
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [selectedQuickAnswers, setSelectedQuickAnswers] = useState<string[]>([]);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -221,6 +222,10 @@ export default function ChatWindow({
         return prevInput.trim() ? `${prevInput.trim()}\n\n${answer}` : answer;
       });
     }
+  }
+
+  function handleQuickAnswerSelect(answer: string) {
+    setSelectedQuickAnswers(prev => [...prev, answer]);
   }
 
   function handleDownloadPDF() {
@@ -420,6 +425,8 @@ export default function ChatWindow({
               quickAnswers={shouldShowQuickAnswers ? m.quickAnswers : []}
               onQuickAnswerClick={shouldShowQuickAnswers ? handleQuickAnswerClick : undefined}
               onDownloadPDF={handleDownloadPDF}
+              selectedAnswers={selectedQuickAnswers}
+              onAnswerSelect={handleQuickAnswerSelect}
             >
               {m.content}
             </MessageBubble>
@@ -428,7 +435,7 @@ export default function ChatWindow({
          
          {/* Thinking indicator */}
          {isThinking && (
-           <MessageBubble role="assistant" quickAnswers={[]} onQuickAnswerClick={undefined}>
+           <MessageBubble role="assistant" quickAnswers={[]} onQuickAnswerClick={undefined} selectedAnswers={[]} onAnswerSelect={undefined}>
              {""}
            </MessageBubble>
          )}

@@ -11,6 +11,8 @@ export function MessageBubble({
   quickAnswers = [],
   onQuickAnswerClick,
   onDownloadPDF,
+  selectedAnswers = [],
+  onAnswerSelect,
 }: {
   role: "user" | "assistant";
   children: React.ReactNode;
@@ -20,6 +22,8 @@ export function MessageBubble({
   quickAnswers?: string[];
   onQuickAnswerClick?: (answer: string) => void;
   onDownloadPDF?: () => void;
+  selectedAnswers?: string[];
+  onAnswerSelect?: (answer: string) => void;
 }) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
@@ -405,7 +409,17 @@ export function MessageBubble({
                                    answer === "Télécharger en tant que PDF" ||
                                    answer === "Télécharger au format PDF" ||
                                    answer === "Télécharger comme PDF";
+                
+                // Check if it's a default button
+                const isDefaultButton = 
+                  answer === "Give me examples" ||
+                  answer === "Skip this question" ||
+                  answer === "Donnez-moi des exemples" ||
+                  answer === "Sauter cette question";
+                
                 const isClicked = clickedAnswers.has(answer);
+                const isSelected = selectedAnswers.includes(answer);
+                
                 return (
                   <button
                     key={index}
@@ -419,6 +433,10 @@ export function MessageBubble({
                         onDownloadPDF();
                       } else {
                         setClickedAnswers(prev => new Set(prev).add(answer));
+                        // If it's not a default button and not a PDF button, mark it as selected
+                        if (!isDefaultButton && !isPDFButton && onAnswerSelect) {
+                          onAnswerSelect(answer);
+                        }
                         onQuickAnswerClick(answer);
                       }
                     }}
@@ -426,9 +444,11 @@ export function MessageBubble({
                     className={`px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
                       isPDFButton
                         ? 'bg-[#3C51E2] text-white hover:bg-[#3041B5]'
-                        : isClicked
+                        : isSelected
+                        ? 'bg-blue-50 text-blue-700 border-2 border-blue-500'
+                        : isClicked && !isSelected
                         ? 'bg-gray-100 border border-gray-400 text-gray-500 cursor-not-allowed'
-                        : 'bg-white border border-gray-300 text-gray-600 hover:bg-gray-50'
+                        : 'bg-white border border-gray-300 text-gray-600 hover:bg-blue-50 hover:border-2 hover:border-blue-500 hover:text-blue-700'
                     }`}
                     style={{ borderRadius: "3px" }}
                   >

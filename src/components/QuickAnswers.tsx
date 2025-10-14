@@ -1,3 +1,4 @@
+
 interface QuickAnswersProps {
   onAnswerClick: (answer: string) => void;
   onDownloadPDF?: () => void;
@@ -5,6 +6,8 @@ interface QuickAnswersProps {
   isClosing?: boolean;
   answers?: string[];
   isFirstMessage?: boolean;
+  selectedAnswers?: string[];
+  onAnswerSelect?: (answer: string) => void;
 }
 
 const DEFAULT_QUICK_ANSWERS = [
@@ -13,7 +16,7 @@ const DEFAULT_QUICK_ANSWERS = [
   "Start an Emotional Story Telling",
 ];
 
-export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = false, isClosing = false, answers, isFirstMessage = false }: QuickAnswersProps) {
+export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = false, isClosing = false, answers, isFirstMessage = false, selectedAnswers = [], onAnswerSelect }: QuickAnswersProps) {
   const handleAnswerClick = (answer: string) => {
     // Check if button is a PDF download button (English and French variations)
     const isPDFButton = answer === "Download as PDF" || 
@@ -21,9 +24,21 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
                        answer === "Télécharger en tant que PDF" ||
                        answer === "Télécharger au format PDF" ||
                        answer === "Télécharger comme PDF";
+    
+    // Check if it's a default button (give_examples or skip_question in both languages)
+    const isDefaultButton = 
+      answer === "Give me examples" ||
+      answer === "Skip this question" ||
+      answer === "Donnez-moi des exemples" ||
+      answer === "Sauter cette question";
+    
     if (isPDFButton && onDownloadPDF) {
       onDownloadPDF();
     } else {
+      // If it's not a default button and not a PDF button, mark it as selected
+      if (!isDefaultButton && !isPDFButton && onAnswerSelect) {
+        onAnswerSelect(answer);
+      }
       onAnswerClick(answer);
     }
   };
@@ -45,17 +60,32 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
                                answer === "Télécharger en tant que PDF" ||
                                answer === "Télécharger au format PDF" ||
                                answer === "Télécharger comme PDF";
+            
+            // Check if it's a default button
+            const isDefaultButton = 
+              answer === "Give me examples" ||
+              answer === "Skip this question" ||
+              answer === "Donnez-moi des exemples" ||
+              answer === "Sauter cette question";
+            
+            // Check if this answer is selected
+            const isSelected = selectedAnswers.includes(answer);
+            
             return (
               <button
                 key={index}
                 onClick={() => handleAnswerClick(answer)}
                 disabled={disabled}
                 className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
-                  disabled
+                  disabled && !isSelected
                     ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
                     : isPDFButton
                     ? 'bg-[#3C51E2] hover:bg-[#3041B5] text-white'
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                    : isSelected
+                    ? 'bg-blue-50 text-blue-700 border-2 border-blue-500'
+                    : isDefaultButton
+                    ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                    : 'bg-gray-100 hover:bg-blue-50 hover:border-2 hover:border-blue-500 hover:text-blue-700 text-gray-700'
                 }`}
               >
                 {answer}
@@ -79,17 +109,32 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
                              answer === "Télécharger en tant que PDF" ||
                              answer === "Télécharger au format PDF" ||
                              answer === "Télécharger comme PDF";
+          
+          // Check if it's a default button
+          const isDefaultButton = 
+            answer === "Give me examples" ||
+            answer === "Skip this question" ||
+            answer === "Donnez-moi des exemples" ||
+            answer === "Sauter cette question";
+          
+          // Check if this answer is selected
+          const isSelected = selectedAnswers.includes(answer);
+          
           return (
             <button
               key={index}
               onClick={() => handleAnswerClick(answer)}
               disabled={disabled}
               className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
-                disabled
+                disabled && !isSelected
                   ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
                   : isPDFButton
                   ? 'bg-[#3C51E2] hover:bg-[#3041B5] text-white'
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  : isSelected
+                  ? 'bg-blue-50 text-blue-700 border-2 border-blue-500'
+                  : isDefaultButton
+                  ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  : 'bg-gray-100 hover:bg-blue-50 hover:border-2 hover:border-blue-500 hover:text-blue-700 text-gray-700'
               }`}
             >
               {answer}
