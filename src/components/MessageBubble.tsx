@@ -384,23 +384,6 @@ export function MessageBubble({
           {/* Quick Answers for bot messages */}
           {quickAnswers && quickAnswers.length > 0 && onQuickAnswerClick && (
             <div className="ml-12 sm:ml-14 flex flex-wrap gap-2">
-              {/* Default options - no feedback visual */}
-              <button
-                onClick={() => onQuickAnswerClick(t('chat.quick_answers.give_examples'))}
-                className="px-3 py-1.5 text-xs font-medium transition-colors duration-200 bg-gray-200 border border-gray-300 text-gray-800 hover:bg-gray-300"
-                style={{ borderRadius: "3px" }}
-              >
-                {t('chat.quick_answers.give_examples')}
-              </button>
-              <button
-                onClick={() => onQuickAnswerClick(t('chat.quick_answers.skip_question'))}
-                className="px-3 py-1.5 text-xs font-normal transition-colors duration-200 bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
-                style={{ borderRadius: "3px" }}
-              >
-                {t('chat.quick_answers.skip_question')}
-              </button>
-
-
               {/* Dynamic quick answers from bot */}
               {quickAnswers.map((answer, index) => {
                 // Check if button is a PDF download button (English and French variations)
@@ -412,9 +395,9 @@ export function MessageBubble({
                 
                 // Check if it's a default button
                 const isDefaultButton = 
-                  answer === "Give me examples" ||
+                  answer === "Generate other examples" ||
                   answer === "Skip this question" ||
-                  answer === "Donnez-moi des exemples" ||
+                  answer === "Générer d'autres exemples" ||
                   answer === "Sauter cette question";
                 
                 const isClicked = clickedAnswers.has(answer);
@@ -456,6 +439,36 @@ export function MessageBubble({
                   </button>
                 );
               })}
+
+              {/* Fixed action buttons - only show if no PDF button exists */}
+              {!quickAnswers.some(answer => 
+                answer === "Download as PDF" || 
+                answer === "Télécharger en PDF" || 
+                answer === "Télécharger en tant que PDF" ||
+                answer === "Télécharger au format PDF" ||
+                answer === "Télécharger comme PDF"
+              ) && (
+                <>
+                  {/* Separator line */}
+                  <div className="w-full border-t border-gray-200 my-2"></div>
+                  
+                  {/* Fixed buttons with different styling */}
+                  <button
+                    onClick={() => onQuickAnswerClick(t('chat.quick_answers.give_examples'))}
+                    className="px-3 py-1.5 text-xs font-medium transition-colors duration-200 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100 hover:border-blue-300"
+                    style={{ borderRadius: "6px" }}
+                  >
+                    ✨ {t('chat.quick_answers.give_examples')}
+                  </button>
+                  <button
+                    onClick={() => onQuickAnswerClick(t('chat.quick_answers.skip_question'))}
+                    className="px-3 py-1.5 text-xs font-medium transition-colors duration-200 bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200 text-gray-600 hover:from-gray-100 hover:to-slate-100 hover:border-gray-300"
+                    style={{ borderRadius: "6px" }}
+                  >
+                    ❯❯❯ {t('chat.quick_answers.skip_question')}
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>

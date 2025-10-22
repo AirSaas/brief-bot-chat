@@ -24,11 +24,11 @@
     "placeholder_thinking": "Le bot répond...",
     "or": "Ou",
     "suggestions": [
-      "Donnez-moi des exemples",
+      "Générer d'autres exemples",
       "Sauter cette question"
     ],
     "quick_answers": {
-      "give_examples": "Donnez-moi des exemples",
+      "give_examples": "Générer d'autres exemples",
       "skip_question": "Sauter cette question"
     },
     "error_message": "❌ Erreur lors du traitement de votre message.",

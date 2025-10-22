@@ -24,11 +24,11 @@
     "placeholder_thinking": "Bot is responding...",
     "or": "Or",
     "suggestions": [
-      "Give me examples",
+      "Generate other examples",
       "Skip this question"
     ],
     "quick_answers": {
-      "give_examples": "Give me examples",
+      "give_examples": "Generate other examples",
       "skip_question": "Skip this question"
     },
     "error_message": "❌ Error processing your message.",

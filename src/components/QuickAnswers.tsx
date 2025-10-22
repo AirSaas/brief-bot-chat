@@ -27,9 +27,9 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
     
     // Check if it's a default button (give_examples or skip_question in both languages)
     const isDefaultButton = 
-      answer === "Give me examples" ||
+      answer === "Generate other examples" ||
       answer === "Skip this question" ||
-      answer === "Donnez-moi des exemples" ||
+      answer === "Générer d'autres exemples" ||
       answer === "Sauter cette question";
     
     if (isPDFButton && onDownloadPDF) {
@@ -63,9 +63,9 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
             
             // Check if it's a default button
             const isDefaultButton = 
-              answer === "Give me examples" ||
+              answer === "Generate other examples" ||
               answer === "Skip this question" ||
-              answer === "Donnez-moi des exemples" ||
+              answer === "Générer d'autres exemples" ||
               answer === "Sauter cette question";
             
             // Check if this answer is selected
@@ -112,9 +112,9 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
           
           // Check if it's a default button
           const isDefaultButton = 
-            answer === "Give me examples" ||
+            answer === "Generate other examples" ||
             answer === "Skip this question" ||
-            answer === "Donnez-moi des exemples" ||
+            answer === "Générer d'autres exemples" ||
             answer === "Sauter cette question";
           
           // Check if this answer is selected
