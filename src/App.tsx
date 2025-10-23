@@ -22,8 +22,36 @@ console.log("sessionId", sessionId);
     sessionStorage.removeItem('chatMessages');
   }, []);
 
+  // Handle window resize to adjust chat mode for mobile/desktop
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 768;
+      
+      // If we're currently in panel mode but switched to mobile, go to fullscreen
+      if (isMobile && chatMode === "panel") {
+        setChatMode("fullscreen");
+      }
+      // If we're currently in fullscreen mode but switched to desktop, go to panel
+      else if (!isMobile && chatMode === "fullscreen") {
+        setChatMode("panel");
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [chatMode]);
+
   const handleStartChat = () => {
-    setChatMode("panel");
+    // Check if mobile (screen width < 768px)
+    const isMobile = window.innerWidth < 768;
+    
+    if (isMobile) {
+      // On mobile, open in fullscreen mode
+      setChatMode("fullscreen");
+    } else {
+      // On desktop, open in panel mode
+      setChatMode("panel");
+    }
   };
 
   const handleToggleChat = () => {
@@ -31,8 +59,12 @@ console.log("sessionId", sessionId);
     const isMobile = window.innerWidth < 768;
 
     if (isMobile) {
-      // On mobile, toggle always goes back to home
-      setChatMode("hidden");
+      // On mobile, toggle between fullscreen and hidden
+      if (chatMode === "fullscreen") {
+        setChatMode("hidden");
+      } else if (chatMode === "panel") {
+        setChatMode("fullscreen");
+      }
     } else {
       // On desktop, toggle between panel and fullscreen
       if (chatMode === "fullscreen") {
@@ -97,7 +129,7 @@ console.log("sessionId", sessionId);
       )}
 
       {chatMode === "fullscreen" && (
-        <div className="fixed inset-0 z-50 bg-white">
+        <div className="fixed inset-0 z-50 bg-white mobile-chat-container">
           <ChatWindow
             onBackToHomepage={handleBackToHomepage}
             onToggleChat={handleToggleChat}

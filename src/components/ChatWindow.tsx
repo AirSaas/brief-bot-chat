@@ -61,6 +61,7 @@ export default function ChatWindow({
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [selectedQuickAnswers, setSelectedQuickAnswers] = useState<string[]>([]);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -79,6 +80,29 @@ export default function ChatWindow({
       sessionStorage.removeItem('chatMessages');
     }
   }, [messages]);
+
+  // Detect mobile keyboard open/close
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 768;
+      if (isMobile) {
+        const initialViewportHeight = window.visualViewport?.height || window.innerHeight;
+        const currentViewportHeight = window.innerHeight;
+        const keyboardHeight = initialViewportHeight - currentViewportHeight;
+        
+        // If viewport height decreased significantly, keyboard is likely open
+        setIsKeyboardOpen(keyboardHeight > 150);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []);
 
   // Function to handle input height changes and scroll to bottom
   const handleInputHeightChange = () => {
@@ -291,93 +315,69 @@ export default function ChatWindow({
   }
 
   return (
-    <div className="h-full flex flex-col bg-white">
-      <header className="bg-white flex flex-col" style={{ padding: '10px 20px 10px 21px' }}>
+    <div className={`h-full flex flex-col bg-white mobile-chat-container chat-window-mobile mobile-safe-area ${isKeyboardOpen ? 'mobile-keyboard-adjust' : ''}`}>
+      <header className="bg-white flex flex-col px-4 sm:px-5 py-3 sm:py-4 chat-header-mobile">
         {/* Main header row */}
         <div className="flex items-center justify-between w-full">
           {/* Left section */}
-          <div className="flex flex-col justify-center" style={{ gap: '10px' }}>
-            {/* Back to Homepage button */}
-            <div className="flex justify-start items-end" style={{ padding: '8px 19px 8px 0px' }}>
-              {/* <button 
-                onClick={() => onBackToHomepage?.()}
-                className="flex items-center rounded-full bg-transparent text-[#3C51E2] hover:bg-gray-50 transition-colors duration-200"
-                style={{ 
-                  fontFamily: 'Product Sans Light, system-ui, sans-serif', 
-                  fontWeight: 300, 
-                  fontSize: '16px', 
-                  lineHeight: '1.213em',
-                  gap: '8px'
-                }}
-              >
-                <svg width="15" height="13" viewBox="0 0 15 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M14.5 6.5C14.5 6.78125 14.25 7 13.9688 7H2.1875L6.5625 11.6875C6.75 11.875 6.75 12.1875 6.53125 12.375C6.4375 12.4688 6.3125 12.5 6.1875 12.5C6.03125 12.5 5.90625 12.4688 5.8125 12.3438L0.625 6.84375C0.4375 6.65625 0.4375 6.375 0.625 6.1875L5.8125 0.6875C6 0.46875 6.3125 0.46875 6.53125 0.65625C6.75 0.84375 6.75 1.15625 6.5625 1.34375L2.1875 6H13.9688C14.25 6 14.5 6.25 14.5 6.5Z" fill="#3C51E2"/>
-                </svg>
-                <span>See all conversations</span>
-              </button> */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Logo - Hidden on mobile */}
+            <div className="hidden sm:flex items-center justify-center overflow-hidden w-8 h-8 sm:w-10 sm:h-10">
+              <img 
+                src="/mini.png" 
+                alt="AirSaas Bot" 
+                className="w-full h-full rounded-lg"
+              />
             </div>
             
-            {/* Logo and title group */}
-            <div className="flex items-center" style={{ gap: '5px' }}>
-              {/* Logo */}
-              <div 
-                className="flex items-center justify-center overflow-hidden"
-                style={{ width: '40px', height: '40px' }}
-              >
-                <img 
-                  src="/mini.png" 
-                  alt="AirSaas Bot" 
-                  className="w-10 h-10 rounded-lg"
-                />
-              </div>
-              
-              {/* Title */}
-              <div 
-                className="text-[#040D22] font-bold"
-                style={{ 
-                  fontFamily: 'Product Sans, system-ui, sans-serif', 
-                  fontWeight: 700, 
-                  fontSize: '18px', 
-                  lineHeight: '1.213em',
-                  paddingLeft: '5px'
-                }}
-              >
-                {t('chat.title')}
-              </div>
+            {/* Title */}
+            <div 
+              className="text-[#040D22] font-bold text-base sm:text-lg"
+              style={{ 
+                fontFamily: 'Product Sans, system-ui, sans-serif', 
+                fontWeight: 700, 
+                lineHeight: '1.213em'
+              }}
+            >
+              {t('chat.title')}
             </div>
           </div>
           
           {/* Right section - Action buttons */}
-          <div className="flex items-center" style={{ gap: '5px' }}>
-            {/* Language Selector - Only show when not in panel mode */}
-            {!isPanel && <LanguageSelector className="mr-2" />}
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* Language Selector - Only show on desktop and when not in panel mode */}
+            {!isPanel && (
+              <div className="hidden md:block">
+                <LanguageSelector className="mr-1 sm:mr-2" />
+              </div>
+            )}
             
-            {/* Expand/Collapse button */}
-            <button 
-              onClick={onToggleChat}
-              className="rounded-full bg-transparent text-[#3C51E2] hover:bg-gray-50 transition-colors duration-200"
-              style={{ padding: '8px' }}
-              title={isPanel ? "Expand to fullscreen" : "Go back to home"}
-            >
-              {isPanel ? (
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                </svg>
-              ) : (
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                </svg>
-              )}
-            </button>
+            {/* Expand/Collapse button - Only show on desktop */}
+            <div className="hidden md:block">
+              <button 
+                onClick={onToggleChat}
+                className="rounded-full bg-transparent text-[#3C51E2] hover:bg-gray-50 transition-colors duration-200 p-2 sm:p-2"
+                title={isPanel ? "Expand to fullscreen" : "Minimize chat"}
+              >
+                {isPanel ? (
+                  <svg width="16" height="16" className="sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" className="sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                  </svg>
+                )}
+              </button>
+            </div>
             
             {/* Close button */}
             <button 
               onClick={onCloseChat}
-              className="rounded-full bg-transparent text-[#061333] hover:bg-gray-50 transition-colors duration-200"
-              style={{ padding: '8px' }}
+              className="rounded-full bg-transparent text-[#061333] hover:bg-gray-50 transition-colors duration-200 p-2 sm:p-2"
               title="Close chat"
             >
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="16" height="16" className="sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
               </svg>
             </button>
@@ -387,7 +387,7 @@ export default function ChatWindow({
 
       <div
         ref={listRef}
-        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4 relative z-10 bg-white chat-scrollbar"
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4 relative z-10 bg-white chat-scrollbar chat-messages-mobile"
       >
         {/* Background logo - Fixed position */}
         {/*<div className="fixed right-6 sm:right-6 bottom-16 sm:bottom-50 opacity-5 pointer-events-none z-0">
@@ -442,7 +442,7 @@ export default function ChatWindow({
          
       </div>
 
-      <footer className="p-4 sm:p-6 bg-transparent">
+      <footer className="p-4 sm:p-6 bg-transparent chat-footer-mobile">
         <div className="space-y-4">
           {/* Voice Recording Button */}
           <div className="w-full">
@@ -473,7 +473,7 @@ export default function ChatWindow({
           </div>
           
           {/* Text Input */}
-          <div className="w-full">
+          <div className="w-full chat-input-mobile">
             <InputWithSuggestions
               value={input}
               onChange={setInput}

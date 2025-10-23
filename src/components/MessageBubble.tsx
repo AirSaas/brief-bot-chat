@@ -31,10 +31,10 @@ export function MessageBubble({
   const [currentThinkingMessage, setCurrentThinkingMessage] = useState("");
   
   const base =
-    "px-3 sm:px-5 py-3 sm:py-4 max-w-[90%] sm:max-w-[80%] transition-all duration-200";
+    "px-3 sm:px-5 py-3 sm:py-4 max-w-[90%] sm:max-w-[80%] transition-all duration-200 message-bubble-mobile";
   const userClasses =
-    "ml-auto bg-[#F8F9FF] text-black rounded-[10px] p-5 max-w-[400px]";
-  const botClasses = "mr-auto text-gray-800";
+    "ml-auto bg-[#F8F9FF] text-black rounded-[10px] p-5 max-w-[400px] user-message-mobile";
+  const botClasses = "mr-auto text-gray-800 bot-message-mobile";
 
   // Rotate thinking messages with rate limiting
   useEffect(() => {
