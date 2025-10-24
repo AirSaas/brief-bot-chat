@@ -26,11 +26,14 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
                        answer === "Télécharger comme PDF";
     
     // Check if it's a default button (give_examples or skip_question in both languages)
+    const lowerAnswer = answer.toLowerCase();
     const isDefaultButton = 
       answer === "Generate other examples" ||
       answer === "Skip this question" ||
       answer === "Générer d'autres exemples" ||
-      answer === "Sauter cette question";
+      answer === "Sauter cette question" ||
+      lowerAnswer === "everything is correct" ||
+      lowerAnswer === "tout est correct";
     
     if (isPDFButton && onDownloadPDF) {
       onDownloadPDF();
@@ -61,6 +64,10 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
                                answer === "Télécharger au format PDF" ||
                                answer === "Télécharger comme PDF";
             
+            // Check if it's a "everything is correct" button
+            const lowerAnswer = answer.toLowerCase();
+            const isCorrectButton = lowerAnswer === "everything is correct" || lowerAnswer === "tout est correct";
+            
             // Check if it's a default button
             const isDefaultButton = 
               answer === "Generate other examples" ||
@@ -79,7 +86,7 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
                 className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
                   disabled && !isSelected
                     ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
-                    : isPDFButton
+                    : isPDFButton || isCorrectButton
                     ? 'bg-[#3C51E2] hover:bg-[#3041B5] text-white'
                     : isSelected
                     ? 'bg-blue-50 text-blue-700 border-2 border-blue-500'
@@ -110,6 +117,10 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
                              answer === "Télécharger au format PDF" ||
                              answer === "Télécharger comme PDF";
           
+          // Check if it's a "everything is correct" button
+          const lowerAnswer = answer.toLowerCase();
+          const isCorrectButton = lowerAnswer === "everything is correct" || lowerAnswer === "tout est correct";
+          
           // Check if it's a default button
           const isDefaultButton = 
             answer === "Generate other examples" ||
@@ -128,7 +139,7 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
               className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
                 disabled && !isSelected
                   ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
-                  : isPDFButton
+                  : isPDFButton || isCorrectButton
                   ? 'bg-[#3C51E2] hover:bg-[#3041B5] text-white'
                   : isSelected
                   ? 'bg-blue-50 text-blue-700 border-2 border-blue-500'

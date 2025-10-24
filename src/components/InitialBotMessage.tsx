@@ -4,6 +4,12 @@ interface InitialBotMessageProps {
   onTemplateSelect: (template: string) => void;
 }
 
+// Function to hide language instruction text between equals signs for display
+const hideLanguageInstruction = (text: string): string => {
+  return text.replace(/\s*=my language is English, let's keep this conversation completely in English=\s*/g, '')
+             .replace(/\s*=ma langue est le français, gardons cette conversation entièrement en français=\s*/g, '');
+};
+
 export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessageProps) {
   const { t } = useTranslation();
 
@@ -32,9 +38,9 @@ export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessag
         </div>
         <div className="max-w-2xl">
           <p className="text-gray-800 leading-relaxed">
-            {t('initial_message.greeting')}
+            {hideLanguageInstruction(t('initial_message.greeting'))}
             <br /><br />
-            {t('initial_message.template_question')}
+            {hideLanguageInstruction(t('initial_message.template_question'))}
           </p>
         </div>
       </div>

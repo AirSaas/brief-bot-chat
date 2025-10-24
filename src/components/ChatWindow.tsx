@@ -229,13 +229,16 @@ export default function ChatWindow({
 
   function handleQuickAnswerClick(answer: string) {
     // Check if it's a default button (give_examples or skip_question in both languages)
+    const lowerAnswer = answer.toLowerCase();
     const isDefaultButton = 
       answer === t('chat.quick_answers.give_examples') || 
       answer === t('chat.quick_answers.skip_question') ||
       answer === "Give me examples" ||
       answer === "Skip this question" ||
       answer === "Donnez-moi des exemples" ||
-      answer === "Sauter cette question";
+      answer === "Sauter cette question" ||
+      lowerAnswer === "everything is correct" ||
+      lowerAnswer === "tout est correct";
     
     if (isDefaultButton) {
       // Send message directly for default buttons

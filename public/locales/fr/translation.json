@@ -82,9 +82,9 @@
     ]
   },
   "initial_message": {
-    "greeting": "Bonjour, je suis là pour vous aider à créer un projet bien structuré. Procédons étape par étape.",
+    "greeting": "Bonjour, je suis là pour vous aider à créer un projet bien structuré. Procédons étape par étape. =ma langue est le français, gardons cette conversation entièrement en français=",
     "template_question": "Quel modèle de fiche projet souhaitez-vous utiliser ?",
-    "lets_start_template": "Commençons un {{template}}, pose-moi ta première question pour guider le brief !",
+    "lets_start_template": "Commençons un {{template}}, pose-moi ta première question pour guider le brief ! =ma langue est le français, gardons cette conversation entièrement en français=",
     "templates": {
       "basic_storytelling": {
         "title": "Récit de Base",

@@ -2,6 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 import Markdown from "react-markdown";
 
+// Function to hide language instruction text between equals signs for display
+const hideLanguageInstruction = (text: string): string => {
+  return text.replace(/\s*=my language is English, let's keep this conversation completely in English=\s*/g, '')
+             .replace(/\s*=ma langue est le français, gardons cette conversation entièrement en français=\s*/g, '');
+};
+
 export function MessageBubble({
   role,
   children,
@@ -111,7 +117,7 @@ export function MessageBubble({
 
   const copyToClipboard = async () => {
     try {
-      const text = String(children).trim();
+      const text = hideLanguageInstruction(String(children).trim());
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000); // Hide after 2 seconds
@@ -222,7 +228,7 @@ export function MessageBubble({
                       ),
                     }}
                   >
-                    {String(children)}
+                    {hideLanguageInstruction(String(children))}
                   </Markdown>
                 )}
               </div>
@@ -338,7 +344,7 @@ export function MessageBubble({
                         ),
                       }}
                     >
-                      {String(children)}
+                      {hideLanguageInstruction(String(children))}
                     </Markdown>
                   )}
                 </div>
@@ -393,6 +399,10 @@ export function MessageBubble({
                                    answer === "Télécharger au format PDF" ||
                                    answer === "Télécharger comme PDF";
                 
+                // Check if it's a "everything is correct" button
+                const lowerAnswer = answer.toLowerCase();
+                const isCorrectButton = lowerAnswer === "everything is correct" || lowerAnswer === "tout est correct";
+                
                 // Check if it's a default button
                 const isDefaultButton = 
                   answer === "Generate other examples" ||
@@ -407,8 +417,8 @@ export function MessageBubble({
                   <button
                     key={index}
                     onClick={() => {
-                      // Prevent click if already clicked (except for PDF buttons)
-                      if (!isPDFButton && isClicked) {
+                      // Prevent click if already clicked (except for PDF buttons and correct buttons)
+                      if (!isPDFButton && !isCorrectButton && isClicked) {
                         return;
                       }
                       
@@ -423,9 +433,9 @@ export function MessageBubble({
                         onQuickAnswerClick(answer);
                       }
                     }}
-                    disabled={!isPDFButton && isClicked}
+                    disabled={!isPDFButton && !isCorrectButton && isClicked}
                     className={`px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
-                      isPDFButton
+                      isPDFButton || isCorrectButton
                         ? 'bg-[#3C51E2] text-white hover:bg-[#3041B5]'
                         : isSelected
                         ? 'bg-blue-50 text-blue-700 border-2 border-blue-500'
@@ -440,14 +450,17 @@ export function MessageBubble({
                 );
               })}
 
-              {/* Fixed action buttons - only show if no PDF button exists */}
-              {!quickAnswers.some(answer => 
-                answer === "Download as PDF" || 
-                answer === "Télécharger en PDF" || 
-                answer === "Télécharger en tant que PDF" ||
-                answer === "Télécharger au format PDF" ||
-                answer === "Télécharger comme PDF"
-              ) && (
+              {/* Fixed action buttons - only show if no PDF button exists and no completion buttons */}
+              {!quickAnswers.some(answer => {
+                const lowerAnswer = answer.toLowerCase();
+                return answer === "Download as PDF" || 
+                       answer === "Télécharger en PDF" || 
+                       answer === "Télécharger en tant que PDF" ||
+                       answer === "Télécharger au format PDF" ||
+                       answer === "Télécharger comme PDF" ||
+                       lowerAnswer === "everything is correct" ||
+                       lowerAnswer === "tout est correct";
+              }) && (
                 <>
                   {/* Separator line */}
                   <div className="w-full border-t border-gray-200 my-2"></div>

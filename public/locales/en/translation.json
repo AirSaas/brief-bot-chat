@@ -82,9 +82,9 @@
     ]
   },
   "initial_message": {
-    "greeting": "Hello, I'm here to assist you to create a well-structured project. Let's take it step by step.",
+    "greeting": "Hello, I'm here to assist you to create a well-structured project. Let's take it step by step. =my language is English, let's keep this conversation completely in English=",
     "template_question": "Which template of project brief do you want to use?",
-    "lets_start_template": "Let's start a {{template}}, start your first question to me for guiding the brief!",
+    "lets_start_template": "Let's start a {{template}}, start your first question to me for guiding the brief! =my language is English, let's keep this conversation completely in English=",
     "templates": {
       "basic_storytelling": {
         "title": "Basic Story Telling",
