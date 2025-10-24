@@ -10,6 +10,7 @@ interface InputWithSuggestionsProps {
   isThinking: boolean;
   suggestions?: string[];
   onHeightChange?: () => void;
+  onRef?: (ref: { setCursorToEnd: () => void }) => void;
 }
 
 export default function InputWithSuggestions({
@@ -21,7 +22,8 @@ export default function InputWithSuggestions({
   disabled,
   isThinking,
   suggestions = ["Donnez-moi des exemples", "Sauter cette question"],
-  onHeightChange
+  onHeightChange,
+  onRef
 }: InputWithSuggestionsProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -29,6 +31,23 @@ export default function InputWithSuggestions({
   
   // Disable suggestions for now
   const suggestionsEnabled = false;
+
+  // Function to set cursor to end of textarea
+  const setCursorToEnd = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      const length = textarea.value.length;
+      textarea.setSelectionRange(length, length);
+      textarea.focus();
+    }
+  }, []);
+
+  // Expose the setCursorToEnd function to parent component
+  useEffect(() => {
+    if (onRef) {
+      onRef({ setCursorToEnd });
+    }
+  }, [onRef, setCursorToEnd]);
 
   // Auto-resize textarea based on content
   const adjustTextareaHeight = useCallback(() => {

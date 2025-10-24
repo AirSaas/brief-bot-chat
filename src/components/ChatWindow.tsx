@@ -63,6 +63,7 @@ export default function ChatWindow({
   const [selectedQuickAnswers, setSelectedQuickAnswers] = useState<string[]>([]);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<{ setCursorToEnd: () => void } | null>(null);
 
   useEffect(() => {
     // Do not scroll if there are no messages
@@ -245,6 +246,13 @@ export default function ChatWindow({
         // If there's already text, add a line break with space before appending
         return prevInput.trim() ? `${prevInput.trim()}\n\n${answer}` : answer;
       });
+      
+      // Position cursor at the end of the inserted text
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.setCursorToEnd();
+        }
+      }, 0);
     }
   }
 
@@ -484,6 +492,7 @@ export default function ChatWindow({
               isThinking={isThinking}
               suggestions={t('chat.suggestions', { returnObjects: true }) as string[]}
               onHeightChange={handleInputHeightChange}
+              onRef={(ref) => { inputRef.current = ref; }}
             />
           </div>
         </div>
