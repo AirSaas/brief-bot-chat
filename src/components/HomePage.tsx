@@ -1,246 +1,322 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from './LanguageSelector';
+import ChatWindow from './ChatWindow';
+import type { ChatMessage } from '../lib/api';
 
 interface HomePageProps {
-  onStartChat: () => void;
+  messages: ChatMessage[];
+  setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  input: string;
+  setInput: React.Dispatch<React.SetStateAction<string>>;
+  sessionId: string;
+  isThinking: boolean;
+  setIsThinking: React.Dispatch<React.SetStateAction<boolean>>;
+  hasSelectedInitialOption: boolean;
+  setHasSelectedInitialOption: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function HomePage({ onStartChat }: HomePageProps) {
+export default function HomePage({
+  messages,
+  setMessages,
+  input,
+  setInput,
+  sessionId,
+  isThinking,
+  setIsThinking,
+  hasSelectedInitialOption,
+  setHasSelectedInitialOption
+}: HomePageProps) {
   const { t } = useTranslation();
+  const [copied, setCopied] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState('app.airsaas.io/link');
+
+  // Parse translated text with bold tags
+  const parseBoldText = (translatedText: string) => {
+    const parts = translatedText.split(/(<strong>.*?<\/strong>)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('<strong>') && part.endsWith('</strong>')) {
+        const text = part.replace(/<\/?strong>/g, '');
+        return <strong key={index} style={{ fontWeight: 700, fontFamily: 'Product Sans, system-ui, sans-serif' }}>{text}</strong>;
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCurrentUrl(window.location.href);
+    }
+  }, []);
+
+  const handleCopyLink = () => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(currentUrl).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-brand-50 to-brand-100 flex flex-col animate-fade-in">
-      
-      {/* Language Selector */}
-      <div className="absolute top-4 right-4 z-10">
-        <LanguageSelector />
+    <div className="h-screen flex bg-white overflow-hidden">
+      {/* Left side - Homepage content */}
+      <div className="hidden md:flex flex-1 bg-gradient-to-br from-white via-brand-50 to-brand-100 flex-col overflow-y-auto">
+        {/* Main Content */}
+        <main className="flex-1 flex items-center justify-start">
+          <div className="w-full max-w-[640px] mx-auto px-8">
+            {/* Hero Section */}
+            <div className="mb-[30px] text-center">
+                  {/* Logo */}
+                  <div className="flex justify-center mb-[16px]">
+                    <div
+                      style={{
+                        position: 'relative',
+                        width: '120px',
+                        height: '120px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}
+                    >
+                      {/* Halo azul de fondo */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '120px',
+                          height: '120px',
+                          background: '#FFFFFF',
+                          border: '8.36px solid #8A97EE',
+                          borderRadius: '250px',
+                          pointerEvents: 'none',
+                          zIndex: 1
+                        }}
+                      />
+                      {/* Imagen por encima del halo */}
+                      <div
+                        style={{
+                          width: '87px',
+                          height: '87px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          position: 'relative',
+                          zIndex: 2
+                        }}
+                      >
+                        <img
+                          src="/mini.png"
+                          alt="AirSaas AI"
+                          style={{
+                            width: '87px',
+                            height: '65px',
+                            objectFit: 'contain',
+                            borderRadius: '9.5px'
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+              
+              <h1
+                className="mb-0"
+                style={{ 
+                  fontFamily: "Product Sans, system-ui, sans-serif",
+                  fontWeight: 400,
+                  fontSize: '38px',
+                  lineHeight: '1.213em',
+                  color: '#3C51E2',
+                  textAlign: 'center'
+                }}
+              >
+                {t('homepage.title')}
+              </h1>
+              <h2
+                className="mt-0 mb-[8px]"
+                style={{ 
+                  fontFamily: "Product Sans, system-ui, sans-serif",
+                  fontWeight: 400,
+                  fontSize: '20px',
+                  lineHeight: '1.5em',
+                  color: '#475467',
+                  textAlign: 'center'
+                }}
+              >
+                {t('homepage.subtitle')}
+              </h2>
+            </div>
+
+            {/* Features Section - Check items */}
+            <div className="flex flex-col mb-[20px] mt-[50px]" style={{ gap: '14px' }}>
+              <div className="flex gap-[10px] items-start w-full">
+                <div className="flex items-center justify-center" style={{ width: '12px', height: '28px' }}>
+                  <div
+                    style={{
+                      width: '9px',
+                      height: '9px',
+                      backgroundColor: '#03E26B',
+                      borderRadius: '50%',
+                      position: 'relative',
+                      top: '0.23px'
+                    }}
+                  />
+                </div>
+                <p
+                  className="flex-1"
+                  style={{ 
+                    fontFamily: "Product Sans, system-ui, sans-serif",
+                    fontWeight: 400,
+                    fontSize: '20px',
+                    lineHeight: '1.213em',
+                    color: '#475467',
+                    paddingTop: '3.4px'
+                  }}
+                >
+                  {parseBoldText(t('homepage.features.question_description'))}
+                </p>
+              </div>
+
+              <div className="flex gap-[10px] items-start w-full">
+                <div className="flex items-center justify-center" style={{ width: '12px', height: '28px' }}>
+                  <div
+                    style={{
+                      width: '9px',
+                      height: '9px',
+                      backgroundColor: '#03E26B',
+                      borderRadius: '50%',
+                      position: 'relative',
+                      top: '-0.17px'
+                    }}
+                  />
+                </div>
+                <p
+                  className="flex-1"
+                  style={{ 
+                    fontFamily: "Product Sans, system-ui, sans-serif",
+                    fontWeight: 400,
+                    fontSize: '20px',
+                    lineHeight: '1.213em',
+                    color: '#475467',
+                    paddingTop: '3.4px'
+                  }}
+                >
+                  {parseBoldText(t('homepage.features.time_description'))}
+                </p>
+              </div>
+
+              <div className="flex gap-[10px] items-start w-full">
+                <div className="flex items-center justify-center" style={{ width: '12px', height: '28px' }}>
+                  <div
+                    style={{
+                      width: '9px',
+                      height: '9px',
+                      backgroundColor: '#03E26B',
+                      borderRadius: '50%',
+                      position: 'relative',
+                      top: '0.43px'
+                    }}
+                  />
+                </div>
+                <p
+                  className="flex-1"
+                  style={{ 
+                    fontFamily: "Product Sans, system-ui, sans-serif",
+                    fontWeight: 400,
+                    fontSize: '20px',
+                    lineHeight: '1.213em',
+                    color: '#475467',
+                    paddingTop: '3.4px'
+                  }}
+                >
+                  {parseBoldText(t('homepage.features.quality_description'))}
+                </p>
+              </div>
+            </div>
+
+            {/* Share link section */}
+            <div className="mb-0">
+              <div className="mb-[5px]">
+                <p
+                  style={{
+                    fontFamily: "Product Sans Light, system-ui, sans-serif",
+                    fontWeight: 300,
+                    fontSize: '16px',
+                    lineHeight: '1.213em',
+                    color: '#50596F'
+                  }}
+                >
+                  {t('homepage.share_link.label', { defaultValue: 'Share the link to your teammates' })}
+                </p>
+              </div>
+              <div className="bg-white border border-[#E5E7EA] rounded-[10px] p-[15px] flex items-center gap-[15px]">
+                <div className="w-4 h-4 flex items-center justify-center bg-[#F8F9FF] rounded-full p-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#061333" strokeWidth="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    value={currentUrl}
+                    readOnly
+                    className="w-full bg-transparent border-none outline-none"
+                    style={{
+                      fontFamily: "Product Sans Light, system-ui, sans-serif",
+                      fontWeight: 300,
+                      fontSize: '18px',
+                      lineHeight: '1.15em',
+                      color: '#061333'
+                    }}
+                  />
+                </div>
+                <button
+                  onClick={handleCopyLink}
+                  className="flex items-center gap-[5px] px-[14px] py-[7px] rounded-full text-[#3C51E2] hover:bg-gray-50 transition-colors"
+                  style={{
+                    fontFamily: "Product Sans Light, system-ui, sans-serif",
+                    fontWeight: 300,
+                    fontSize: '16px',
+                    lineHeight: '1.213em'
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3C51E2" strokeWidth="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                  <span>{copied ? 'Copied!' : 'Copy'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
 
-      {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Hero Section */}
-          <div className="mb-16 relative">
-            {/* Background Logo - Decorative */}
-            <div className="absolute -right-60 top-20 opacity-10 blur-sm pointer-events-none">
-              <div className="w-96 h-96 flex items-center justify-center">
-                <img
-                  src="https://cdn.prod.website-files.com/609552290d93fd43ba0f0849/65ba002d83b7017b6891e776_AirSaas-logo%20300x300.svg"
-                  alt="AirSaas"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            </div>
-            
-            <h1
-              className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight animate-slide-up opacity-0"
-              style={{ 
-                fontFamily: "Google Sans, system-ui, sans-serif",
-                animationDelay: "0.2s",
-                animationFillMode: "forwards"
-              }}
-            >
-              {t('homepage.title')}
-            </h1>
-            <h2
-              className="text-3xl md:text-4xl font-medium text-brand-600 mb-8 leading-tight animate-slide-up opacity-0"
-              style={{ 
-                fontFamily: "Google Sans, system-ui, sans-serif",
-                animationDelay: "0.4s",
-                animationFillMode: "forwards"
-              }}
-            >
-              {t('homepage.subtitle')}
-            </h2>
-
-            <p
-              className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed animate-slide-up opacity-0"
-              style={{ 
-                fontFamily: "Google Sans, system-ui, sans-serif",
-                animationDelay: "0.6s",
-                animationFillMode: "forwards"
-              }}
-            >
-              {t('homepage.description')}
-            </p>
-
-            {/* CTA Button */}
-            <button
-              onClick={onStartChat}
-              className="group inline-flex items-center gap-3 bg-brand-500 hover:bg-brand-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 relative overflow-hidden animate-slide-up opacity-0"
-              style={{
-                fontFamily: "Google Sans, system-ui, sans-serif",
-                color: "#FFFFFF",
-                fontWeight: "500",
-                background: "linear-gradient(135deg, #3C51E2 0%, #3041B5 100%)",
-                boxShadow: "0 10px 25px rgba(60, 81, 226, 0.4), 0 4px 12px rgba(60, 81, 226, 0.2)",
-                animationDelay: "0.8s",
-                animationFillMode: "forwards"
-              }}
-            >
-              {/* Rainbow Shine effect */}
-              <div className="absolute inset-0 -top-2 -left-2 w-full h-full bg-gradient-to-r from-transparent via-cyan-300/40 to-transparent opacity-40 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1200"></div>
-              
-              {/* Multi-color Glow effect */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/30 via-purple-400/40 to-yellow-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-400 blur-sm"></div>
-              
-              {/* Colorful Sparkles */}
-              <div className="absolute top-2 right-4 w-3 h-3 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full opacity-0 group-hover:opacity-90 transition-all duration-300 animate-pulse shadow-lg shadow-cyan-400/50"></div>
-              <div className="absolute bottom-3 left-6 w-2 h-2 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-80 transition-all duration-500 animate-pulse shadow-lg shadow-pink-400/50"></div>
-              <div className="absolute top-4 left-3 w-1.5 h-1.5 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full opacity-0 group-hover:opacity-70 transition-all duration-700 animate-pulse shadow-lg shadow-yellow-400/50"></div>
-              <div className="absolute bottom-2 right-8 w-2.5 h-2.5 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full opacity-0 group-hover:opacity-85 transition-all duration-400 animate-pulse shadow-lg shadow-green-400/50"></div>
-              
-              {/* Floating particles */}
-              <div className="absolute top-1/2 left-1/4 w-1 h-1 bg-gradient-to-r from-violet-400 to-indigo-400 rounded-full opacity-0 group-hover:opacity-60 transition-all duration-600 animate-bounce"></div>
-              <div className="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-gradient-to-r from-rose-400 to-red-400 rounded-full opacity-0 group-hover:opacity-70 transition-all duration-800 animate-bounce"></div>
-              
-              <span>👉</span>
-              <span className="relative z-10 text-white">
-                {t('homepage.cta_button')}
-              </span>
-            </button>
-          </div>
-
-          {/* Features Section */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-white/50 animate-slide-in-left opacity-0" style={{ animationDelay: "1s", animationFillMode: "forwards" }}>
-              <div className="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-                <svg
-                  className="w-8 h-8 text-brand-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h3
-                className="text-xl font-bold text-gray-900 mb-4"
-                style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
-              >
-                {t('homepage.features.question_title')}
-              </h3>
-              <p
-                className="text-gray-600 leading-relaxed"
-                style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
-              >
-                {t('homepage.features.question_description')}
-              </p>
-            </div>
-
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-white/50 animate-slide-in-up opacity-0" style={{ animationDelay: "1.2s", animationFillMode: "forwards" }}>
-              <div className="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-                <svg
-                  className="w-8 h-8 text-brand-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h3
-                className="text-xl font-bold text-gray-900 mb-4"
-                style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
-              >
-                {t('homepage.features.time_title')}
-              </h3>
-              <p
-                className="text-gray-600 leading-relaxed"
-                style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
-              >
-                {t('homepage.features.time_description')}
-              </p>
-            </div>
-
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-white/50 animate-slide-in-right opacity-0" style={{ animationDelay: "1.4s", animationFillMode: "forwards" }}>
-              <div className="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-                <svg
-                  className="w-8 h-8 text-brand-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                  />
-                </svg>
-              </div>
-              <h3
-                className="text-xl font-bold text-gray-900 mb-4"
-                style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
-              >
-                {t('homepage.features.quality_title')}
-              </h3>
-              <p
-                className="text-gray-600 leading-relaxed"
-                style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
-              >
-                {t('homepage.features.quality_description')}
-              </p>
-            </div>
-          </div>
-
-          {/* Additional CTA */}
-          <div className="bg-gradient-to-r from-brand-500 to-brand-600 rounded-3xl p-8 text-white animate-fade-in-up opacity-0" style={{ animationDelay: "1.6s", animationFillMode: "forwards" }}>
-            <h3
-              className="text-2xl font-bold mb-4 text-gray-900"
-              style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
-            >
-              {t('homepage.additional_cta.title')}
-            </h3>
-            <p
-              className="text-brand-100 text-gray-900 mb-4"
-              style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
-            >
-              {t('homepage.additional_cta.description')}
-            </p>
-
-            {/* AirSaas AI Logo */}
-            <div className="flex justify-center">
-              <div className="flex items-center justify-center">
-                <img
-                  src="/airsaas-ai-logo.svg"
-                  alt="AirSaas AI Logo"
-                  width={260}
-                  height={260}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            </div>
-          </div>
+      {/* Right side - Chat Panel */}
+      <div className="w-full md:w-[639px] md:border-l border-[#E5E7EA] flex flex-col bg-white relative">
+        {/* Language Selector */}
+        <div className="absolute top-[10px] right-[10px] md:left-[-140px] z-50">
+          <LanguageSelector />
         </div>
-      </main>
-
-      {/* Footer */}
-      <footer
-        className="bg-white/80 backdrop-blur-sm border-t border-gray-200 py-8"
-        style={{
-          backgroundColor: "#6b7be9",
-        }}
-      >
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <p
-            className="text-white text-sm"
-            style={{ fontFamily: "Google Sans, system-ui, sans-serif" }}
-          >
-            {t('homepage.footer', { year: new Date().getFullYear() })}
-          </p>
+        <div className="flex flex-col overflow-hidden flex-1">
+          {/* Chat Section */}
+          <ChatWindow
+            messages={messages}
+            setMessages={setMessages}
+            input={input}
+            setInput={setInput}
+            sessionId={sessionId}
+            isThinking={isThinking}
+            setIsThinking={setIsThinking}
+            hasSelectedInitialOption={hasSelectedInitialOption}
+            setHasSelectedInitialOption={setHasSelectedInitialOption}
+            isPanel={true}
+          />
         </div>
-      </footer>
+      </div>
     </div>
   );
 }

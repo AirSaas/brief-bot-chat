@@ -33,6 +33,11 @@ i18n
       escapeValue: false, // React already does escaping
     },
     
+    // React options
+    react: {
+      useSuspense: false,
+    },
+    
     // Supported languages
     supportedLngs: ['fr', 'en'],
   });

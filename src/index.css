@@ -490,17 +490,23 @@ div.button-group-container {
   }
   
   /* Footer mobile optimization */
-  .chat-footer-mobile {
-    flex-shrink: 0;
-    padding: 12px 16px;
-    background: white;
-    border-top: 1px solid #e5e7eb;
-  }
-  
-  /* Input area mobile optimization */
-  .chat-input-mobile {
-    min-height: 44px;
-    max-height: 120px;
+  @media (max-width: 768px) {
+    .chat-footer-mobile {
+      flex-shrink: 0;
+      padding: 12px;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+      width: 100%;
+      max-width: 100%;
+    }
+    
+    /* Input area mobile optimization */
+    .chat-input-mobile {
+      min-height: 44px;
+      max-height: 120px;
+      width: 100%;
+      max-width: 100%;
+    }
   }
   
   /* Message bubbles mobile optimization */

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 
 interface InputWithSuggestionsProps {
   value: string;
@@ -11,6 +11,10 @@ interface InputWithSuggestionsProps {
   suggestions?: string[];
   onHeightChange?: () => void;
   onRef?: (ref: { setCursorToEnd: () => void }) => void;
+  onRecorded?: (file: File) => Promise<void>;
+  isRecording?: boolean;
+  onRecordingStateChange?: (isRecording: boolean) => void;
+  hasSelectedInitialOption?: boolean;
 }
 
 export default function InputWithSuggestions({
@@ -23,12 +27,105 @@ export default function InputWithSuggestions({
   isThinking,
   suggestions = ["Donnez-moi des exemples", "Sauter cette question"],
   onHeightChange,
-  onRef
+  onRef,
+  onRecorded,
+  isRecording: externalIsRecording,
+  onRecordingStateChange,
+  hasSelectedInitialOption = false
 }: InputWithSuggestionsProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const [hoverRecord, setHoverRecord] = useState(false);
+  const [hoverSend, setHoverSend] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [localIsRecording, setLocalIsRecording] = useState(false);
+  const [rec, setRec] = useState<MediaRecorder | null>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const chunks = useRef<BlobPart[]>([]);
   
+  const isRecording = externalIsRecording ?? localIsRecording;
+
+  // Audio recording functionality
+  useEffect(() => {
+    return () => { 
+      if (rec?.state === 'recording') {
+        rec.stop();
+      }
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [rec, stream]);
+
+  // Always notify parent when recording state changes
+  // The parent (ChatWindow) manages the state
+  useEffect(() => {
+    onRecordingStateChange?.(isRecording);
+  }, [isRecording, onRecordingStateChange]);
+
+  async function startRecording() {
+    try {
+      // Always notify parent first to update external state immediately
+      if (onRecordingStateChange) {
+        onRecordingStateChange(true);
+      }
+      // Also update local state in case external state is not provided
+      setLocalIsRecording(true);
+      
+      const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setStream(audioStream);
+      const mr = new MediaRecorder(audioStream, { mimeType: 'audio/webm' });
+      chunks.current = []; // Clear previous chunks
+      
+      mr.ondataavailable = (e) => { 
+        if (e.data.size > 0) {
+          chunks.current.push(e.data); 
+        }
+      };
+      
+      mr.onstop = async () => {
+        const blob = new Blob(chunks.current, { type: 'audio/webm' });
+        chunks.current = [];
+        const file = new File([blob], `voice_${Date.now()}.webm`, { type: 'audio/webm' });
+        
+        // Stop all tracks
+        if (audioStream) {
+          audioStream.getTracks().forEach(track => track.stop());
+        }
+        setStream(null);
+        
+        // Update recording state - always notify parent
+        if (onRecordingStateChange) {
+          onRecordingStateChange(false);
+        }
+        setLocalIsRecording(false);
+        setRec(null);
+        
+        if (onRecorded && blob.size > 0) {
+          await onRecorded(file);
+        }
+      };
+      
+      mr.start();
+      setRec(mr);
+    } catch (error) {
+      console.error('Error starting recording:', error);
+      if (onRecordingStateChange) {
+        onRecordingStateChange(false);
+      }
+      setLocalIsRecording(false);
+      setStream(null);
+    }
+  }
+
+  function stopRecording() {
+    if (rec && rec.state === 'recording') {
+      rec.stop();
+      // The onstop handler will clean up everything
+    }
+  }
+
   // Disable suggestions for now
   const suggestionsEnabled = false;
 
@@ -143,71 +240,272 @@ export default function InputWithSuggestions({
     };
   }, [inputTimeout]);
 
+  // Determine input state
+  const isInputDisabled = disabled || isThinking || isRecording;
+  const isRecordDisabled = (disabled || isThinking || !hasSelectedInitialOption || value.trim().length > 0) && !isRecording;
+  const isSendDisabled = isThinking || !value.trim() || isRecording;
+
+  // Get input container styles based on state
+  const getInputContainerStyle = () => {
+    if (isInputDisabled || isRecording) {
+      return {
+        background: '#F3F3FC', // Primary 5
+        border: 'none'
+      };
+    }
+    if (isFocused) {
+      return {
+        background: '#FFFFFF', // White
+        border: '1px solid #3C51E2' // Primary
+      };
+    }
+    return {
+      background: '#F3F3FC', // Primary 5
+      border: '1px solid #3C51E2' // Primary (for hover state)
+    };
+  };
+
+  // Get record button styles - use useMemo to recalculate when dependencies change
+  const recordButtonStyle = useMemo(() => {
+    const recording = isRecording || localIsRecording;
+    if (recording) {
+      // When recording, button is Stop button with Warning color
+      // According to Figma, it should have hover state when recording
+      if (hoverRecord) {
+        return {
+          background: '#FF0A55', // Warning (same, but could be darker on hover if needed)
+          color: '#FFFFFF',
+          iconColor: '#FAFAFB' // Secondary 2
+        };
+      }
+      return {
+        background: '#FF0A55', // Warning
+        color: '#FFFFFF',
+        iconColor: '#FAFAFB' // Secondary 2
+      };
+    }
+    if (hoverRecord) {
+      return {
+        background: '#061333', // Secondary
+        color: '#FFFFFF',
+        iconColor: '#FFFFFF'
+      };
+    }
+    return {
+      background: '#E8EBFE', // Primary 10
+      color: '#3C51E2', // Primary
+      iconColor: '#3C51E2' // Primary
+    };
+  }, [isRecording, localIsRecording, hoverRecord]);
+
+  // Get send button styles - use useMemo to recalculate when dependencies change
+  const sendButtonStyle = useMemo(() => {
+    if (isSendDisabled) {
+      return {
+        background: '#F3F3FC', // Primary 5
+        color: '#8D94A3', // Secondary 50
+        iconColor: '#8D94A3' // Secondary 50
+      };
+    }
+    if (hoverSend) {
+      return {
+        background: '#061333', // Secondary
+        color: '#FFFFFF',
+        iconColor: '#FFFFFF'
+      };
+    }
+    return {
+      background: '#3C51E2', // Primary
+      color: '#FFFFFF',
+      iconColor: '#FFFFFF'
+    };
+  }, [isSendDisabled, hoverSend]);
+
   return (
-    <div className="flex-1 relative">
-      <div className="relative">
-        <textarea
-          ref={textareaRef}
-          rows={1}
-          tabIndex={1}
-          className={`w-full min-h-[42px] max-h-[120px] pl-[15px] pr-[45px] py-[11px] rounded-[10px] border-0 focus:outline-none bg-[#F8F9FF] focus:bg-white focus:border focus:border-[#3C51E2] text-gray-700 placeholder-[#8D94A3] text-base resize-none ${
-            isThinking ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          style={{ 
-            fontFamily: 'Product Sans Light, system-ui, sans-serif', 
-            fontWeight: 300, 
-            lineHeight: '1.213em',
-            transition: 'height 0.2s ease-in-out',
-            scrollbarWidth: 'thin',
-            scrollbarColor: '#CBD5E0 transparent'
+    <div className="flex flex-col gap-[5px] w-full max-w-full">
+      {/* Text field container */}
+      <div 
+        className="flex flex-col w-full max-w-full"
+        style={{
+          gap: '10px',
+          borderRadius: '10px',
+          ...getInputContainerStyle()
+        }}
+      >
+        {/* Input text area */}
+        <div 
+          className="flex flex-row px-3 md:px-[15px] py-2 md:py-2"
+          style={{
+            gap: '5px',
+            borderRadius: '4px 4px 0px 0px'
           }}
-          placeholder={placeholder}
-          value={value}
-          onChange={(e) => handleInputChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              if (!isThinking) {
-                onSend();
-              }
-            }
-            if (e.key === "Escape") {
-              hideSuggestions();
-            }
-          }}
-          onFocus={() => {
-            if (suggestionsEnabled && value.trim().length > 0) {
-              setShowSuggestions(true);
-            } else if (suggestionsEnabled) {
-              // Start inactivity timer when user focuses
-              startInactivityTimer();
-            }
-          }}
-          onBlur={() => {
-            // Small delay to allow clicking on suggestions
-            setTimeout(() => {
-              setShowSuggestions(false);
-            }, 200);
-          }}
-          disabled={disabled}
-        />
-        
-        {/* Send button icon */}
-        <button
-          onClick={onSend}
-          disabled={isThinking || !value.trim()}
-          tabIndex={3}
-          className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-[7px] rounded-full transition-all duration-200 disabled:cursor-not-allowed ${
-            value.trim() 
-              ? 'bg-[#3C51E2] text-white hover:bg-[#3041B5]' 
-              : 'bg-[#F3F3FC] text-[#8D94A3]'
-          } disabled:opacity-30`}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="rotate-45">
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22,2 15,22 11,13 2,9"></polygon>
-          </svg>
-        </button>
+          <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+            <textarea
+              ref={textareaRef}
+              rows={1}
+              tabIndex={1}
+              className="w-full resize-none outline-none text-[15px] md:text-base"
+              style={{ 
+                fontFamily: 'Product Sans Light, system-ui, sans-serif', 
+                fontWeight: 300,
+                lineHeight: '1.213em',
+                color: isInputDisabled && !isRecording ? '#A6AAB6' : '#061333', // Secondary 40 when disabled, Secondary when enabled
+                background: 'transparent',
+                border: 'none',
+                padding: 0,
+                minHeight: 'auto',
+                transition: 'height 0.2s ease-in-out',
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#CBD5E0 transparent'
+              }}
+              placeholder={placeholder}
+              value={value}
+              onChange={(e) => handleInputChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (!isThinking && !isRecording) {
+                    onSend();
+                  }
+                }
+                if (e.key === "Escape") {
+                  hideSuggestions();
+                }
+              }}
+              onFocus={() => {
+                setIsFocused(true);
+                if (suggestionsEnabled && value.trim().length > 0) {
+                  setShowSuggestions(true);
+                } else if (suggestionsEnabled) {
+                  // Start inactivity timer when user focuses
+                  startInactivityTimer();
+                }
+              }}
+              onBlur={() => {
+                setIsFocused(false);
+                // Small delay to allow clicking on suggestions
+                setTimeout(() => {
+                  setShowSuggestions(false);
+                }, 200);
+              }}
+              disabled={isInputDisabled}
+            />
+          </div>
+        </div>
+
+        {/* Actions bottom */}
+        <div
+          className="flex flex-row justify-end md:justify-between items-center px-3 md:px-[15px] pb-2 md:pb-[6px]"
+          style={{
+            borderRadius: '0px 0px 10px 10px'
+          }}
+        >
+          {/* Empty space on left - only on desktop */}
+          <div className="hidden md:block" style={{ flex: 1 }} />
+          
+          {/* Buttons container */}
+          <div
+            className="flex flex-row justify-end items-center gap-2 md:gap-[5px]"
+          >
+            {/* Record button */}
+            {(!isRecording && !localIsRecording) ? (
+              <button
+                onClick={startRecording}
+                disabled={isRecordDisabled}
+                onMouseEnter={() => setHoverRecord(true)}
+                onMouseLeave={() => setHoverRecord(false)}
+                className="flex flex-row justify-center items-center rounded-full border-none transition-all duration-200 px-2.5 py-1.5 md:px-[10px] md:py-1.5"
+                style={{
+                  gap: '4px',
+                  cursor: isRecordDisabled ? 'not-allowed' : 'pointer',
+                  opacity: isRecordDisabled ? 0.5 : 1,
+                  background: recordButtonStyle.background,
+                  color: recordButtonStyle.color,
+                  fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                  fontWeight: 300,
+                  fontSize: '12px',
+                  lineHeight: '1.213em'
+                }}
+              >
+                <svg 
+                  width="12" 
+                  height="12" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke={recordButtonStyle.iconColor} 
+                  strokeWidth="2"
+                  className="w-3 h-3 md:w-3.5 md:h-3.5"
+                >
+                  <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                  <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                </svg>
+                <span>Record</span>
+              </button>
+            ) : (
+              <button
+                onClick={stopRecording}
+                onMouseEnter={() => setHoverRecord(true)}
+                onMouseLeave={() => setHoverRecord(false)}
+                className="flex flex-row justify-center items-center rounded-full border-none transition-all duration-200 px-2.5 py-1.5 md:px-[10px] md:py-1.5"
+                style={{
+                  gap: '4px',
+                  cursor: 'pointer',
+                  background: recordButtonStyle.background,
+                  color: recordButtonStyle.color,
+                  fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                  fontWeight: 300,
+                  fontSize: '12px',
+                  lineHeight: '1.213em'
+                }}
+              >
+                <svg 
+                  width="12" 
+                  height="12" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke={recordButtonStyle.iconColor} 
+                  strokeWidth="2"
+                  className="w-3 h-3 md:w-3.5 md:h-3.5"
+                >
+                  <rect x="6" y="6" width="12" height="12" rx="2"/>
+                </svg>
+                <span>Stop</span>
+              </button>
+            )}
+
+            {/* Send button */}
+            <button
+              onClick={onSend}
+              disabled={isSendDisabled}
+              onMouseEnter={() => !isSendDisabled && setHoverSend(true)}
+              onMouseLeave={() => setHoverSend(false)}
+              className="flex flex-row justify-center items-center rounded-full border-none transition-all duration-200 p-1.5 md:p-2"
+              style={{
+                cursor: isSendDisabled ? 'not-allowed' : 'pointer',
+                opacity: isSendDisabled ? 0.5 : 1,
+                background: sendButtonStyle.background,
+                color: sendButtonStyle.color,
+                width: '26px',
+                height: '26px'
+              }}
+            >
+              <svg 
+                width="13" 
+                height="13" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke={sendButtonStyle.iconColor} 
+                strokeWidth="1.5" 
+                className="w-3 h-3 md:w-4 md:h-4"
+                style={{ transform: 'rotate(45deg)' }}
+              >
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22,2 15,22 11,13 2,9"></polygon>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
       
       {/* Help suggestions */}

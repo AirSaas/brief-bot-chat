@@ -1,16 +1,19 @@
 {
   "homepage": {
     "title": "Vous avez une fiche projet à faire ?",
-    "subtitle": "Laissez notre assistant IA vous aider",
+    "subtitle": "Laissez notre assistant IA vous aider avec cela",
     "description": "Brief Project transforme vos notes et échanges en une fiche projet claire, structurée et prête à partager en quelques secondes.",
     "cta_button": "Tester Notre Assistant IA Brief Project gratuitement",
     "features": {
       "question_title": "Se poser les bonnes questions",
-      "question_description": "Notre IA vous guide pour cadrer objectifs, risques, livrables et parties prenantes.",
+      "question_description": "Notre assistant <strong>pose les bonnes questions</strong> pour cadrer objectifs, risques, livrables et parties prenantes.",
       "time_title": "Gain de temps",
-      "time_description": "Finis les allers-retours et les fiches rédigées à la dernière minute.",
+      "time_description": "<strong>Gagnez du temps</strong> en répondant par la voix ou par écrit. L'assistant créera la fiche projet en quelques secondes.",
       "quality_title": "Résultat de niveau professionnel",
-      "quality_description": "Une fiche claire, homogène et directement exploitable par vos équipes."
+      "quality_description": "Profitez d'un <strong>résultat de niveau professionnel</strong> avec une fiche claire, structurée et directement utilisable par vos équipes."
+    },
+    "share_link": {
+      "label": "Partagez le lien avec vos coéquipiers"
     },
     "additional_cta": {
       "title": "Prêt à créer votre fiche projet parfaite ?",
@@ -19,8 +22,8 @@
     "footer": "© {{year}} AirSaas. Made with Love in France 🇫🇷"
   },
   "chat": {
-    "title": "Assistant IA AirSaas",
-    "placeholder": "Tapez si nécessaire...",
+    "title": "AirSaas AI assistant",
+    "placeholder": "Appuyez pour enregistrer, ou tapez si nécessaire...",
     "placeholder_thinking": "Le bot répond...",
     "or": "Ou",
     "suggestions": [
@@ -29,7 +32,9 @@
     ],
     "quick_answers": {
       "give_examples": "Générer d'autres exemples",
-      "skip_question": "Sauter cette question"
+      "skip_question": "Sauter cette question",
+      "create_new_brief": "Commencer un nouveau brief",
+      "download_pdf": "Télécharger en PDF"
     },
     "error_message": "❌ Erreur lors du traitement de votre message.",
     "audio_error": "Je n'ai pas pu traiter votre audio, pourriez-vous l'écrire à la place ?",
@@ -85,6 +90,7 @@
     "greeting": "Bonjour, je suis là pour vous aider à créer un projet bien structuré. Procédons étape par étape. =ma langue est le français, gardons cette conversation entièrement en français=",
     "template_question": "Quel modèle de fiche projet souhaitez-vous utiliser ?",
     "lets_start_template": "Commençons un {{template}}, pose-moi ta première question pour guider le brief ! =ma langue est le français, gardons cette conversation entièrement en français=",
+    "button_text": "Commencer !",
     "templates": {
       "basic_storytelling": {
         "title": "Récit de Base",

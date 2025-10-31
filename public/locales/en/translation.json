@@ -1,16 +1,19 @@
 {
   "homepage": {
     "title": "Do you have a project brief to create?",
-    "subtitle": "Let our AI assistant help you",
+    "subtitle": "Let our AI assistant help you with that",
     "description": "Brief Project transforms your notes and exchanges into a clear, structured project brief ready to share in seconds.",
     "cta_button": "Test Our Brief Project AI Assistant for free",
     "features": {
       "question_title": "Ask the right questions",
-      "question_description": "Our AI guides you to frame objectives, risks, deliverables and stakeholders.",
+      "question_description": "Our assistant <strong>asks the right questions</strong> to frame objectives, risks, deliverables and stakeholders.",
       "time_title": "Time saving",
-      "time_description": "No more back and forth and briefs written at the last minute.",
+      "time_description": "<strong>Save time</strong> answering by voice or in writing. The assistant will create the project brief in seconds.",
       "quality_title": "Professional level result",
-      "quality_description": "A clear, homogeneous brief directly usable by your teams."
+      "quality_description": "Enjoy a <strong>profesional level result</strong> with a clear, structured brief directly usable by your teams."
+    },
+    "share_link": {
+      "label": "Share the link to your teammates"
     },
     "additional_cta": {
       "title": "Ready to create your perfect project brief?",
@@ -19,8 +22,8 @@
     "footer": "© {{year}} AirSaas. Made with Love in France 🇫🇷"
   },
   "chat": {
-    "title": "AirSaas AI Assistant",
-    "placeholder": "Type if necessary...",
+    "title": "AirSaas AI assistant",
+    "placeholder": "Tap to record, or type if necessary...",
     "placeholder_thinking": "Bot is responding...",
     "or": "Or",
     "suggestions": [
@@ -29,7 +32,9 @@
     ],
     "quick_answers": {
       "give_examples": "Generate other examples",
-      "skip_question": "Skip this question"
+      "skip_question": "Skip this question",
+      "create_new_brief": "Start a new brief",
+      "download_pdf": "Download as PDF"
     },
     "error_message": "❌ Error processing your message.",
     "audio_error": "I couldn't process your audio, could you write it instead?",
@@ -85,6 +90,7 @@
     "greeting": "Hello, I'm here to assist you to create a well-structured project. Let's take it step by step. =my language is English, let's keep this conversation completely in English=",
     "template_question": "Which template of project brief do you want to use?",
     "lets_start_template": "Let's start a {{template}}, start your first question to me for guiding the brief! =my language is English, let's keep this conversation completely in English=",
+    "button_text": "Start!",
     "templates": {
       "basic_storytelling": {
         "title": "Basic Story Telling",

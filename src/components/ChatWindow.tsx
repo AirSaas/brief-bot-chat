@@ -2,17 +2,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { sendToChat, uploadAudio, type ChatMessage } from "../lib/api";
-import AudioRecorder from "./AudioRecorder";
 import { MessageBubble } from "./MessageBubble";
 import InputWithSuggestions from "./InputWithSuggestions";
 import InitialBotMessage from "./InitialBotMessage";
 import DownloadPDFModal from "./DownloadPDFModal";
-import LanguageSelector from "./LanguageSelector";
 
 interface ChatWindowProps {
-  onBackToHomepage?: () => void;
-  onToggleChat?: () => void;
-  onCloseChat?: () => void;
   isPanel?: boolean;
   messages?: ChatMessage[];
   setMessages?: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
@@ -26,9 +21,7 @@ interface ChatWindowProps {
 }
 
 export default function ChatWindow({ 
-  onToggleChat, 
-  onCloseChat, 
-  isPanel = false,
+  isPanel: _isPanel = false,
   messages: externalMessages,
   setMessages: externalSetMessages,
   input: externalInput,
@@ -65,13 +58,42 @@ export default function ChatWindow({
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<{ setCursorToEnd: () => void } | null>(null);
 
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+
   useEffect(() => {
-    // Do not scroll if there are no messages
-    if (messages.length > 0) {
-      // Delay to ensure the content has been rendered
-      setTimeout(() => {
-        listRef.current?.scrollTo(0, listRef.current.scrollHeight);
-      }, 100);
+    // Track scroll position to determine if user manually scrolled up
+    const handleScroll = () => {
+      if (listRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = listRef.current;
+        const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
+        setShouldAutoScroll(isAtBottom);
+      }
+    };
+
+    const scrollElement = listRef.current;
+    if (scrollElement) {
+      scrollElement.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      if (scrollElement) {
+        scrollElement.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    // Only auto-scroll if user hasn't manually scrolled up
+    // This allows users to scroll up to see previous messages
+    if (shouldAutoScroll && listRef.current) {
+      // Use requestAnimationFrame for better scroll performance
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (listRef.current && shouldAutoScroll) {
+            listRef.current.scrollTop = listRef.current.scrollHeight;
+          }
+        }, 100);
+      });
     }
     
     // Save messages to sessionStorage for PDF generation
@@ -80,7 +102,7 @@ export default function ChatWindow({
     } else {
       sessionStorage.removeItem('chatMessages');
     }
-  }, [messages]);
+  }, [messages, shouldAutoScroll]);
 
   // Detect mobile keyboard open/close
   useEffect(() => {
@@ -104,6 +126,21 @@ export default function ChatWindow({
       window.removeEventListener('orientationchange', handleResize);
     };
   }, []);
+
+  // Scroll to bottom on mount, especially for initial messages
+  useEffect(() => {
+    // Scroll to bottom when component mounts to show initial messages at bottom
+    const scrollToBottom = () => {
+      if (listRef.current) {
+        listRef.current.scrollTop = listRef.current.scrollHeight;
+      }
+    };
+    
+    // Initial scroll after mount
+    requestAnimationFrame(() => {
+      setTimeout(scrollToBottom, 200);
+    });
+  }, []); // Only run on mount
 
   // Function to handle input height changes and scroll to bottom
   const handleInputHeightChange = () => {
@@ -327,26 +364,27 @@ export default function ChatWindow({
 
   return (
     <div className={`h-full flex flex-col bg-white mobile-chat-container chat-window-mobile mobile-safe-area ${isKeyboardOpen ? 'mobile-keyboard-adjust' : ''}`}>
-      <header className="bg-white flex flex-col px-4 sm:px-5 py-3 sm:py-4 chat-header-mobile">
+      <header className="bg-white flex flex-col px-4 py-2.5 md:px-5 md:py-2.5">
         {/* Main header row */}
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center justify-between w-full gap-0 md:gap-[307px]">
           {/* Left section */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Logo - Hidden on mobile */}
-            <div className="hidden sm:flex items-center justify-center overflow-hidden w-8 h-8 sm:w-10 sm:h-10">
+          <div className="flex items-center gap-2 md:gap-[10px] flex-1 min-w-0">
+            {/* Logo */}
+            <div className="flex items-center justify-center w-10 h-10 flex-shrink-0">
               <img 
                 src="/mini.png" 
-                alt="AirSaas Bot" 
-                className="w-full h-full rounded-lg"
+                alt="AirSaas AI" 
+                className="w-full h-full object-contain rounded-lg"
               />
             </div>
             
             {/* Title */}
             <div 
-              className="text-[#040D22] font-bold text-base sm:text-lg"
+              className="text-[#040D22] flex-1 min-w-0"
               style={{ 
                 fontFamily: 'Product Sans, system-ui, sans-serif', 
-                fontWeight: 700, 
+                fontWeight: 700,
+                fontSize: '20px',
                 lineHeight: '1.213em'
               }}
             >
@@ -354,51 +392,28 @@ export default function ChatWindow({
             </div>
           </div>
           
-          {/* Right section - Action buttons */}
-          <div className="flex items-center gap-1 sm:gap-2">
-            {/* Language Selector - Only show on desktop and when not in panel mode */}
-            {!isPanel && (
-              <div className="hidden md:block">
-                <LanguageSelector className="mr-1 sm:mr-2" />
-              </div>
-            )}
-            
-            {/* Expand/Collapse button - Only show on desktop */}
-            <div className="hidden md:block">
-              <button 
-                onClick={onToggleChat}
-                className="rounded-full bg-transparent text-[#3C51E2] hover:bg-gray-50 transition-colors duration-200 p-2 sm:p-2"
-                title={isPanel ? "Expand to fullscreen" : "Minimize chat"}
-              >
-                {isPanel ? (
-                  <svg width="16" height="16" className="sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                  </svg>
-                ) : (
-                  <svg width="16" height="16" className="sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                  </svg>
-                )}
-              </button>
-            </div>
-            
-            {/* Close button */}
-            <button 
-              onClick={onCloseChat}
-              className="rounded-full bg-transparent text-[#061333] hover:bg-gray-50 transition-colors duration-200 p-2 sm:p-2"
-              title="Close chat"
-            >
-              <svg width="16" height="16" className="sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-              </svg>
-            </button>
+          {/* Right section - Empty but maintains spacing */}
+          <div className="flex items-center gap-[5px]" style={{ width: 'auto' }}>
+            {/* Empty - maintains layout spacing */}
           </div>
         </div>
       </header>
 
       <div
         ref={listRef}
-        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4 relative z-10 bg-white chat-scrollbar chat-messages-mobile"
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '10px 20px 20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+          position: 'relative',
+          zIndex: 10,
+          backgroundColor: '#FFFFFF',
+          borderRadius: '25px'
+        }}
+        className="chat-scrollbar chat-messages-mobile"
       >
         {/* Background logo - Fixed position */}
         {/*<div className="fixed right-6 sm:right-6 bottom-16 sm:bottom-50 opacity-5 pointer-events-none z-0">
@@ -453,51 +468,24 @@ export default function ChatWindow({
          
       </div>
 
-      <footer className="p-4 sm:p-6 bg-transparent chat-footer-mobile">
-        <div className="space-y-4">
-          {/* Voice Recording Button */}
-          <div className="w-full">
-            <AudioRecorder 
-              onRecorded={sendAudioFile} 
-              disabled={isThinking || !hasSelectedInitialOption || input.trim().length > 0}
-              onRecordingStateChange={setIsRecording}
-            />
-          </div>
-          
-          {/* Separator */}
-          <div className="flex items-center justify-center opacity-80" style={{ height: '15px' }}>
-            <div className="flex-1 h-px bg-[#A6AAB6]"></div>
-            <span 
-              className="text-[#A6AAB6] text-xs font-light"
-              style={{ 
-                fontFamily: 'Product Sans Light, system-ui, sans-serif', 
-                fontWeight: 300, 
-                fontSize: '12px', 
-                lineHeight: '1.213em',
-                paddingLeft: '16px',
-                paddingRight: '16px'
-              }}
-            >
-              {t('chat.or')}
-            </span>
-            <div className="flex-1 h-px bg-[#A6AAB6]"></div>
-          </div>
-          
-          {/* Text Input */}
-          <div className="w-full chat-input-mobile">
-            <InputWithSuggestions
-              value={input}
-              onChange={setInput}
-              onSend={sendText}
-              onSendDirectly={sendMessageDirectly}
-              placeholder={isThinking ? t('chat.placeholder_thinking') : t('chat.placeholder')}
-              disabled={isThinking || !hasSelectedInitialOption || isRecording}
-              isThinking={isThinking}
-              suggestions={t('chat.suggestions', { returnObjects: true }) as string[]}
-              onHeightChange={handleInputHeightChange}
-              onRef={(ref) => { inputRef.current = ref; }}
-            />
-          </div>
+      <footer className="px-3 py-3 md:px-6 md:py-4 bg-transparent chat-footer-mobile">
+        <div className="w-full max-w-full chat-input-mobile">
+          <InputWithSuggestions
+            value={input}
+            onChange={setInput}
+            onSend={sendText}
+            onSendDirectly={sendMessageDirectly}
+            placeholder={isThinking ? t('chat.placeholder_thinking') : t('chat.placeholder')}
+            disabled={isThinking || !hasSelectedInitialOption || isRecording}
+            isThinking={isThinking}
+            suggestions={t('chat.suggestions', { returnObjects: true }) as string[]}
+            onHeightChange={handleInputHeightChange}
+            onRef={(ref) => { inputRef.current = ref; }}
+            onRecorded={sendAudioFile}
+            isRecording={isRecording}
+            onRecordingStateChange={setIsRecording}
+            hasSelectedInitialOption={hasSelectedInitialOption}
+          />
         </div>
       </footer>
 
