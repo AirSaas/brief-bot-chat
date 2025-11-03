@@ -170,9 +170,28 @@ export default function ChatWindow({
           const parsed = JSON.parse(jsonStr);
           
           if (parsed.quick_answers && Array.isArray(parsed.quick_answers)) {
+            // Process quick_answers: handle both string arrays and object arrays
+            const processedAnswers = parsed.quick_answers.map((item: any) => {
+              if (typeof item === 'string') {
+                return item;
+              } else if (typeof item === 'object' && item !== null) {
+                // Handle object format with indicator and goal
+                if (item.indicator && item.goal) {
+                  return `${item.indicator}: ${item.goal}`;
+                } else if (item.indicator) {
+                  return item.indicator;
+                } else if (item.goal) {
+                  return item.goal;
+                }
+                // Fallback: try to stringify the object if it has other properties
+                return JSON.stringify(item);
+              }
+              return String(item);
+            });
+            
             // Remove the entire markdown block from the content
             const cleanContent = content.replace(markdownMatch[0], '').trim();
-            return { cleanContent, quickAnswers: parsed.quick_answers };
+            return { cleanContent, quickAnswers: processedAnswers };
           }
         }
       }
@@ -185,9 +204,28 @@ export default function ChatWindow({
         const parsed = JSON.parse(jsonStr);
         
         if (parsed.quick_answers && Array.isArray(parsed.quick_answers)) {
+          // Process quick_answers: handle both string arrays and object arrays
+          const processedAnswers = parsed.quick_answers.map((item: any) => {
+            if (typeof item === 'string') {
+              return item;
+            } else if (typeof item === 'object' && item !== null) {
+              // Handle object format with indicator and goal
+              if (item.indicator && item.goal) {
+                return `${item.indicator}: ${item.goal}`;
+              } else if (item.indicator) {
+                return item.indicator;
+              } else if (item.goal) {
+                return item.goal;
+              }
+              // Fallback: try to stringify the object if it has other properties
+              return JSON.stringify(item);
+            }
+            return String(item);
+          });
+          
           // Remove the JSON from the content
           const cleanContent = content.replace(jsonMatch[0], '').trim();
-          return { cleanContent, quickAnswers: parsed.quick_answers };
+          return { cleanContent, quickAnswers: processedAnswers };
         }
       }
     } catch {
@@ -496,6 +534,11 @@ export default function ChatWindow({
            // Show quick answers only if it's the last assistant message AND not the first assistant message
            const shouldShowQuickAnswers = isLastAssistantMessage && !isFirstAssistantMessage;
            
+           // Filter out selected quick answers so they disappear once chosen
+           const availableQuickAnswers = shouldShowQuickAnswers && m.quickAnswers
+             ? m.quickAnswers.filter(answer => !selectedQuickAnswers.includes(answer))
+             : [];
+           
            return (
             <div key={i} className="message-bubble-enter">
               <MessageBubble
@@ -503,7 +546,7 @@ export default function ChatWindow({
                 isAudio={!!(m.audioFile || m.audioUrl)}
                 audioFile={m.audioFile}
                 showCopyButton={m.role === "assistant"}
-                quickAnswers={shouldShowQuickAnswers ? m.quickAnswers : []}
+                quickAnswers={availableQuickAnswers}
                 onQuickAnswerClick={shouldShowQuickAnswers ? handleQuickAnswerClick : undefined}
                 onDownloadPDF={handleDownloadPDF}
                 selectedAnswers={selectedQuickAnswers}
