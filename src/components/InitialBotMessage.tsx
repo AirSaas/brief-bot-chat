@@ -74,7 +74,7 @@ export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessag
                 padding: '0px',
                 gap: '5px',
                 boxSizing: 'border-box',
-                border: 'none'
+                border: '1px solid transparent'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#F3F3FC';
@@ -82,7 +82,7 @@ export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessag
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = '#F8F9FF';
-                e.currentTarget.style.border = 'none';
+                e.currentTarget.style.border = '1px solid transparent';
               }}
             >
               {/* Cont */}
