@@ -52,49 +52,119 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
           fontFamily: 'Product Sans Light, system-ui, sans-serif',
           fontWeight: 300,
           fontSize: '16px',
-          lineHeight: '1.213em'
+          lineHeight: '1.2130000591278076em'
         }}
       >
         <img
           src={currentLanguage.flag}
           alt={currentLanguage.name}
-          className="w-5 h-[19px] rounded-[9.5px] object-cover"
+          style={{ width: '20px', height: '19px', borderRadius: '9.5px', objectFit: 'cover' }}
         />
         <span>{currentLanguage.name}</span>
       </button>
 
       {/* Dropdown menu */}
       {isOpen && (
-        <div className="absolute top-full right-0 mt-[10px] w-[213px] bg-white rounded-[10px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.2)] z-50 overflow-hidden">
-          <div className="flex flex-col gap-[5px] pt-[10px] pb-[10px]">
+        <div 
+          className="absolute top-full right-0 mt-[10px] bg-white rounded-[10px] z-50 overflow-hidden"
+          style={{
+            width: '213px',
+            padding: '0px 0px 10px',
+            boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.2)'
+          }}
+        >
+          {/* Cont */}
+          <div 
+            className="flex flex-col"
+            style={{
+              width: '214px',
+              padding: '10px 0px 0px',
+              gap: '5px'
+            }}
+          >
             {languages.map((lang) => {
               const isSelected = lang.code === i18n.language;
               return (
-                <button
+                <div
                   key={lang.code}
-                  onClick={() => handleLanguageChange(lang.code)}
-                  className={`flex items-center justify-between gap-[5px] px-[13px] py-[3px] mx-[10px] rounded transition-colors ${
-                    isSelected
-                      ? 'bg-[#F3F3FC]'
-                      : 'bg-white hover:bg-gray-50'
-                  }`}
                   style={{
-                    fontFamily: 'Product Sans Light, system-ui, sans-serif',
-                    fontWeight: 300,
-                    fontSize: '16px',
-                    lineHeight: '1.213em',
-                    color: isSelected ? '#3C51E2' : '#061333'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px',
+                    padding: '0px 10px',
+                    width: '214px'
                   }}
                 >
-                  <div className="flex items-center gap-[5px]">
+                  {/* item */}
+                  <button
+                    onClick={() => handleLanguageChange(lang.code)}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      height: '35px',
+                      background: isSelected ? '#F3F3FC' : '#FFFFFF',
+                      borderRadius: '10px',
+                      padding: '4px 0px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      width: '100%'
+                  }}
+                >
+                    {/* state-layer */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: '5px',
+                        padding: '0px 10px',
+                        width: '100%',
+                        height: '100%'
+                      }}
+                    >
+                      {/* name */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: '5px'
+                        }}
+                      >
                     <img
                       src={lang.flag}
                       alt={lang.name}
-                      className="w-5 h-[19px] rounded-[9.5px] object-cover"
+                          style={{ width: '20px', height: '19px', borderRadius: '9.5px', objectFit: 'cover' }}
                     />
-                    <span>{lang.name}</span>
+                        <span
+                          style={{
+                            fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                            fontWeight: 300,
+                            fontSize: '16px',
+                            lineHeight: '1.2130000591278076em',
+                            color: isSelected ? '#061333' : '#3C51E2'
+                          }}
+                        >
+                          {lang.name}
+                        </span>
+                      </div>
+                      {/* icons-right - empty but maintains structure */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          justifyContent: 'flex-end',
+                          alignItems: 'center',
+                          gap: '5px',
+                          width: 'auto'
+                        }}
+                      />
                   </div>
                 </button>
+                </div>
               );
             })}
           </div>

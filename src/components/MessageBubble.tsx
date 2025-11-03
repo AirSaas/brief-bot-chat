@@ -35,11 +35,13 @@ export function MessageBubble({
   const [copied, setCopied] = useState(false);
   const [clickedAnswers, setClickedAnswers] = useState<Set<string>>(new Set());
   const [currentThinkingMessage, setCurrentThinkingMessage] = useState("");
+  const [hoveredAnswer, setHoveredAnswer] = useState<string | null>(null);
+  const [hoveredSelectButton, setHoveredSelectButton] = useState<string | null>(null);
   
   const base =
     "px-3 sm:px-5 py-3 sm:py-4 max-w-[90%] sm:max-w-[80%] transition-all duration-200 message-bubble-mobile";
   const userClasses =
-    "ml-auto bg-[#F8F9FF] text-black rounded-[10px] p-5 max-w-[400px] user-message-mobile";
+    "ml-auto bg-[#F8F9FF] text-black rounded-[10px] max-w-[400px] user-message-mobile";
   const botClasses = "mr-auto text-gray-800 bot-message-mobile";
 
   // Rotate thinking messages with rate limiting
@@ -130,11 +132,12 @@ export function MessageBubble({
     <>
       {role === "user" ? (
         // User message - simple structure, full width
-        <div className="flex flex-row-reverse items-start gap-2 sm:gap-3">
+        <div className="flex flex-row-reverse items-start gap-[10px]" style={{ width: '100%' }}>
           <div
             className={`${base} ${userClasses} ${
               isAudio ? "flex flex-col gap-2" : ""
             }`}
+            style={{ padding: '20px', width: '400px' }}
           >
             {isAudio && audioFile ? (
               <div className="flex flex-col gap-2 min-h-[2rem] justify-center -my-4 -mx-4">
@@ -239,22 +242,50 @@ export function MessageBubble({
         // Bot message - vertical structure with quick answers
         <div className="space-y-3">
           {/* Message container */}
-          <div className="flex items-start gap-2 sm:gap-3">
-            {/* Bot profile picture */}
-            <div className="flex-shrink-0">
-              <img
-                src="/mini.png"
-                alt="AirSaas Bot"
-                className="w-7 h-7 sm:w-9 sm:h-9"
-              />
+          <div 
+            style={{ 
+              display: 'flex',
+              flexDirection: 'row',
+              alignSelf: 'stretch',
+              alignItems: 'flex-start',
+              gap: '10px',
+              width: '100%'
+            }}
+          >
+            {/* logo */}
+            <div 
+              style={{ 
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                width: '30px',
+                flexShrink: 0,
+                paddingTop: '12px'
+              }}
+            >
+              <svg width="30" height="22" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', verticalAlign: 'top' }}>
+                <path opacity="0.4" d="M35.1855 9.45942L41.4551 7.03957L43.765 0.879946C43.875 0.32998 44.425 0 44.9749 0C45.4149 0 45.9649 0.32998 46.0749 0.879946L48.4947 7.03957L54.6544 9.45942C55.2044 9.56941 55.5343 10.1194 55.5343 10.5593C55.5343 11.1093 55.2044 11.6593 54.6544 11.7693L48.4947 14.0791L46.0749 20.3487C45.9649 20.7887 45.4149 21.1187 44.9749 21.1187C44.425 21.1187 43.875 20.7887 43.765 20.3487L41.4551 14.0791L35.1855 11.7693C34.7455 11.6593 34.4155 11.1093 34.4155 10.5593C34.4155 10.1194 34.7455 9.56941 35.1855 9.45942Z" fill="#3C51E2"/>
+                <path opacity="0.4" d="M5.21452 22.8817L6.92554 18.319C7.00701 17.9116 7.4144 17.6672 7.82178 17.6672C8.14769 17.6672 8.55508 17.9116 8.63655 18.319L10.429 22.8817L14.9918 24.6742C15.3991 24.7556 15.6436 25.163 15.6436 25.4889C15.6436 25.8963 15.3991 26.3037 14.9918 26.3852L10.429 28.0962L8.63655 32.7403C8.55508 33.0662 8.14769 33.3107 7.82178 33.3107C7.4144 33.3107 7.00701 33.0662 6.92554 32.7403L5.21452 28.0962L0.570338 26.3852C0.244431 26.3037 0 25.8963 0 25.4889C0 25.163 0.244431 24.7556 0.570338 24.6742L5.21452 22.8817Z" fill="#3C51E2"/>
+                <path d="M27.0839 17.6672L43.804 53.1412L26.561 47.8021L31.6504 44.7152L35.385 45.8817L27.0823 28.2685L19.7552 43.8142L29.0691 38.243L30.9827 42.2978L9.38818 55.2115L27.0839 17.6672Z" fill="#3C51E2"/>
+              </svg>
             </div>
 
+            {/* text */}
+            <div 
+              style={{ 
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '10px',
+                flex: 1
+              }}
+            >
             {/* Message content */}
             <div
               className={`${base} ${botClasses} ${
                 isAudio ? "flex flex-col gap-2" : ""
               } group relative bot-message-no-radius`}
-              style={{ borderRadius: "0" }}
+                style={{ borderRadius: "0", width: '400px', paddingTop: '5px' }}
             >
               {isAudio && audioFile ? (
                 <div className="flex flex-col gap-2">
@@ -275,6 +306,13 @@ export function MessageBubble({
                   className={`markdown-content ${
                     String(children).trim() === "" ? "thinking-message" : ""
                   }`}
+                  style={{
+                    fontFamily: "Product Sans Light, system-ui, sans-serif",
+                    fontWeight: 300,
+                    fontSize: "14px",
+                    lineHeight: "1.4285714285714286em",
+                    color: "#000000"
+                  }}
                 >
                   {String(children).trim() === "" ? (
                     <div className="thinking-status-message">
@@ -384,6 +422,7 @@ export function MessageBubble({
                   Copied to Clipboard
                 </div>
               )}
+              </div>
             </div>
           </div>
 
@@ -450,10 +489,76 @@ export function MessageBubble({
                       
                       const isClicked = clickedAnswers.has(answer);
                       const isSelected = selectedAnswers.includes(answer);
+                      const isHovered = hoveredAnswer === answer;
                       
                       return (
-                        <button
+                        <div
                           key={index}
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'flex-end',
+                            gap: '10px',
+                            width: '100%',
+                            alignSelf: 'stretch'
+                          }}
+                          onMouseEnter={() => !isClicked && setHoveredAnswer(answer)}
+                          onMouseLeave={() => setHoveredAnswer(null)}
+                        >
+                          {/* wrapper */}
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignSelf: 'stretch',
+                              gap: '5px',
+                              background: isSelected ? '#E8EBFE' : (isHovered ? '#F3F3FC' : '#F8F9FF'),
+                              border: isSelected || isHovered ? '1px solid #3C51E2' : 'none',
+                              borderRadius: '10px',
+                              flex: 1,
+                              transition: 'all 0.2s ease'
+                            }}
+                          >
+                            {/* Cont */}
+                            <div
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                padding: '10px 10px 10px 20px',
+                                flex: 1
+                              }}
+                            >
+                              {/* left */}
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  gap: '5px',
+                                  flex: 1
+                                }}
+                              >
+                                {/* text */}
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    flex: 1
+                                  }}
+                                >
+                                  {/* title */}
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      flexDirection: 'row',
+                                      alignItems: 'center',
+                                      gap: '5px',
+                                      width: '100%'
+                                    }}
+                                  >
+                                    <button
                           onClick={() => {
                             if (isClicked) {
                               return;
@@ -467,25 +572,108 @@ export function MessageBubble({
                           }}
                           disabled={isClicked}
                           style={{
-                            padding: '10px 10px 10px 20px',
-                            borderRadius: '10px',
                             fontFamily: 'Product Sans, system-ui, sans-serif',
                             fontWeight: 700,
                             fontSize: '14px',
-                            lineHeight: '1.213em',
+                                        lineHeight: '1.2130000250680106em',
                             textAlign: 'left',
-                            transition: 'all 0.2s ease',
                             cursor: isClicked ? 'not-allowed' : 'pointer',
-                            background: isSelected ? '#E8EBFE' : '#F8F9FF',
-                            border: isSelected ? '1px solid #3C51E2' : 'none',
+                                        background: 'transparent',
+                                        border: 'none',
                             color: '#040D22',
                             opacity: isClicked && !isSelected ? 0.5 : 1,
-                            width: '100%',
-                            alignSelf: 'stretch'
+                                        padding: 0,
+                                        width: '100%'
                           }}
                         >
                           {answer}
                         </button>
+                                  </div>
+                                </div>
+                              </div>
+                              {/* Right */}
+                              {isHovered && !isClicked && (
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    justifyContent: 'flex-end',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                    padding: '0px 0px 0px 5px',
+                                    flex: 'none'
+                                  }}
+                                >
+                                  {/* button-small */}
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (!isDefaultButton && onAnswerSelect) {
+                                        onAnswerSelect(answer);
+                                      }
+                                      onQuickAnswerClick(answer);
+                                    }}
+                                    onMouseEnter={() => setHoveredSelectButton(answer)}
+                                    onMouseLeave={() => setHoveredSelectButton(null)}
+                                    style={{
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      alignItems: 'flex-start',
+                                      padding: '7px 14px',
+                                      gap: '5px',
+                                      isolation: 'isolate',
+                                      width: '60px',
+                                      height: '29px',
+                                      background: hoveredSelectButton === answer ? '#061333' : '#3C51E2',
+                                      borderRadius: '100px',
+                                      flex: 'none',
+                                      cursor: 'pointer',
+                                      border: 'none',
+                                      transition: 'all 0.2s ease'
+                                    }}
+                                  >
+                                    {/* state-layer */}
+                                    <div
+                                      style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        padding: '0px',
+                                        gap: '5px',
+                                        width: '32px',
+                                        height: '15px',
+                                        borderRadius: '100px',
+                                        flex: 'none',
+                                        zIndex: 0
+                                      }}
+                                    >
+                                      {/* label-text */}
+                                      <span
+                                        style={{
+                                          width: '32px',
+                                          height: '15px',
+                                          fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                                          fontStyle: 'normal',
+                                          fontWeight: 300,
+                                          fontSize: '12px',
+                                          lineHeight: '15px',
+                                          color: '#FFFFFF',
+                                          flex: 'none',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center'
+                                        }}
+                                      >
+                                        Select
+                                      </span>
+                                    </div>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       );
                     })}
                     

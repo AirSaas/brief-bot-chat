@@ -36,6 +36,7 @@ export default function InputWithSuggestions({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [hoverRecord, setHoverRecord] = useState(false);
   const [hoverSend, setHoverSend] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -259,9 +260,15 @@ export default function InputWithSuggestions({
         border: '1px solid #3C51E2' // Primary
       };
     }
+    if (isHovered) {
+      return {
+        background: '#F3F3FC', // Primary 5
+        border: '1px solid #3C51E2' // Primary
+      };
+    }
     return {
       background: '#F3F3FC', // Primary 5
-      border: '1px solid #3C51E2' // Primary (for hover state)
+      border: 'none'
     };
   };
 
@@ -331,11 +338,14 @@ export default function InputWithSuggestions({
           borderRadius: '10px',
           ...getInputContainerStyle()
         }}
+        onMouseEnter={() => !isInputDisabled && !isRecording && setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         {/* Input text area */}
         <div 
-          className="flex flex-row px-3 md:px-[15px] py-2 md:py-2"
+          className="flex flex-row"
           style={{
+            padding: '8px 15px',
             gap: '5px',
             borderRadius: '4px 4px 0px 0px'
           }}
@@ -345,11 +355,12 @@ export default function InputWithSuggestions({
               ref={textareaRef}
               rows={1}
               tabIndex={1}
-              className="w-full resize-none outline-none text-[15px] md:text-base"
+              className={`w-full resize-none outline-none ${isInputDisabled && !isRecording ? 'input-disabled' : ''}`}
               style={{ 
                 fontFamily: 'Product Sans Light, system-ui, sans-serif', 
                 fontWeight: 300,
-                lineHeight: '1.213em',
+                fontSize: '16px',
+                lineHeight: '1.2130000591278076em',
                 color: isInputDisabled && !isRecording ? '#A6AAB6' : '#061333', // Secondary 40 when disabled, Secondary when enabled
                 background: 'transparent',
                 border: 'none',
@@ -396,8 +407,9 @@ export default function InputWithSuggestions({
 
         {/* Actions bottom */}
         <div
-          className="flex flex-row justify-end md:justify-between items-center px-3 md:px-[15px] pb-2 md:pb-[6px]"
+          className="flex flex-row justify-end md:justify-between items-center"
           style={{
+            padding: '0px 10px 6px 15px',
             borderRadius: '0px 0px 10px 10px'
           }}
         >
@@ -408,101 +420,225 @@ export default function InputWithSuggestions({
           <div
             className="flex flex-row justify-end items-center gap-2 md:gap-[5px]"
           >
-            {/* Record button */}
+            {/* Record button - button-small */}
             {(!isRecording && !localIsRecording) ? (
               <button
                 onClick={startRecording}
                 disabled={isRecordDisabled}
                 onMouseEnter={() => setHoverRecord(true)}
                 onMouseLeave={() => setHoverRecord(false)}
-                className="flex flex-row justify-center items-center rounded-full border-none transition-all duration-200 px-2.5 py-1.5 md:px-[10px] md:py-1.5"
                 style={{
-                  gap: '4px',
-                  cursor: isRecordDisabled ? 'not-allowed' : 'pointer',
-                  opacity: isRecordDisabled ? 0.5 : 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'flex-start',
+                  padding: '7px 14px',
+                  gap: '8px',
+                  width: '88px',
+                  height: '30px',
                   background: recordButtonStyle.background,
-                  color: recordButtonStyle.color,
-                  fontFamily: 'Product Sans Light, system-ui, sans-serif',
-                  fontWeight: 300,
-                  fontSize: '12px',
-                  lineHeight: '1.213em'
+                  borderRadius: '100px',
+                  flex: 'none',
+                  cursor: isRecordDisabled ? 'not-allowed' : 'pointer',
+                  border: 'none',
+                  opacity: isRecordDisabled ? 0.5 : 1,
+                  transition: 'background-color 0.2s ease'
                 }}
               >
+                {/* state-layer */}
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '0px',
+                    gap: '5px',
+                    width: '60px',
+                    height: '16px',
+                    borderRadius: '100px',
+                    flex: 'none'
+                }}
+              >
+                  {/* icons/small-icon */}
                 <svg 
-                  width="12" 
-                  height="12" 
+                    width="14" 
+                    height="14" 
                   viewBox="0 0 24 24" 
                   fill="none" 
                   stroke={recordButtonStyle.iconColor} 
                   strokeWidth="2"
-                  className="w-3 h-3 md:w-3.5 md:h-3.5"
+                    style={{
+                      width: '14px',
+                      height: '14px',
+                      flex: 'none'
+                    }}
                 >
                   <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
                   <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
                 </svg>
-                <span>Record</span>
+                  {/* label-text */}
+                  <span
+                    style={{
+                      width: '41px',
+                      height: '16px',
+                      fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                      fontStyle: 'normal',
+                      fontWeight: 300,
+                      fontSize: '13.2571px',
+                      lineHeight: '16px',
+                      color: recordButtonStyle.color,
+                      flex: 'none'
+                    }}
+                  >
+                    Record
+                  </span>
+                </div>
               </button>
             ) : (
               <button
                 onClick={stopRecording}
                 onMouseEnter={() => setHoverRecord(true)}
                 onMouseLeave={() => setHoverRecord(false)}
-                className="flex flex-row justify-center items-center rounded-full border-none transition-all duration-200 px-2.5 py-1.5 md:px-[10px] md:py-1.5"
                 style={{
-                  gap: '4px',
-                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'flex-start',
+                  padding: '7px 14px',
+                  gap: '8px',
+                  width: '88px',
+                  height: '30px',
                   background: recordButtonStyle.background,
-                  color: recordButtonStyle.color,
-                  fontFamily: 'Product Sans Light, system-ui, sans-serif',
-                  fontWeight: 300,
-                  fontSize: '12px',
-                  lineHeight: '1.213em'
+                  borderRadius: '100px',
+                  flex: 'none',
+                  cursor: 'pointer',
+                  border: 'none',
+                  transition: 'background-color 0.2s ease'
                 }}
               >
+                {/* state-layer */}
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '0px',
+                    gap: '5px',
+                    width: '60px',
+                    height: '16px',
+                    borderRadius: '100px',
+                    flex: 'none'
+                }}
+              >
+                  {/* icons/small-icon */}
                 <svg 
-                  width="12" 
-                  height="12" 
+                    width="14" 
+                    height="14" 
                   viewBox="0 0 24 24" 
                   fill="none" 
                   stroke={recordButtonStyle.iconColor} 
                   strokeWidth="2"
-                  className="w-3 h-3 md:w-3.5 md:h-3.5"
+                    style={{
+                      width: '14px',
+                      height: '14px',
+                      flex: 'none'
+                    }}
                 >
                   <rect x="6" y="6" width="12" height="12" rx="2"/>
                 </svg>
-                <span>Stop</span>
+                  {/* label-text */}
+                  <span
+                    style={{
+                      width: '41px',
+                      height: '16px',
+                      fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                      fontStyle: 'normal',
+                      fontWeight: 300,
+                      fontSize: '13.2571px',
+                      lineHeight: '16px',
+                      color: recordButtonStyle.color,
+                      flex: 'none'
+                    }}
+                  >
+                    Stop
+                  </span>
+                </div>
               </button>
             )}
 
-            {/* Send button */}
+            {/* Send button - icon-button-small */}
             <button
               onClick={onSend}
               disabled={isSendDisabled}
               onMouseEnter={() => !isSendDisabled && setHoverSend(true)}
               onMouseLeave={() => setHoverSend(false)}
-              className="flex flex-row justify-center items-center rounded-full border-none transition-all duration-200 p-1.5 md:p-2"
               style={{
-                cursor: isSendDisabled ? 'not-allowed' : 'pointer',
-                opacity: isSendDisabled ? 0.5 : 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: '7px',
+                isolation: 'isolate',
+                width: '29px',
+                height: '29px',
                 background: sendButtonStyle.background,
-                color: sendButtonStyle.color,
-                width: '26px',
-                height: '26px'
+                borderRadius: '100px',
+                flex: 'none',
+                cursor: isSendDisabled ? 'not-allowed' : 'pointer',
+                border: 'none',
+                transition: 'background-color 0.2s ease'
               }}
             >
+              {/* container */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: '0px',
+                  width: '15px',
+                  height: '15px',
+                  flex: 'none',
+                  zIndex: 0
+                }}
+              >
+                {/* state-layer */}
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '0px',
+                    width: '15px',
+                    height: '15px',
+                    flex: 'none',
+                    zIndex: 0
+              }}
+            >
+                  {/* icons/small-icon */}
               <svg 
-                width="13" 
-                height="13" 
+                    width="14" 
+                    height="14" 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 stroke={sendButtonStyle.iconColor} 
-                strokeWidth="1.5" 
-                className="w-3 h-3 md:w-4 md:h-4"
-                style={{ transform: 'rotate(45deg)' }}
+                    strokeWidth="2" 
+                    style={{
+                      width: '14px',
+                      height: '14px',
+                      flex: 'none',
+                      transform: 'rotate(45deg)'
+                    }}
               >
                 <line x1="22" y1="2" x2="11" y2="13"></line>
                 <polygon points="22,2 15,22 11,13 2,9"></polygon>
               </svg>
+                </div>
+              </div>
             </button>
           </div>
         </div>

@@ -21,7 +21,6 @@ interface ChatWindowProps {
 }
 
 export default function ChatWindow({ 
-  isPanel: _isPanel = false,
   messages: externalMessages,
   setMessages: externalSetMessages,
   input: externalInput,
@@ -65,6 +64,7 @@ export default function ChatWindow({
     const handleScroll = () => {
       if (listRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = listRef.current;
+        // Check if we're near the bottom (where newest messages are)
         const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
         setShouldAutoScroll(isAtBottom);
       }
@@ -84,7 +84,7 @@ export default function ChatWindow({
 
   useEffect(() => {
     // Only auto-scroll if user hasn't manually scrolled up
-    // This allows users to scroll up to see previous messages
+    // Scroll to bottom to show newest messages
     if (shouldAutoScroll && listRef.current) {
       // Use requestAnimationFrame for better scroll performance
       requestAnimationFrame(() => {
@@ -129,7 +129,7 @@ export default function ChatWindow({
 
   // Scroll to bottom on mount, especially for initial messages
   useEffect(() => {
-    // Scroll to bottom when component mounts to show initial messages at bottom
+    // Scroll to bottom when component mounts to show newest messages at bottom
     const scrollToBottom = () => {
       if (listRef.current) {
         listRef.current.scrollTop = listRef.current.scrollHeight;
@@ -146,10 +146,12 @@ export default function ChatWindow({
   const handleInputHeightChange = () => {
     // Scroll to bottom when input grows
     setTimeout(() => {
-      listRef.current?.scrollTo({
+      if (listRef.current && shouldAutoScroll) {
+        listRef.current.scrollTo({
         top: listRef.current.scrollHeight,
         behavior: 'smooth'
       });
+      }
     }, 0);
   };
 
@@ -364,36 +366,85 @@ export default function ChatWindow({
 
   return (
     <div className={`h-full flex flex-col bg-white mobile-chat-container chat-window-mobile mobile-safe-area ${isKeyboardOpen ? 'mobile-keyboard-adjust' : ''}`}>
-      <header className="bg-white flex flex-col px-4 py-2.5 md:px-5 md:py-2.5">
-        {/* Main header row */}
-        <div className="flex items-center justify-between w-full gap-0 md:gap-[307px]">
-          {/* Left section */}
-          <div className="flex items-center gap-2 md:gap-[10px] flex-1 min-w-0">
-            {/* Logo */}
-            <div className="flex items-center justify-center w-10 h-10 flex-shrink-0">
-              <img 
-                src="/mini.png" 
-                alt="AirSaas AI" 
-                className="w-full h-full object-contain rounded-lg"
-              />
-            </div>
-            
-            {/* Title */}
+      <header className="bg-white flex flex-col" style={{ padding: '10px 20px 10px 21px' }}>
+        {/* Cont */}
+        <div 
+          style={{ 
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            alignSelf: 'stretch',
+            gap: '307px'
+          }}
+        >
+          {/* left */}
+          <div 
+            style={{ 
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: '10px',
+              flex: 1,
+              minWidth: 0
+            }}
+          >
+            {/* left subgroup */}
             <div 
-              className="text-[#040D22] flex-1 min-w-0"
               style={{ 
-                fontFamily: 'Product Sans, system-ui, sans-serif', 
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '10px',
+                width: '100%'
+              }}
+            >
+              {/* icons/airsaas-ai */}
+              <div 
+                style={{ 
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '40px',
+                  height: '40px',
+                  flexShrink: 0
+                }}
+              >
+                <svg width="40" height="40" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path opacity="0.4" d="M35.1855 9.45942L41.4551 7.03957L43.765 0.879946C43.875 0.32998 44.425 0 44.9749 0C45.4149 0 45.9649 0.32998 46.0749 0.879946L48.4947 7.03957L54.6544 9.45942C55.2044 9.56941 55.5343 10.1194 55.5343 10.5593C55.5343 11.1093 55.2044 11.6593 54.6544 11.7693L48.4947 14.0791L46.0749 20.3487C45.9649 20.7887 45.4149 21.1187 44.9749 21.1187C44.425 21.1187 43.875 20.7887 43.765 20.3487L41.4551 14.0791L35.1855 11.7693C34.7455 11.6593 34.4155 11.1093 34.4155 10.5593C34.4155 10.1194 34.7455 9.56941 35.1855 9.45942Z" fill="#3C51E2"/>
+                  <path opacity="0.4" d="M5.21452 22.8817L6.92554 18.319C7.00701 17.9116 7.4144 17.6672 7.82178 17.6672C8.14769 17.6672 8.55508 17.9116 8.63655 18.319L10.429 22.8817L14.9918 24.6742C15.3991 24.7556 15.6436 25.163 15.6436 25.4889C15.6436 25.8963 15.3991 26.3037 14.9918 26.3852L10.429 28.0962L8.63655 32.7403C8.55508 33.0662 8.14769 33.3107 7.82178 33.3107C7.4144 33.3107 7.00701 33.0662 6.92554 32.7403L5.21452 28.0962L0.570338 26.3852C0.244431 26.3037 0 25.8963 0 25.4889C0 25.163 0.244431 24.7556 0.570338 24.6742L5.21452 22.8817Z" fill="#3C51E2"/>
+                  <path d="M27.0839 17.6672L43.804 53.1412L26.561 47.8021L31.6504 44.7152L35.385 45.8817L27.0823 28.2685L19.7552 43.8142L29.0691 38.243L30.9827 42.2978L9.38818 55.2115L27.0839 17.6672Z" fill="#3C51E2"/>
+                </svg>
+              </div>
+              
+              {/* panel name */}
+              <div 
+                style={{ 
+                  fontFamily: 'Product Sans, system-ui, sans-serif',
                 fontWeight: 700,
-                fontSize: '20px',
-                lineHeight: '1.213em'
+                  fontSize: '18px',
+                  lineHeight: '1.2130000856187608em',
+                  color: '#040D22',
+                  textAlign: 'left'
               }}
             >
               {t('chat.title')}
+              </div>
             </div>
           </div>
           
-          {/* Right section - Empty but maintains spacing */}
-          <div className="flex items-center gap-[5px]" style={{ width: 'auto' }}>
+          {/* right */}
+          <div 
+            style={{ 
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+              gap: '5px',
+              flexShrink: 0
+            }}
+          >
             {/* Empty - maintains layout spacing */}
           </div>
         </div>
@@ -407,11 +458,13 @@ export default function ChatWindow({
           padding: '10px 20px 20px',
           display: 'flex',
           flexDirection: 'column',
+          justifyContent: hasSelectedInitialOption ? 'flex-start' : 'flex-end',
           gap: '20px',
           position: 'relative',
           zIndex: 10,
           backgroundColor: '#FFFFFF',
-          borderRadius: '25px'
+          borderRadius: '25px',
+          transition: 'justify-content 0.3s ease-in-out'
         }}
         className="chat-scrollbar chat-messages-mobile"
       >
@@ -429,41 +482,46 @@ export default function ChatWindow({
            <InitialBotMessage onTemplateSelect={handleTemplateSelect} />
          )}
          
+         {/* Render messages in chronological order: first messages at top, newest at bottom */}
          {messages.map((m, i) => {
            // Only show quick answers for the last assistant message, but never for the first assistant message
            const isLastAssistantMessage = m.role === "assistant" && 
              i === messages.length - 1;
            
            // Check if this is the first assistant message
+           const firstAssistantIndex = messages.findIndex(msg => msg.role === "assistant");
            const isFirstAssistantMessage = m.role === "assistant" && 
-             messages.findIndex(msg => msg.role === "assistant") === i;
+             i === firstAssistantIndex;
            
            // Show quick answers only if it's the last assistant message AND not the first assistant message
            const shouldShowQuickAnswers = isLastAssistantMessage && !isFirstAssistantMessage;
            
            return (
-            <MessageBubble
-              key={i}
-              role={m.role}
-              isAudio={!!(m.audioFile || m.audioUrl)}
-              audioFile={m.audioFile}
-              showCopyButton={m.role === "assistant"}
-              quickAnswers={shouldShowQuickAnswers ? m.quickAnswers : []}
-              onQuickAnswerClick={shouldShowQuickAnswers ? handleQuickAnswerClick : undefined}
-              onDownloadPDF={handleDownloadPDF}
-              selectedAnswers={selectedQuickAnswers}
-              onAnswerSelect={handleQuickAnswerSelect}
-            >
-              {m.content}
-            </MessageBubble>
+            <div key={i} className="message-bubble-enter">
+              <MessageBubble
+                role={m.role}
+                isAudio={!!(m.audioFile || m.audioUrl)}
+                audioFile={m.audioFile}
+                showCopyButton={m.role === "assistant"}
+                quickAnswers={shouldShowQuickAnswers ? m.quickAnswers : []}
+                onQuickAnswerClick={shouldShowQuickAnswers ? handleQuickAnswerClick : undefined}
+                onDownloadPDF={handleDownloadPDF}
+                selectedAnswers={selectedQuickAnswers}
+                onAnswerSelect={handleQuickAnswerSelect}
+              >
+                {m.content}
+              </MessageBubble>
+            </div>
           );
          })}
          
          {/* Thinking indicator */}
          {isThinking && (
-           <MessageBubble role="assistant" quickAnswers={[]} onQuickAnswerClick={undefined} selectedAnswers={[]} onAnswerSelect={undefined}>
-             {""}
-           </MessageBubble>
+           <div className="message-bubble-enter">
+             <MessageBubble role="assistant" quickAnswers={[]} onQuickAnswerClick={undefined} selectedAnswers={[]} onAnswerSelect={undefined}>
+               {""}
+             </MessageBubble>
+           </div>
          )}
          
       </div>
