@@ -66,7 +66,7 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
       {/* Dropdown menu */}
       {isOpen && (
         <div 
-          className="absolute top-full right-0 mt-[10px] bg-white rounded-[10px] z-50 overflow-hidden"
+            className="absolute top-full right-0 mt-[5px] bg-white rounded-[10px] z-50 overflow-hidden"
           style={{
             width: '213px',
             padding: '0px 0px 10px',

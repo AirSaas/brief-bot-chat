@@ -251,24 +251,28 @@ export default function InputWithSuggestions({
     if (isInputDisabled || isRecording) {
       return {
         background: '#F3F3FC', // Primary 5
-        border: 'none'
+        border: 'none',
+        outline: '1px solid #F3F3FC' // Same color as background to prevent jump
       };
     }
     if (isFocused) {
       return {
         background: '#FFFFFF', // White
-        border: '1px solid #3C51E2' // Primary
+        border: '1px solid #3C51E2', // Primary
+        outline: '1px solid #3C51E2' // Primary
       };
     }
     if (isHovered) {
       return {
         background: '#F3F3FC', // Primary 5
-        border: '1px solid #3C51E2' // Primary
+        border: 'none',
+        outline: '1px solid #3C51E2' // Primary - only color changes
       };
     }
     return {
       background: '#F3F3FC', // Primary 5
-      border: 'none'
+      border: 'none',
+      outline: '1px solid #F3F3FC' // Same color as background to prevent jump
     };
   };
 
@@ -439,6 +443,8 @@ export default function InputWithSuggestions({
                   background: recordButtonStyle.background,
                   borderRadius: '100px',
                   flex: 'none',
+                  order: 0,
+                  flexGrow: 0,
                   cursor: isRecordDisabled ? 'not-allowed' : 'pointer',
                   border: 'none',
                   opacity: isRecordDisabled ? 0.5 : 1,
@@ -457,25 +463,26 @@ export default function InputWithSuggestions({
                     width: '60px',
                     height: '16px',
                     borderRadius: '100px',
-                    flex: 'none'
+                    flex: 'none',
+                    order: 0,
+                    flexGrow: 0
                 }}
               >
                   {/* icons/small-icon */}
                 <svg 
                     width="14" 
                     height="14" 
-                  viewBox="0 0 24 24" 
+                  viewBox="0 0 14 15" 
                   fill="none" 
-                  stroke={recordButtonStyle.iconColor} 
-                  strokeWidth="2"
+                  xmlns="http://www.w3.org/2000/svg"
                     style={{
                       width: '14px',
                       height: '14px',
-                      flex: 'none'
+                      flex: 'none',
+                      order: 0
                     }}
                 >
-                  <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                  <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                  <path d="M10.9375 5.25C11.1562 5.25 11.375 5.46875 11.375 5.6875V7C11.375 9.26953 9.625 11.1289 7.4375 11.3477V13.125H9.1875C9.40625 13.125 9.625 13.3438 9.625 13.5625C9.625 13.8086 9.40625 14 9.1875 14H4.8125C4.56641 14 4.375 13.8086 4.375 13.5625C4.375 13.3438 4.56641 13.125 4.8125 13.125H6.5625V11.3477C4.29297 11.1289 2.625 9.13281 2.625 6.86328V5.6875C2.625 5.46875 2.81641 5.25 3.0625 5.25C3.28125 5.25 3.5 5.46875 3.5 5.6875V6.89062C3.5 8.75 4.89453 10.3906 6.75391 10.5C8.77734 10.6367 10.5 9.02344 10.5 7V5.6875C10.5 5.46875 10.6914 5.25 10.9375 5.25ZM7 9.625C5.55078 9.625 4.375 8.44922 4.375 7V2.625C4.375 1.17578 5.55078 0 7 0C8.44922 0 9.625 1.20312 9.625 2.625V7C9.625 8.44922 8.44922 9.625 7 9.625ZM5.25 2.625V7C5.25 7.98438 6.01562 8.75 7 8.75C7.95703 8.75 8.75 7.98438 8.75 7V2.625C8.75 1.66797 7.95703 0.875 7 0.875C6.01562 0.875 5.25 1.66797 5.25 2.625Z" fill={recordButtonStyle.iconColor}/>
                 </svg>
                   {/* label-text */}
                   <span
@@ -488,7 +495,8 @@ export default function InputWithSuggestions({
                       fontSize: '13.2571px',
                       lineHeight: '16px',
                       color: recordButtonStyle.color,
-                      flex: 'none'
+                      flex: 'none',
+                      order: 1
                     }}
                   >
                     Record
@@ -529,7 +537,9 @@ export default function InputWithSuggestions({
                     width: '60px',
                     height: '16px',
                     borderRadius: '100px',
-                    flex: 'none'
+                    flex: 'none',
+                    order: 0,
+                    flexGrow: 0
                 }}
               >
                   {/* icons/small-icon */}
@@ -576,10 +586,13 @@ export default function InputWithSuggestions({
               onMouseLeave={() => setHoverSend(false)}
               style={{
                 display: 'flex',
-                flexDirection: 'column',
+                flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
-                padding: '7px',
+                paddingTop: '7px',
+                paddingBottom: '7px',
+                paddingLeft: '0px',
+                paddingRight: '0px',
                 isolation: 'isolate',
                 width: '29px',
                 height: '29px',
@@ -588,57 +601,29 @@ export default function InputWithSuggestions({
                 flex: 'none',
                 cursor: isSendDisabled ? 'not-allowed' : 'pointer',
                 border: 'none',
-                transition: 'background-color 0.2s ease'
+                transition: 'background-color 0.2s ease',
+                boxSizing: 'border-box',
               }}
             >
-              {/* container */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '0px',
-                  width: '15px',
-                  height: '15px',
-                  flex: 'none',
-                  zIndex: 0
-                }}
-              >
-                {/* state-layer */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    padding: '0px',
-                    width: '15px',
-                    height: '15px',
-                    flex: 'none',
-                    zIndex: 0
-              }}
-            >
-                  {/* icons/small-icon */}
+              {/* icons/small-icon */}
               <svg 
-                    width="14" 
-                    height="14" 
+                width="14" 
+                height="14" 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 stroke={sendButtonStyle.iconColor} 
-                    strokeWidth="2" 
-                    style={{
-                      width: '14px',
-                      height: '14px',
-                      flex: 'none',
-                      transform: 'rotate(45deg)'
-                    }}
+                strokeWidth="2" 
+                style={{
+                  width: '14px',
+                  height: '14px',
+                  flex: 'none',
+                  transform: 'rotate(45deg)',
+                  marginLeft: '-3px'
+                }}
               >
                 <line x1="22" y1="2" x2="11" y2="13"></line>
                 <polygon points="22,2 15,22 11,13 2,9"></polygon>
               </svg>
-                </div>
-              </div>
             </button>
           </div>
         </div>

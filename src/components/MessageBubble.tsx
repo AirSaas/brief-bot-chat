@@ -524,7 +524,8 @@ export function MessageBubble({
                               alignSelf: 'stretch',
                               gap: '5px',
                               background: isSelected ? '#E8EBFE' : (isHovered ? '#F3F3FC' : '#F8F9FF'),
-                              border: isSelected || isHovered ? '1px solid #3C51E2' : '1px solid transparent',
+                              border: '1px solid',
+                              borderColor: isSelected || isHovered ? '#3C51E2' : 'transparent',
                               borderRadius: '10px',
                               flex: 1,
                               transition: 'all 0.2s ease',
@@ -538,6 +539,7 @@ export function MessageBubble({
                                 flexDirection: 'row',
                                 alignItems: 'center',
                                 padding: '10px 10px 10px 20px',
+                                gap: '5px',
                                 flex: 1
                               }}
                             >
@@ -611,9 +613,9 @@ export function MessageBubble({
                                   justifyContent: 'flex-end',
                                   alignItems: 'center',
                                   gap: '5px',
-                                  padding: '0px 0px 0px 5px',
+                                  padding: '0px',
                                   flex: 'none',
-                                  width: isHovered && !isClicked ? 'auto' : '60px',
+                                  width: '60px',
                                   minWidth: '60px',
                                   opacity: isHovered && !isClicked ? 1 : 0,
                                   pointerEvents: isHovered && !isClicked ? 'auto' : 'none',
@@ -831,19 +833,21 @@ export function MessageBubble({
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 gap: '5px',
-                                padding: '8px 19px',
+                                padding: '7px 15px',
+                                height: '29px',
                                 borderRadius: '100px',
                                 fontFamily: 'Product Sans Light, system-ui, sans-serif',
                                 fontWeight: 300,
-                                fontSize: '16px',
-                                lineHeight: '1.213em',
+                                fontSize: '12px',
+                                lineHeight: '12px',
                                 textAlign: 'center',
                                 transition: 'all 0.2s ease',
                                 cursor: isClicked ? 'not-allowed' : 'pointer',
                                 background: isCorrectButton ? '#3C51E2' : 'transparent',
                                 border: isChangesButton ? '1px solid #3C51E2' : 'none',
                                 color: isCorrectButton ? '#FFFFFF' : '#3C51E2',
-                                opacity: isClicked ? 0.5 : 1
+                                opacity: isClicked ? 0.5 : 1,
+                                boxSizing: 'border-box'
                               }}
                             >
                               {isCorrectButton && (
@@ -920,17 +924,19 @@ export function MessageBubble({
                       justifyContent: 'center',
                       alignItems: 'center',
                       gap: '5px',
-                      padding: '8px 19px',
+                      padding: '7px 15px',
+                      height: '29px',
                       borderRadius: '100px',
                       background: '#3C51E2',
                       border: 'none',
                       fontFamily: 'Product Sans Light, system-ui, sans-serif',
                       fontWeight: 300,
-                      fontSize: '16px',
-                      lineHeight: '1.213em',
+                      fontSize: '12px',
+                      lineHeight: '12px',
                       color: '#FFFFFF',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease'
+                      transition: 'all 0.2s ease',
+                      boxSizing: 'border-box'
                     }}
                   >
                     <svg 
@@ -955,17 +961,19 @@ export function MessageBubble({
                       justifyContent: 'center',
                       alignItems: 'center',
                       gap: '5px',
-                      padding: '8px 19px',
+                      padding: '7px 15px',
+                      height: '29px',
                       borderRadius: '100px',
                       background: 'transparent',
                       border: '1px solid #3C51E2',
                       fontFamily: 'Product Sans Light, system-ui, sans-serif',
                       fontWeight: 300,
-                      fontSize: '16px',
-                      lineHeight: '1.213em',
+                      fontSize: '12px',
+                      lineHeight: '12px',
                       color: '#3C51E2',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease'
+                      transition: 'all 0.2s ease',
+                      boxSizing: 'border-box'
                     }}
                   >
                     <svg 

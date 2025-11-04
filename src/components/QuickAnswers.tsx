@@ -78,12 +78,15 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
             // Check if this answer is selected
             const isSelected = selectedAnswers.includes(answer);
             
+            // Check if this is a small button that needs specific styling
+            const isSmallButton = isDefaultButton || isCorrectButton;
+            
             return (
               <button
                 key={index}
                 onClick={() => handleAnswerClick(answer)}
                 disabled={disabled}
-                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
+                className={isSmallButton ? '' : `px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
                   disabled && !isSelected
                     ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
                     : isPDFButton || isCorrectButton
@@ -94,6 +97,35 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
                     ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                     : 'bg-gray-100 hover:bg-blue-50 hover:border-2 hover:border-blue-500 hover:text-blue-700 text-gray-700'
                 }`}
+                style={isSmallButton ? {
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '5px',
+                  padding: '7px 15px',
+                  height: '29px',
+                  borderRadius: '100px',
+                  fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                  fontWeight: 300,
+                  fontSize: '12px',
+                  lineHeight: '12px',
+                  color: disabled && !isSelected
+                    ? '#9CA3AF'
+                    : isCorrectButton
+                    ? '#FFFFFF'
+                    : '#3C51E2',
+                  background: disabled && !isSelected
+                    ? '#F3F4F6'
+                    : isCorrectButton
+                    ? '#3C51E2'
+                    : 'transparent',
+                  border: isDefaultButton ? 'none' : '1px solid #3C51E2',
+                  cursor: disabled ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxSizing: 'border-box',
+                  opacity: disabled && !isSelected ? 0.5 : 1
+                } : {}}
               >
                 {answer}
               </button>
@@ -131,12 +163,15 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
           // Check if this answer is selected
           const isSelected = selectedAnswers.includes(answer);
           
+          // Check if this is a small button that needs specific styling
+          const isSmallButton = isDefaultButton || isCorrectButton;
+          
           return (
             <button
               key={index}
               onClick={() => handleAnswerClick(answer)}
               disabled={disabled}
-              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
+              className={isSmallButton ? '' : `px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
                 disabled && !isSelected
                   ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
                   : isPDFButton || isCorrectButton
@@ -147,6 +182,35 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
                   ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                   : 'bg-gray-100 hover:bg-blue-50 hover:border-2 hover:border-blue-500 hover:text-blue-700 text-gray-700'
               }`}
+              style={isSmallButton ? {
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '7px 15px',
+                height: '29px',
+                borderRadius: '100px',
+                fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                fontWeight: 300,
+                fontSize: '12px',
+                lineHeight: '12px',
+                color: disabled && !isSelected
+                  ? '#9CA3AF'
+                  : isCorrectButton
+                  ? '#FFFFFF'
+                  : '#3C51E2',
+                background: disabled && !isSelected
+                  ? '#F3F4F6'
+                  : isCorrectButton
+                  ? '#3C51E2'
+                  : 'transparent',
+                border: isDefaultButton ? 'none' : '1px solid #3C51E2',
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+                boxSizing: 'border-box',
+                opacity: disabled && !isSelected ? 0.5 : 1
+              } : {}}
             >
               {answer}
             </button>

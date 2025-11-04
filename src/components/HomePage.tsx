@@ -66,17 +66,42 @@ export default function HomePage({
         <main className="flex-1 flex items-center justify-start" style={{ margin: '0px 40px 0px 40px', width: 'calc(100% - 80px)', boxSizing: 'border-box' }}>
           <div className="w-full" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '56px' }}>
             {/* Hero Section */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '30px', alignSelf: 'stretch', marginTop: 'calc(81% - 99%)'}}>
-                  {/* Logo */}
-                  <div className="flex justify-center">
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '30px', alignSelf: 'stretch', marginTop: 'calc(-12.5%)'}}>
+                  {/* Logo with halo */}
+                  <div 
+                    className="flex justify-center items-center" 
+                    style={{ 
+                      width: '91px', 
+                      height: '91px',
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    {/* Halo - outline of 8px on each side */}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        width: '91px',
+                        height: '91px',
+                        borderRadius: '50%',
+                        border: '8px solid transparent',
+                        boxSizing: 'border-box',
+                        pointerEvents: 'none'
+                      }}
+                    />
+                    {/* Logo - 75px diameter */}
                     <img
                       src="/airsaas-ai-logo.svg"
                       alt="AirSaas AI"
                       style={{
-                        width: '75px',
-                        height: '75px'
-                          }}
-                        />
+                        width: '91px',
+                        height: '91px',
+                        position: 'relative',
+                        zIndex: 1
+                      }}
+                    />
                   </div>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
