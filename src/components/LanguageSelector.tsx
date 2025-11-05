@@ -13,6 +13,7 @@ const languages = [
 export default function LanguageSelector({ className = '' }: LanguageSelectorProps) {
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[1];
 
@@ -43,6 +44,8 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
       {/* Button - shows current language */}
       <button
         onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         className={`flex items-center gap-[5px] px-[19px] py-2 rounded-full transition-colors ${
           isOpen
             ? 'bg-[#061333] text-white'
@@ -52,7 +55,11 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
           fontFamily: 'Product Sans Light, system-ui, sans-serif',
           fontWeight: 300,
           fontSize: '16px',
-          lineHeight: '1.2130000591278076em'
+          lineHeight: '1.2130000591278076em',
+          border: isHovered && !isOpen ? '1px solid #3C51E2' : '1px solid transparent',
+          outline: 'none',
+          transition: 'border-color 0.2s ease',
+          boxSizing: 'border-box'
         }}
       >
         <img

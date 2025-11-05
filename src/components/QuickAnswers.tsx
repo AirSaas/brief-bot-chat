@@ -1,3 +1,4 @@
+import { useState } from 'react';
 
 interface QuickAnswersProps {
   onAnswerClick: (answer: string) => void;
@@ -17,6 +18,8 @@ const DEFAULT_QUICK_ANSWERS = [
 ];
 
 export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = false, isClosing = false, answers, isFirstMessage = false, selectedAnswers = [], onAnswerSelect }: QuickAnswersProps) {
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+  
   const handleAnswerClick = (answer: string) => {
     // Check if button is a PDF download button (English and French variations)
     const isPDFButton = answer === "Download as PDF" || 
@@ -79,12 +82,15 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
             const isSelected = selectedAnswers.includes(answer);
             
             // Check if this is a small button that needs specific styling
-            const isSmallButton = isDefaultButton || isCorrectButton;
+            const isSmallButton = isDefaultButton || isCorrectButton || isPDFButton;
+            const isHovered = hoveredButton === answer;
             
             return (
               <button
                 key={index}
                 onClick={() => handleAnswerClick(answer)}
+                onMouseEnter={() => !disabled && setHoveredButton(answer)}
+                onMouseLeave={() => setHoveredButton(null)}
                 disabled={disabled}
                 className={isSmallButton ? '' : `px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
                   disabled && !isSelected
@@ -112,12 +118,16 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
                   lineHeight: '12px',
                   color: disabled && !isSelected
                     ? '#9CA3AF'
-                    : isCorrectButton
+                    : isHovered
+                    ? '#FFFFFF'
+                    : isCorrectButton || isPDFButton
                     ? '#FFFFFF'
                     : '#3C51E2',
                   background: disabled && !isSelected
                     ? '#F3F4F6'
-                    : isCorrectButton
+                    : isHovered
+                    ? '#061333'
+                    : isCorrectButton || isPDFButton
                     ? '#3C51E2'
                     : 'transparent',
                   border: isDefaultButton ? 'none' : '1px solid #3C51E2',
@@ -164,12 +174,15 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
           const isSelected = selectedAnswers.includes(answer);
           
           // Check if this is a small button that needs specific styling
-          const isSmallButton = isDefaultButton || isCorrectButton;
+          const isSmallButton = isDefaultButton || isCorrectButton || isPDFButton;
+          const isHovered = hoveredButton === answer;
           
           return (
             <button
               key={index}
               onClick={() => handleAnswerClick(answer)}
+              onMouseEnter={() => !disabled && setHoveredButton(answer)}
+              onMouseLeave={() => setHoveredButton(null)}
               disabled={disabled}
               className={isSmallButton ? '' : `px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
                 disabled && !isSelected
@@ -197,12 +210,16 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
                 lineHeight: '12px',
                 color: disabled && !isSelected
                   ? '#9CA3AF'
-                  : isCorrectButton
+                  : isHovered
+                  ? '#FFFFFF'
+                  : isCorrectButton || isPDFButton
                   ? '#FFFFFF'
                   : '#3C51E2',
                 background: disabled && !isSelected
                   ? '#F3F4F6'
-                  : isCorrectButton
+                  : isHovered
+                  ? '#061333'
+                  : isCorrectButton || isPDFButton
                   ? '#3C51E2'
                   : 'transparent',
                 border: isDefaultButton ? 'none' : '1px solid #3C51E2',

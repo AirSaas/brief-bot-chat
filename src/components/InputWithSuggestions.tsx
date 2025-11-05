@@ -251,28 +251,28 @@ export default function InputWithSuggestions({
     if (isInputDisabled || isRecording) {
       return {
         background: '#F3F3FC', // Primary 5
-        border: 'none',
-        outline: '1px solid #F3F3FC' // Same color as background to prevent jump
+        border: '1px solid #F3F3FC', // Same color as background to prevent jump
+        outline: 'none'
       };
     }
     if (isFocused) {
       return {
         background: '#FFFFFF', // White
         border: '1px solid #3C51E2', // Primary
-        outline: '1px solid #3C51E2' // Primary
+        outline: 'none'
       };
     }
     if (isHovered) {
       return {
         background: '#F3F3FC', // Primary 5
-        border: 'none',
-        outline: '1px solid #3C51E2' // Primary - only color changes
+        border: '1px solid #3C51E2', // Primary
+        outline: 'none'
       };
     }
     return {
       background: '#F3F3FC', // Primary 5
-      border: 'none',
-      outline: '1px solid #F3F3FC' // Same color as background to prevent jump
+      border: '1px solid #F3F3FC', // Same color as background to prevent jump
+      outline: 'none'
     };
   };
 

@@ -37,6 +37,9 @@ export function MessageBubble({
   const [currentThinkingMessage, setCurrentThinkingMessage] = useState("");
   const [hoveredAnswer, setHoveredAnswer] = useState<string | null>(null);
   const [hoveredSelectButton, setHoveredSelectButton] = useState<string | null>(null);
+  const [hoveredSpecialButton, setHoveredSpecialButton] = useState<string | null>(null);
+  const [hoveredActionButton, setHoveredActionButton] = useState<string | null>(null);
+  const [hoveredFixedButton, setHoveredFixedButton] = useState<string | null>(null);
   
   const base =
     "px-3 sm:px-5 py-3 sm:py-4 max-w-[90%] sm:max-w-[80%] transition-all duration-200 message-bubble-mobile";
@@ -360,16 +363,124 @@ export function MessageBubble({
                         li: ({ children }) => (
                           <li className="ml-2">{children}</li>
                         ),
-                        code: ({ children }) => (
-                          <code className="bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-sm font-mono">
-                            {children}
-                          </code>
-                        ),
-                        pre: ({ children }) => (
-                          <pre className="bg-gray-100 text-gray-800 p-3 rounded-lg overflow-x-auto text-sm font-mono mb-2">
-                            {children}
-                          </pre>
-                        ),
+                        pre: ({ children }) => {
+                          // Check if children is empty or only whitespace
+                          let content = '';
+                          
+                          if (typeof children === 'string') {
+                            content = children.trim();
+                          } else if (React.isValidElement(children)) {
+                            // If it's a React element (like code), check its children
+                            const codeChildren = (children.props as { children?: React.ReactNode })?.children;
+                            if (codeChildren === null || codeChildren === undefined) {
+                              content = '';
+                            } else if (Array.isArray(codeChildren)) {
+                              // If it's an array, check if all elements are empty
+                              if (codeChildren.length === 0) {
+                                content = '';
+                              } else {
+                                const joined = codeChildren
+                                  .map(child => {
+                                    if (child === null || child === undefined) return '';
+                                    if (typeof child === 'string') return child.trim();
+                                    return String(child).trim();
+                                  })
+                                  .join('')
+                                  .trim();
+                                content = joined;
+                              }
+                            } else if (typeof codeChildren === 'string') {
+                              content = codeChildren.trim();
+                            } else {
+                              const str = String(codeChildren).trim();
+                              content = str;
+                            }
+                          } else if (Array.isArray(children)) {
+                            // If children is an array, check all elements
+                            if (children.length === 0) {
+                              content = '';
+                            } else {
+                              const joined = children
+                                .map(child => {
+                                  if (child === null || child === undefined) return '';
+                                  if (typeof child === 'string') return child.trim();
+                                  if (React.isValidElement(child)) {
+                                    // If it's a React element, check its children
+                                    const elemChildren = (child.props as { children?: React.ReactNode })?.children;
+                                    if (elemChildren === null || elemChildren === undefined) return '';
+                                    if (Array.isArray(elemChildren)) {
+                                      if (elemChildren.length === 0) return '';
+                                      return elemChildren
+                                        .map(c => {
+                                          if (c === null || c === undefined) return '';
+                                          if (typeof c === 'string') return c.trim();
+                                          return String(c).trim();
+                                        })
+                                        .join('')
+                                        .trim();
+                                    }
+                                    if (typeof elemChildren === 'string') return elemChildren.trim();
+                                    return String(elemChildren).trim();
+                                  }
+                                  return String(child).trim();
+                                })
+                                .join('')
+                                .trim();
+                              content = joined;
+                            }
+                          } else {
+                            content = String(children).trim();
+                          }
+                          
+                          // Don't render empty code blocks
+                          if (!content || content.length === 0) {
+                            return null;
+                          }
+                          
+                          return (
+                            <pre className="bg-gray-100 text-gray-800 p-3 rounded-lg overflow-x-auto text-sm font-mono mb-2">
+                              {children}
+                            </pre>
+                          );
+                        },
+                        code: ({ children }) => {
+                          // Check if code is empty (often happens inside empty pre blocks)
+                          let content = '';
+                          
+                          if (children === null || children === undefined) {
+                            content = '';
+                          } else if (typeof children === 'string') {
+                            content = children.trim();
+                          } else if (Array.isArray(children)) {
+                            // If it's an array, check if all elements are empty
+                            if (children.length === 0) {
+                              content = '';
+                            } else {
+                              const joined = children
+                                .map(child => {
+                                  if (child === null || child === undefined) return '';
+                                  if (typeof child === 'string') return child.trim();
+                                  return String(child).trim();
+                                })
+                                .join('')
+                                .trim();
+                              content = joined;
+                            }
+                          } else {
+                            content = String(children).trim();
+                          }
+                          
+                          // Don't render empty code elements
+                          if (!content || content.length === 0) {
+                            return null;
+                          }
+                          
+                          return (
+                            <code className="bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-sm font-mono">
+                              {children}
+                            </code>
+                          );
+                        },
                         blockquote: ({ children }) => (
                           <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-600 mb-2">
                             {children}
@@ -447,7 +558,8 @@ export function MessageBubble({
                 gap: '10px',
                 alignItems: 'flex-start',
                 width: 'calc(100% - 30px)',
-                maxWidth: 'calc(100% - 30px)'
+                maxWidth: 'calc(100% - 30px)',
+                background: 'transparent'
               }}
             >
               {/* Separate regular and special buttons */}
@@ -486,6 +598,13 @@ export function MessageBubble({
                     regularButtons.push({ answer, index });
                   }
                 });
+                
+                // Only render if there are buttons to show
+                const hasButtons = regularButtons.length > 0 || specialButtons.length > 0 || actionButtons.length > 0;
+                
+                if (!hasButtons) {
+                  return null;
+                }
                 
                 return (
                   <>
@@ -718,6 +837,8 @@ export function MessageBubble({
                                                   answer === "Create a new brief" ||
                                                   answer === "Créer un nouveau brief";
                           
+                          const isHovered = hoveredActionButton === answer;
+                          
                           return (
                             <button
                               key={index}
@@ -728,56 +849,53 @@ export function MessageBubble({
                                   onQuickAnswerClick(answer);
                                 }
                               }}
+                              onMouseEnter={() => setHoveredActionButton(answer)}
+                              onMouseLeave={() => setHoveredActionButton(null)}
                               style={{
                                 display: 'flex',
                                 flexDirection: 'row',
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 gap: '5px',
-                                padding: '8px 19px',
+                                padding: '7px 15px',
+                                height: '29px',
                                 borderRadius: '100px',
                                 fontFamily: 'Product Sans Light, system-ui, sans-serif',
                                 fontWeight: 300,
-                                fontSize: '16px',
-                                lineHeight: '1.213em',
+                                fontSize: '12px',
+                                lineHeight: '12px',
                                 textAlign: 'center',
                                 transition: 'all 0.2s ease',
                                 cursor: 'pointer',
-                                background: isPDFButton ? '#3C51E2' : 'transparent',
+                                background: isHovered ? '#061333' : (isPDFButton ? '#3C51E2' : 'transparent'),
                                 border: isNewBriefButton ? '1px solid #3C51E2' : 'none',
-                                color: isPDFButton ? '#FFFFFF' : '#3C51E2'
+                                color: isHovered ? '#FFFFFF' : (isPDFButton ? '#FFFFFF' : '#3C51E2'),
+                                boxSizing: 'border-box'
                               }}
                             >
                               {isPDFButton && (
                                 <svg 
-                                  width="19" 
-                                  height="19" 
-                                  viewBox="0 0 24 24" 
+                                  width="14" 
+                                  height="14" 
+                                  viewBox="0 0 14 15" 
                                   fill="none" 
-                                  stroke="#FFFFFF" 
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  style={{ width: '19px', height: '19px' }}
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  style={{ width: '14px', height: '14px', flex: 'none' }}
                                 >
-                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                  <polyline points="14 2 14 8 20 8"/>
-                                  <path d="M16 13H8"/>
-                                  <path d="M16 17H8"/>
-                                  <path d="M10 9H8"/>
+                                  <path d="M12.25 12.25C12.25 13.2344 11.457 14 10.5 14H3.5C2.51562 14 1.75 13.2344 1.75 12.25H2.625C2.625 12.7422 3.00781 13.125 3.5 13.125H10.5C10.9648 13.125 11.375 12.7422 11.375 12.25H12.25ZM8.3125 5.25C7.57422 5.25 7 4.67578 7 3.9375V0.875H3.5C3.00781 0.875 2.625 1.28516 2.625 1.75V6.125H1.75V1.75C1.75 0.792969 2.51562 0 3.5 0H7.76562C8.09375 0 8.44922 0.164062 8.69531 0.410156L11.8398 3.55469C12.0859 3.80078 12.25 4.15625 12.25 4.48438V6.125H11.375V5.25H8.3125ZM11.2383 4.18359L8.06641 1.01172C8.01172 0.957031 7.92969 0.929688 7.875 0.902344V3.9375C7.875 4.18359 8.06641 4.375 8.3125 4.375H11.3477C11.3203 4.32031 11.293 4.23828 11.2383 4.18359ZM4.15625 7C4.97656 7 5.6875 7.71094 5.6875 8.53125C5.6875 9.37891 4.97656 10.0625 4.15625 10.0625H3.9375V10.9375C3.9375 11.1836 3.71875 11.375 3.5 11.375C3.25391 11.375 3.0625 11.1836 3.0625 10.9375V7.4375C3.0625 7.21875 3.25391 7 3.5 7H4.15625ZM4.8125 8.53125C4.8125 8.17578 4.51172 7.875 4.15625 7.875H3.9375V9.1875H4.15625C4.51172 9.1875 4.8125 8.91406 4.8125 8.53125ZM6.125 7.4375C6.125 7.21875 6.31641 7 6.5625 7H7.21875C7.92969 7 8.53125 7.60156 8.53125 8.3125V10.0625C8.53125 10.8008 7.92969 11.375 7.21875 11.375H6.5625C6.31641 11.375 6.125 11.1836 6.125 10.9375V7.4375ZM7 10.5H7.21875C7.4375 10.5 7.65625 10.3086 7.65625 10.0625V8.3125C7.65625 8.09375 7.4375 7.875 7.21875 7.875H7V10.5ZM10.9375 7C11.1562 7 11.375 7.21875 11.375 7.4375C11.375 7.68359 11.1562 7.875 10.9375 7.875H10.0625V8.75H10.9375C11.1562 8.75 11.375 8.96875 11.375 9.1875C11.375 9.43359 11.1562 9.625 10.9375 9.625H10.0625V10.9375C10.0625 11.1836 9.84375 11.375 9.625 11.375C9.37891 11.375 9.1875 11.1836 9.1875 10.9375V7.4375C9.1875 7.21875 9.37891 7 9.625 7H10.9375Z" fill={isHovered ? '#FFFFFF' : '#FFFFFF'}/>
                                 </svg>
                               )}
                               {isNewBriefButton && (
                                 <svg 
-                                  width="19" 
-                                  height="19" 
+                                  width="14" 
+                                  height="14" 
                                   viewBox="0 0 24 24" 
                                   fill="none" 
-                                  stroke="#3C51E2" 
+                                  stroke={isHovered ? '#FFFFFF' : '#3C51E2'} 
                                   strokeWidth="2"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
-                                  style={{ width: '19px', height: '19px' }}
+                                  style={{ width: '14px', height: '14px', flex: 'none' }}
                                 >
                                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -806,12 +924,15 @@ export function MessageBubble({
                           const isCorrectButton = lowerAnswer === "everything is correct" || lowerAnswer === "tout est correct";
                           const isChangesButton = lowerAnswer.includes("i need to make") || 
                                                  lowerAnswer.includes("i would like to make") ||
+                                                 lowerAnswer.includes("i want to make") ||
+                                                 lowerAnswer.includes("i want to make some changes") ||
                                                  lowerAnswer.includes("i need to make some changes") ||
                                                  lowerAnswer.includes("je souhaite apporter") ||
                                                  lowerAnswer.includes("j'aimerais faire") ||
                                                  lowerAnswer.includes("des modifications");
                           
                           const isClicked = clickedAnswers.has(answer);
+                          const isHovered = hoveredSpecialButton === answer;
                           
                           return (
                             <button
@@ -826,6 +947,8 @@ export function MessageBubble({
                                 }
                                 onQuickAnswerClick(answer);
                               }}
+                              onMouseEnter={() => !isClicked && setHoveredSpecialButton(answer)}
+                              onMouseLeave={() => setHoveredSpecialButton(null)}
                               disabled={isClicked}
                               style={{
                                 display: 'flex',
@@ -843,9 +966,9 @@ export function MessageBubble({
                                 textAlign: 'center',
                                 transition: 'all 0.2s ease',
                                 cursor: isClicked ? 'not-allowed' : 'pointer',
-                                background: isCorrectButton ? '#3C51E2' : 'transparent',
+                                background: isHovered ? '#061333' : (isCorrectButton ? '#3C51E2' : 'transparent'),
                                 border: isChangesButton ? '1px solid #3C51E2' : 'none',
-                                color: isCorrectButton ? '#FFFFFF' : '#3C51E2',
+                                color: isHovered ? '#FFFFFF' : (isCorrectButton ? '#FFFFFF' : '#3C51E2'),
                                 opacity: isClicked ? 0.5 : 1,
                                 boxSizing: 'border-box'
                               }}
@@ -856,7 +979,7 @@ export function MessageBubble({
                                   height="19" 
                                   viewBox="0 0 24 24" 
                                   fill="none" 
-                                  stroke="#FFFFFF" 
+                                  stroke={isHovered ? '#FFFFFF' : '#FFFFFF'} 
                                   strokeWidth="2"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
@@ -871,7 +994,7 @@ export function MessageBubble({
                                   height="19" 
                                   viewBox="0 0 24 24" 
                                   fill="none" 
-                                  stroke="#3C51E2" 
+                                  stroke={isHovered ? '#FFFFFF' : '#3C51E2'} 
                                   strokeWidth="2"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
@@ -918,6 +1041,8 @@ export function MessageBubble({
                   {/* Generate other examples button - filled */}
                   <button
                     onClick={() => onQuickAnswerClick(t('chat.quick_answers.give_examples'))}
+                    onMouseEnter={() => setHoveredFixedButton('give_examples')}
+                    onMouseLeave={() => setHoveredFixedButton(null)}
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
@@ -927,7 +1052,7 @@ export function MessageBubble({
                       padding: '7px 15px',
                       height: '29px',
                       borderRadius: '100px',
-                      background: '#3C51E2',
+                      background: hoveredFixedButton === 'give_examples' ? '#061333' : '#3C51E2',
                       border: 'none',
                       fontFamily: 'Product Sans Light, system-ui, sans-serif',
                       fontWeight: 300,
@@ -940,14 +1065,14 @@ export function MessageBubble({
                     }}
                   >
                     <svg 
-                      width="19" 
-                      height="19" 
+                      width="14" 
+                      height="14" 
                       viewBox="0 0 19 19" 
                       fill="none" 
                       xmlns="http://www.w3.org/2000/svg"
-                      style={{ width: '19px', height: '19px' }}
+                      style={{ width: '14px', height: '14px', flex: 'none' }}
                     >
-                      <path d="M12.875 9.875C13.4688 9.9375 13.6875 10.6562 13.2812 11.0938L10.9062 13.4062L11.4688 16.6875C11.5 16.875 11.4375 17.0938 11.2812 17.25C11.1562 17.4062 10.9688 17.5 10.75 17.5C10.625 17.5 10.5 17.4688 10.4062 17.4375L7.5 15.875L4.5625 17.4375C4.4375 17.5 4.34375 17.5 4.21875 17.5C4 17.5 3.8125 17.4062 3.6875 17.25C3.5625 17.0938 3.5 16.875 3.53125 16.6875L4.0625 13.4062L1.71875 11.0938C1.28125 10.6875 1.5 9.9375 2.09375 9.875L5.375 9.375L6.84375 6.40625C6.96875 6.15625 7.21875 6 7.46875 6C7.75 6 8 6.15625 8.125 6.40625L9.59375 9.375L12.875 9.875ZM9.8125 13.0625L12.1562 10.7812L8.9375 10.3125L7.5 7.375L6.03125 10.3125L2.8125 10.7812L5.125 13.0625L4.59375 16.2812L7.46875 14.75L10.375 16.2812L9.8125 13.0625ZM9.5 5C9.21875 5 9 4.78125 9 4.5C9 4.25 9.21875 4 9.5 4.03125L11.5 4V2C11.5 1.75 11.7188 1.5 12 1.5C12.25 1.5 12.5 1.75 12.5 2V4L14.5 4.03125C14.75 4.03125 15 4.25 15 4.5C15 4.78125 14.75 5 14.5 5H12.5V7C12.5 7.28125 12.25 7.5 12 7.5C11.7188 7.5 11.5 7.28125 11.5 7V5H9.5ZM17 8C17.25 8 17.5 8.25 17.5 8.53125C17.5 8.78125 17.25 9 17 9H16V10C16 10.2812 15.75 10.5312 15.5 10.5312C15.2188 10.5312 15 10.2812 15 10V9H14C13.7188 9 13.5 8.78125 13.5 8.53125C13.5 8.25 13.7188 8 14 8H15V7C15 6.75 15.25 6.53125 15.5 6.53125C15.75 6.53125 16 6.75 16 7V8H17Z" fill="white"/>
+                      <path d="M12.875 9.875C13.4688 9.9375 13.6875 10.6562 13.2812 11.0938L10.9062 13.4062L11.4688 16.6875C11.5 16.875 11.4375 17.0938 11.2812 17.25C11.1562 17.4062 10.9688 17.5 10.75 17.5C10.625 17.5 10.5 17.4688 10.4062 17.4375L7.5 15.875L4.5625 17.4375C4.4375 17.5 4.34375 17.5 4.21875 17.5C4 17.5 3.8125 17.4062 3.6875 17.25C3.5625 17.0938 3.5 16.875 3.53125 16.6875L4.0625 13.4062L1.71875 11.0938C1.28125 10.6875 1.5 9.9375 2.09375 9.875L5.375 9.375L6.84375 6.40625C6.96875 6.15625 7.21875 6 7.46875 6C7.75 6 8 6.15625 8.125 6.40625L9.59375 9.375L12.875 9.875ZM9.8125 13.0625L12.1562 10.7812L8.9375 10.3125L7.5 7.375L6.03125 10.3125L2.8125 10.7812L5.125 13.0625L4.59375 16.2812L7.46875 14.75L10.375 16.2812L9.8125 13.0625ZM9.5 5C9.21875 5 9 4.78125 9 4.5C9 4.25 9.21875 4 9.5 4.03125L11.5 4V2C11.5 1.75 11.7188 1.5 12 1.5C12.25 1.5 12.5 1.75 12.5 2V4L14.5 4.03125C14.75 4.03125 15 4.25 15 4.5C15 4.78125 14.75 5 14.5 5H12.5V7C12.5 7.28125 12.25 7.5 12 7.5C11.7188 7.5 11.5 7.28125 11.5 7V5H9.5ZM17 8C17.25 8 17.5 8.25 17.5 8.53125C17.5 8.78125 17.25 9 17 9H16V10C16 10.2812 15.75 10.5312 15.5 10.5312C15.2188 10.5312 15 10.2812 15 10V9H14C13.7188 9 13.5 8.78125 13.5 8.53125C13.5 8.25 13.7188 8 14 8H15V7C15 6.75 15.25 6.53125 15.5 6.53125C15.75 6.53125 16 6.75 16 7V8H17Z" fill="#FFFFFF"/>
                     </svg>
                     <span>{t('chat.quick_answers.give_examples')}</span>
                   </button>
@@ -955,6 +1080,8 @@ export function MessageBubble({
                   {/* Skip this question button - outlined */}
                   <button
                     onClick={() => onQuickAnswerClick(t('chat.quick_answers.skip_question'))}
+                    onMouseEnter={() => setHoveredFixedButton('skip_question')}
+                    onMouseLeave={() => setHoveredFixedButton(null)}
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
@@ -964,27 +1091,27 @@ export function MessageBubble({
                       padding: '7px 15px',
                       height: '29px',
                       borderRadius: '100px',
-                      background: 'transparent',
+                      background: hoveredFixedButton === 'skip_question' ? '#061333' : 'transparent',
                       border: '1px solid #3C51E2',
                       fontFamily: 'Product Sans Light, system-ui, sans-serif',
                       fontWeight: 300,
                       fontSize: '12px',
                       lineHeight: '12px',
-                      color: '#3C51E2',
+                      color: hoveredFixedButton === 'skip_question' ? '#FFFFFF' : '#3C51E2',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
                       boxSizing: 'border-box'
                     }}
                   >
                     <svg 
-                      width="19" 
-                      height="19" 
+                      width="14" 
+                      height="14" 
                       viewBox="0 0 19 19" 
                       fill="none" 
                       xmlns="http://www.w3.org/2000/svg"
-                      style={{ width: '19px', height: '19px' }}
+                      style={{ width: '14px', height: '14px', flex: 'none' }}
                     >
-                      <path d="M7.15625 8.40625L2.5 4.5V14.5312L7.15625 10.625C7.375 10.4375 7.6875 10.4688 7.875 10.6875C8.03125 10.9062 8 11.2188 7.8125 11.375L3.03125 15.3125C2.875 15.4375 2.65625 15.5 2.4375 15.5C1.9375 15.5 1.5 15.0938 1.5 14.5V4.53125C1.5 3.9375 1.9375 3.5 2.4375 3.5C2.65625 3.5 2.875 3.59375 3.03125 3.71875L7.8125 7.65625C8 7.8125 8.03125 8.125 7.875 8.34375C7.6875 8.5625 7.375 8.59375 7.15625 8.40625ZM17.125 8.71875C17.3438 8.90625 17.5 9.21875 17.5 9.5C17.5 9.8125 17.3438 10.125 17.125 10.3438L11.0312 15.3125C10.875 15.4375 10.6562 15.5 10.4375 15.5C10.125 15.5 9.5 15.25 9.5 14.5V4.53125C9.5 3.78125 10.125 3.5 10.4375 3.5C10.6562 3.5 10.875 3.59375 11.0312 3.75L17.125 8.71875ZM10.5 14.5312L16.4688 9.5L10.5 4.5V14.5312Z" fill="#3C51E2"/>
+                      <path d="M7.15625 8.40625L2.5 4.5V14.5312L7.15625 10.625C7.375 10.4375 7.6875 10.4688 7.875 10.6875C8.03125 10.9062 8 11.2188 7.8125 11.375L3.03125 15.3125C2.875 15.4375 2.65625 15.5 2.4375 15.5C1.9375 15.5 1.5 15.0938 1.5 14.5V4.53125C1.5 3.9375 1.9375 3.5 2.4375 3.5C2.65625 3.5 2.875 3.59375 3.03125 3.71875L7.8125 7.65625C8 7.8125 8.03125 8.125 7.875 8.34375C7.6875 8.5625 7.375 8.59375 7.15625 8.40625ZM17.125 8.71875C17.3438 8.90625 17.5 9.21875 17.5 9.5C17.5 9.8125 17.3438 10.125 17.125 10.3438L11.0312 15.3125C10.875 15.4375 10.6562 15.5 10.4375 15.5C10.125 15.5 9.5 15.25 9.5 14.5V4.53125C9.5 3.78125 10.125 3.5 10.4375 3.5C10.6562 3.5 10.875 3.59375 11.0312 3.75L17.125 8.71875ZM10.5 14.5312L16.4688 9.5L10.5 4.5V14.5312Z" fill={hoveredFixedButton === 'skip_question' ? '#FFFFFF' : '#3C51E2'}/>
                     </svg>
                     <span>{t('chat.quick_answers.skip_question')}</span>
                   </button>

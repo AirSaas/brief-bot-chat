@@ -161,61 +161,290 @@ export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalPr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-50/75 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4 relative">
+    <div 
+      className="flex items-center justify-center z-50"
+      style={{
+        position: 'fixed',
+        left: '0%',
+        right: '0%',
+        top: '0%',
+        bottom: '0%',
+        background: 'rgba(6, 19, 51, 0.74)'
+      }}
+    >
+      <div 
+        className="bg-white rounded-[10px] relative"
+        style={{
+          width: '602px',
+          maxWidth: 'calc(100% - 32px)',
+          padding: '15px 10px 20px',
+          boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.2)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '5px'
+        }}
+      >
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute"
+          style={{
+            top: '10px',
+            right: '10px',
+            padding: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            borderRadius: '100px'
+          }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-          </svg>
+          <div style={{
+            width: '19px',
+            height: '19px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14.3438 14.375C14.1562 14.5625 13.8125 14.5625 13.625 14.375L9.5 10.2188L5.34375 14.375C5.15625 14.5625 4.8125 14.5625 4.625 14.375C4.4375 14.1875 4.4375 13.8438 4.625 13.6562L8.78125 9.5L4.625 5.375C4.4375 5.1875 4.4375 4.84375 4.625 4.65625C4.8125 4.46875 5.15625 4.46875 5.34375 4.65625L9.5 8.8125L13.625 4.65625C13.8125 4.46875 14.1562 4.46875 14.3438 4.65625C14.5312 4.84375 14.5312 5.1875 14.3438 5.375L10.1875 9.5L14.3438 13.6562C14.5312 13.8438 14.5312 14.1875 14.3438 14.375Z" fill="#061333"/>
+            </svg>
+          </div>
         </button>
 
-        {/* Title */}
-        <h2 className="text-xl font-bold text-black mb-3 text-center">
-          {t('pdf_modal.title')}
-        </h2>
+        {/* Title with icon */}
+        <div 
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            alignSelf: 'stretch',
+            gap: '10px',
+            padding: '0px 0px 0px 10px',
+            marginBottom: '10px'
+          }}
+        >
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: '5px'
+          }}>
+            {/* Icon - file duotone */}
+            <div style={{
+              width: '20px',
+              height: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative'
+            }}>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.1875 0.875L17.125 6.8125H11.1875V0.875Z" fill="#6B7BE9"/>
+                <path opacity="0.4" d="M11.1875 0.875V6.8125H17.125V17.5C17.125 18.8359 16.0488 19.875 14.75 19.875H5.25C3.91406 19.875 2.875 18.8359 2.875 17.5V3.25C2.875 1.95117 3.91406 0.875 5.25 0.875H11.1875Z" fill="#6B7BE9"/>
+              </svg>
+            </div>
+            {/* Title text */}
+            <h2 
+              style={{
+                fontFamily: 'Product Sans, system-ui, sans-serif',
+                fontWeight: 700,
+                fontSize: '18px',
+                lineHeight: '1.2130000856187608em',
+                color: '#061333',
+                margin: 0,
+                textAlign: 'left'
+              }}
+            >
+              {t('pdf_modal.title')}
+            </h2>
+          </div>
+        </div>
 
-        {/* Description */}
-        <p className="text-sm text-black mb-6 text-center">
-          {t('pdf_modal.description')}
-        </p>
+        {/* Content container */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignSelf: 'stretch',
+          gap: '10px',
+          padding: '0px 10px'
+        }}>
+          {/* Description section */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignSelf: 'stretch',
+            gap: '10px'
+          }}>
+            <p 
+              style={{
+                fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                fontWeight: 300,
+                fontSize: '14px',
+                lineHeight: '1.4285714285714286em',
+                color: '#061333',
+                margin: 0,
+                textAlign: 'left'
+              }}
+            >
+              {t('pdf_modal.description')}
+            </p>
+          </div>
 
-        {/* Buttons */}
-        <div className="space-y-3">
-          {/* Share on LinkedIn button */}
-          <button
-            onClick={handleShareLinkedIn}
-            className="w-full bg-[#3C51E2] text-white py-3 px-4 font-medium flex items-center justify-center gap-2 hover:bg-[#3041B5] rounded-full transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77Z"/>
-            </svg>
-            {t('pdf_modal.share_linkedin')}
-          </button>
+          {/* Buttons section */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignSelf: 'stretch',
+            gap: '10px'
+          }}>
+            {/* Share on LinkedIn button */}
+            <button
+              onClick={handleShareLinkedIn}
+              style={{
+                width: '100%',
+                background: '#3C51E2',
+                borderRadius: '10px',
+                padding: '10px 24px',
+                height: '80px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                gap: '8px',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s ease',
+                boxSizing: 'border-box'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#3041B5';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#3C51E2';
+              }}
+            >
+              <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                gap: '5px',
+                borderRadius: '100px'
+              }}>
+                {/* LinkedIn icon */}
+                <div style={{
+                  width: '23px',
+                  height: '23px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18.25 3.375C18.8477 3.375 19.375 3.90234 19.375 4.53516V18C19.375 18.6328 18.8477 19.125 18.25 19.125H4.71484C4.11719 19.125 3.625 18.6328 3.625 18V4.53516C3.625 3.90234 4.11719 3.375 4.71484 3.375H18.25ZM8.37109 16.875V9.38672H6.05078V16.875H8.37109ZM7.21094 8.33203C7.94922 8.33203 8.54688 7.73438 8.54688 6.99609C8.54688 6.25781 7.94922 5.625 7.21094 5.625C6.4375 5.625 5.83984 6.25781 5.83984 6.99609C5.83984 7.73438 6.4375 8.33203 7.21094 8.33203ZM17.125 16.875V12.7617C17.125 10.7578 16.668 9.17578 14.3125 9.17578C13.1875 9.17578 12.4141 9.80859 12.0977 10.4062H12.0625V9.38672H9.84766V16.875H12.168V13.1836C12.168 12.1992 12.3438 11.25 13.5742 11.25C14.7695 11.25 14.7695 12.375 14.7695 13.2188V16.875H17.125Z" fill="white"/>
+                  </svg>
+                </div>
+                {/* Button text */}
+                <span style={{
+                  fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                  fontWeight: 300,
+                  fontSize: '18px',
+                  lineHeight: '1.2130000856187608em',
+                  color: '#FFFFFF',
+                  textAlign: 'left'
+                }}>
+                  {t('pdf_modal.share_linkedin')}
+                </span>
+              </div>
+            </button>
 
-          {/* Download as PDF button */}
-          <button
-            onClick={handleDownloadPDF}
-            disabled={isDownloading}
-            className="w-full rounded-full bg-white border border-[#3C51E2] text-[#3C51E2] py-3 px-4 font-medium flex items-center justify-center gap-2 hover:bg-[#3C51E2] hover:text-white transition-colors disabled:opacity-50"
-          >
-            {isDownloading ? (
-              <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current"></div>
-                {t('pdf_modal.downloading')}
-              </>
-            ) : (
-              <>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-                </svg>
-                {t('pdf_modal.download_pdf')}
-              </>
-            )}
-          </button>
+            {/* Download as PDF button */}
+            <button
+              onClick={handleDownloadPDF}
+              disabled={isDownloading}
+              style={{
+                width: '100%',
+                background: '#3C51E2',
+                borderRadius: '10px',
+                padding: '10px 24px',
+                height: '80px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                gap: '8px',
+                border: 'none',
+                cursor: isDownloading ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.2s ease',
+                boxSizing: 'border-box',
+                opacity: isDownloading ? 0.6 : 1
+              }}
+              onMouseEnter={(e) => {
+                if (!isDownloading) {
+                  e.currentTarget.style.background = '#3041B5';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isDownloading) {
+                  e.currentTarget.style.background = '#3C51E2';
+                }
+              }}
+            >
+              <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                gap: '5px',
+                borderRadius: '100px'
+              }}>
+                {isDownloading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current" style={{ flexShrink: 0 }}></div>
+                    <span style={{
+                      fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                      fontWeight: 300,
+                      fontSize: '18px',
+                      lineHeight: '1.2130000856187608em',
+                      color: '#FFFFFF',
+                      textAlign: 'left'
+                    }}>
+                      {t('pdf_modal.downloading')}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    {/* Download icon */}
+                    <div style={{
+                      width: '23px',
+                      height: '23px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.0781 16.1719L6.01562 11.1094C5.80469 10.8984 5.80469 10.5117 6.01562 10.3008C6.22656 10.0898 6.61328 10.0898 6.82422 10.3008L10.9375 14.4141V3.9375C10.9375 3.65625 11.1836 3.375 11.5 3.375C11.7812 3.375 12.0625 3.65625 12.0625 3.9375V14.4141L16.1406 10.3008C16.3516 10.0898 16.7383 10.0898 16.9492 10.3008C17.1602 10.5117 17.1602 10.8984 16.9492 11.1094L11.8867 16.1719C11.7812 16.2773 11.6406 16.3125 11.5 16.3125C11.3242 16.3125 11.1836 16.2773 11.0781 16.1719ZM17.6875 18C17.9688 18 18.25 18.2812 18.25 18.5625C18.25 18.8789 17.9688 19.125 17.6875 19.125H5.3125C4.99609 19.125 4.75 18.8789 4.75 18.5625C4.75 18.2812 4.99609 18 5.3125 18H17.6875Z" fill="white"/>
+                      </svg>
+                    </div>
+                    {/* Button text */}
+                    <span style={{
+                      fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                      fontWeight: 300,
+                      fontSize: '18px',
+                      lineHeight: '1.2130000856187608em',
+                      color: '#FFFFFF',
+                      textAlign: 'left'
+                    }}>
+                      {t('pdf_modal.download_pdf')}
+                    </span>
+                  </>
+                )}
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </div>
