@@ -669,6 +669,14 @@ div.button-group-container {
   }
 }
 
+/* Exception for share link input - allow 14px font size in mobile */
+@media (max-width: 800px) {
+  input[type="text"].share-link-input,
+  input.share-link-input {
+    font-size: 14px !important;
+  }
+}
+
 /* Mobile responsiveness improvements */
 @media (max-width: 640px) {
   /* Improve touch targets for Send/Record buttons */

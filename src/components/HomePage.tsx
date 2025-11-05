@@ -295,7 +295,7 @@ export default function HomePage({
                                       type="text"
                                       value={currentUrl}
                                       readOnly
-                                      className="bg-transparent border-none outline-none"
+                                      className="bg-transparent border-none outline-none share-link-input"
                                       style={{
                                         fontFamily: "Product Sans Light, system-ui, sans-serif",
                                         fontWeight: 300,
@@ -356,29 +356,29 @@ export default function HomePage({
 
               {/* Start Button */}
               <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '45px' }}>
-                <button
-                  onClick={handleStartChat}
+              <button
+                onClick={handleStartChat}
                   className="rounded-full bg-[#3C51E2] text-white transition-all duration-200 hover:bg-[#3041B5]"
-                  style={{
-                    fontFamily: "Product Sans Light, system-ui, sans-serif",
-                    fontWeight: 300,
-                    fontSize: '16px',
-                    lineHeight: '1.2130000591278076em',
+                style={{
+                  fontFamily: "Product Sans Light, system-ui, sans-serif",
+                  fontWeight: 300,
+                  fontSize: '16px',
+                  lineHeight: '1.2130000591278076em',
                     padding: '0px',
-                    gap: '3px',
-                    display: 'flex',
+                  gap: '3px',
+                  display: 'flex',
                     flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderRadius: '100px',
-                    border: '1px solid #3C51E2',
-                    boxSizing: 'border-box',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: '100px',
+                  border: '1px solid #3C51E2',
+                  boxSizing: 'border-box',
                     width: '131px',
                     height: '35px'
-                  }}
-                >
-                  {t('initial_message.button_text', { defaultValue: 'Start!' })}
-                </button>
+                }}
+              >
+                {t('initial_message.button_text', { defaultValue: 'Start!' })}
+              </button>
               </div>
             </div>
           </main>
