@@ -155,15 +155,24 @@ export default function InputWithSuggestions({
       // Reset height to auto to get the correct scrollHeight
       textarea.style.height = 'auto';
       // Set height to scrollHeight (content height)
-      const maxHeight = 120; // Max height 120px (~4 lines)
-      const newHeight = Math.min(textarea.scrollHeight, maxHeight);
+      // Allow expansion up to 200px on mobile, 120px on desktop
+      const isMobile = window.innerWidth < 768;
+      const maxHeight = isMobile ? 200 : 120; // Max height 200px on mobile (~6-7 lines), 120px on desktop (~4 lines)
+      
+      // Get the actual scroll height
+      const scrollHeight = textarea.scrollHeight;
+      const newHeight = Math.min(scrollHeight, maxHeight);
+      
+      // Apply the new height
       textarea.style.height = `${newHeight}px`;
       
       // Enable scroll when content exceeds max height
-      if (textarea.scrollHeight > maxHeight) {
+      if (scrollHeight > maxHeight) {
         textarea.style.overflowY = 'auto';
+        textarea.style.maxHeight = `${maxHeight}px`;
       } else {
         textarea.style.overflowY = 'hidden';
+        textarea.style.maxHeight = 'none';
       }
       
       // Notify parent if height changed
@@ -172,6 +181,16 @@ export default function InputWithSuggestions({
       }
     }
   }, [onHeightChange]);
+
+  // Re-adjust height on window resize (for mobile/desktop switch)
+  useEffect(() => {
+    const handleResize = () => {
+      adjustTextareaHeight();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [adjustTextareaHeight]);
 
   // Adjust height when value changes
   useEffect(() => {
@@ -333,98 +352,94 @@ export default function InputWithSuggestions({
   }, [isSendDisabled, hoverSend]);
 
   return (
-    <div className="flex flex-col gap-[5px] w-full max-w-full">
-      {/* Text field container */}
-      <div 
-        className="flex flex-col w-full max-w-full"
-        style={{
-          gap: '10px',
-          borderRadius: '10px',
-          ...getInputContainerStyle()
-        }}
-        onMouseEnter={() => !isInputDisabled && !isRecording && setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {/* Input text area */}
+    <div className="flex flex-col md:flex-col gap-[5px] w-full max-w-full">
+      {/* Mobile: Horizontal layout - Text field and buttons in same row */}
+      <div className="flex md:hidden flex-row items-center gap-[5px] w-full">
+        {/* Text field container */}
         <div 
-          className="flex flex-row"
+          className="flex flex-col flex-1"
           style={{
-            padding: '8px 15px',
-            gap: '5px',
-            borderRadius: '4px 4px 0px 0px'
+            borderRadius: '100px',
+            minHeight: 'auto',
+            maxHeight: 'none',
+            ...getInputContainerStyle()
           }}
+          onMouseEnter={() => !isInputDisabled && !isRecording && setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-          <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-            <textarea
-              ref={textareaRef}
-              rows={1}
-              tabIndex={1}
-              className={`w-full resize-none outline-none ${isInputDisabled && !isRecording ? 'input-disabled' : ''}`}
-              style={{ 
-                fontFamily: 'Product Sans Light, system-ui, sans-serif', 
-                fontWeight: 300,
-                fontSize: '16px',
-                lineHeight: '1.2130000591278076em',
-                color: isInputDisabled && !isRecording ? '#A6AAB6' : '#061333', // Secondary 40 when disabled, Secondary when enabled
-                background: 'transparent',
-                border: 'none',
-                padding: 0,
-                minHeight: 'auto',
-                transition: 'height 0.2s ease-in-out',
-                scrollbarWidth: 'thin',
-                scrollbarColor: '#CBD5E0 transparent'
-              }}
-              placeholder={placeholder}
-              value={value}
-              onChange={(e) => handleInputChange(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  if (!isThinking && !isRecording) {
-                    onSend();
+          {/* Input text area */}
+          <div 
+            className="flex flex-row items-stretch"
+            style={{
+              padding: '8px 15px',
+              gap: '4px',
+              borderRadius: '100px',
+              justifyContent: 'stretch',
+              alignSelf: 'stretch',
+              minHeight: 'auto',
+              maxHeight: 'none'
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', flex: 1, minHeight: 'auto' }}>
+              <textarea
+                ref={textareaRef}
+                rows={1}
+                tabIndex={1}
+                className={`w-full resize-none outline-none ${isInputDisabled && !isRecording ? 'input-disabled' : ''}`}
+                style={{ 
+                  fontFamily: 'Product Sans Light, system-ui, sans-serif', 
+                  fontWeight: 300,
+                  fontSize: '16px',
+                  lineHeight: '1.2130000591278076em',
+                  color: isInputDisabled && !isRecording ? '#A6AAB6' : '#061333',
+                  background: 'transparent',
+                  border: 'none',
+                  padding: 0,
+                  minHeight: '20px',
+                  height: 'auto',
+                  transition: 'height 0.2s ease-in-out',
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#CBD5E0 transparent',
+                  textAlign: 'left',
+                  verticalAlign: 'middle'
+                }}
+                placeholder={placeholder}
+                value={value}
+                onChange={(e) => handleInputChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    if (!isThinking && !isRecording) {
+                      onSend();
+                    }
                   }
-                }
-                if (e.key === "Escape") {
-                  hideSuggestions();
-                }
-              }}
-              onFocus={() => {
-                setIsFocused(true);
-                if (suggestionsEnabled && value.trim().length > 0) {
-                  setShowSuggestions(true);
-                } else if (suggestionsEnabled) {
-                  // Start inactivity timer when user focuses
-                  startInactivityTimer();
-                }
-              }}
-              onBlur={() => {
-                setIsFocused(false);
-                // Small delay to allow clicking on suggestions
-                setTimeout(() => {
-                  setShowSuggestions(false);
-                }, 200);
-              }}
-              disabled={isInputDisabled}
-            />
+                  if (e.key === "Escape") {
+                    hideSuggestions();
+                  }
+                }}
+                onFocus={() => {
+                  setIsFocused(true);
+                  if (suggestionsEnabled && value.trim().length > 0) {
+                    setShowSuggestions(true);
+                  } else if (suggestionsEnabled) {
+                    startInactivityTimer();
+                  }
+                }}
+                onBlur={() => {
+                  setIsFocused(false);
+                  setTimeout(() => {
+                    setShowSuggestions(false);
+                  }, 200);
+                }}
+                disabled={isInputDisabled}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Actions bottom */}
-        <div
-          className="flex flex-row justify-end md:justify-between items-center"
-          style={{
-            padding: '0px 10px 6px 15px',
-            borderRadius: '0px 0px 10px 10px'
-          }}
-        >
-          {/* Empty space on left - only on desktop */}
-          <div className="hidden md:block" style={{ flex: 1 }} />
-          
-          {/* Buttons container */}
-          <div
-            className="flex flex-row justify-end items-center gap-2 md:gap-[5px]"
-          >
-            {/* Record button - button-small */}
+        {/* Buttons container - Mobile */}
+        <div className="flex flex-row items-center gap-[5px] flex-shrink-0">
+            {/* Record button - icon-button-medium */}
             {(!isRecording && !localIsRecording) ? (
               <button
                 onClick={startRecording}
@@ -435,19 +450,15 @@ export default function InputWithSuggestions({
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
-                  alignItems: 'flex-start',
-                  padding: '7px 14px',
-                  gap: '8px',
-                  width: '88px',
-                  height: '30px',
-                  background: recordButtonStyle.background,
+                  alignItems: 'center',
+                  padding: '8px',
+                  width: '35px',
+                  height: '35px',
+                  background: isRecordDisabled ? '#E8EBFE' : recordButtonStyle.background,
                   borderRadius: '100px',
                   flex: 'none',
-                  order: 0,
-                  flexGrow: 0,
                   cursor: isRecordDisabled ? 'not-allowed' : 'pointer',
                   border: 'none',
-                  opacity: isRecordDisabled ? 0.5 : 1,
                   transition: 'background-color 0.2s ease'
                 }}
               >
@@ -458,49 +469,25 @@ export default function InputWithSuggestions({
                     flexDirection: 'row',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    padding: '0px',
-                    gap: '5px',
-                    width: '60px',
-                    height: '16px',
-                    borderRadius: '100px',
-                    flex: 'none',
-                    order: 0,
-                    flexGrow: 0
-                }}
-              >
-                  {/* icons/small-icon */}
-                <svg 
-                    width="14" 
-                    height="14" 
-                  viewBox="0 0 14 15" 
-                  fill="none" 
-                  xmlns="http://www.w3.org/2000/svg"
-                    style={{
-                      width: '14px',
-                      height: '14px',
-                      flex: 'none',
-                      order: 0
-                    }}
+                    width: '19px',
+                    height: '19px'
+                  }}
                 >
-                  <path d="M10.9375 5.25C11.1562 5.25 11.375 5.46875 11.375 5.6875V7C11.375 9.26953 9.625 11.1289 7.4375 11.3477V13.125H9.1875C9.40625 13.125 9.625 13.3438 9.625 13.5625C9.625 13.8086 9.40625 14 9.1875 14H4.8125C4.56641 14 4.375 13.8086 4.375 13.5625C4.375 13.3438 4.56641 13.125 4.8125 13.125H6.5625V11.3477C4.29297 11.1289 2.625 9.13281 2.625 6.86328V5.6875C2.625 5.46875 2.81641 5.25 3.0625 5.25C3.28125 5.25 3.5 5.46875 3.5 5.6875V6.89062C3.5 8.75 4.89453 10.3906 6.75391 10.5C8.77734 10.6367 10.5 9.02344 10.5 7V5.6875C10.5 5.46875 10.6914 5.25 10.9375 5.25ZM7 9.625C5.55078 9.625 4.375 8.44922 4.375 7V2.625C4.375 1.17578 5.55078 0 7 0C8.44922 0 9.625 1.20312 9.625 2.625V7C9.625 8.44922 8.44922 9.625 7 9.625ZM5.25 2.625V7C5.25 7.98438 6.01562 8.75 7 8.75C7.95703 8.75 8.75 7.98438 8.75 7V2.625C8.75 1.66797 7.95703 0.875 7 0.875C6.01562 0.875 5.25 1.66797 5.25 2.625Z" fill={recordButtonStyle.iconColor}/>
-                </svg>
-                  {/* label-text */}
-                  <span
+                  {/* icons/medium-icon */}
+                  <svg 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 14 15" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
                     style={{
-                      width: '41px',
+                      width: '16px',
                       height: '16px',
-                      fontFamily: 'Product Sans Light, system-ui, sans-serif',
-                      fontStyle: 'normal',
-                      fontWeight: 300,
-                      fontSize: '13.2571px',
-                      lineHeight: '16px',
-                      color: recordButtonStyle.color,
-                      flex: 'none',
-                      order: 1
+                      flex: 'none'
                     }}
                   >
-                    Record
-                  </span>
+                    <path d="M10.9375 5.25C11.1562 5.25 11.375 5.46875 11.375 5.6875V7C11.375 9.26953 9.625 11.1289 7.4375 11.3477V13.125H9.1875C9.40625 13.125 9.625 13.3438 9.625 13.5625C9.625 13.8086 9.40625 14 9.1875 14H4.8125C4.56641 14 4.375 13.8086 4.375 13.5625C4.375 13.3438 4.56641 13.125 4.8125 13.125H6.5625V11.3477C4.29297 11.1289 2.625 9.13281 2.625 6.86328V5.6875C2.625 5.46875 2.81641 5.25 3.0625 5.25C3.28125 5.25 3.5 5.46875 3.5 5.6875V6.89062C3.5 8.75 4.89453 10.3906 6.75391 10.5C8.77734 10.6367 10.5 9.02344 10.5 7V5.6875C10.5 5.46875 10.6914 5.25 10.9375 5.25ZM7 9.625C5.55078 9.625 4.375 8.44922 4.375 7V2.625C4.375 1.17578 5.55078 0 7 0C8.44922 0 9.625 1.20312 9.625 2.625V7C9.625 8.44922 8.44922 9.625 7 9.625ZM5.25 2.625V7C5.25 7.98438 6.01562 8.75 7 8.75C7.95703 8.75 8.75 7.98438 8.75 7V2.625C8.75 1.66797 7.95703 0.875 7 0.875C6.01562 0.875 5.25 1.66797 5.25 2.625Z" fill={isRecordDisabled ? '#3C51E2' : recordButtonStyle.iconColor}/>
+                  </svg>
                 </div>
               </button>
             ) : (
@@ -512,11 +499,10 @@ export default function InputWithSuggestions({
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
-                  alignItems: 'flex-start',
-                  padding: '7px 14px',
-                  gap: '8px',
-                  width: '88px',
-                  height: '30px',
+                  alignItems: 'center',
+                  padding: '8px',
+                  width: '35px',
+                  height: '35px',
                   background: recordButtonStyle.background,
                   borderRadius: '100px',
                   flex: 'none',
@@ -532,53 +518,30 @@ export default function InputWithSuggestions({
                     flexDirection: 'row',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    padding: '0px',
-                    gap: '5px',
-                    width: '60px',
-                    height: '16px',
-                    borderRadius: '100px',
-                    flex: 'none',
-                    order: 0,
-                    flexGrow: 0
-                }}
-              >
-                  {/* icons/small-icon */}
-                <svg 
-                    width="14" 
-                    height="14" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke={recordButtonStyle.iconColor} 
-                  strokeWidth="2"
-                    style={{
-                      width: '14px',
-                      height: '14px',
-                      flex: 'none'
-                    }}
+                    width: '19px',
+                    height: '19px'
+                  }}
                 >
-                  <rect x="6" y="6" width="12" height="12" rx="2"/>
-                </svg>
-                  {/* label-text */}
-                  <span
+                  {/* icons/medium-icon */}
+                  <svg 
+                    width="19" 
+                    height="19" 
+                    viewBox="0 0 19 19" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
                     style={{
-                      width: '41px',
+                      width: '16px',
                       height: '16px',
-                      fontFamily: 'Product Sans Light, system-ui, sans-serif',
-                      fontStyle: 'normal',
-                      fontWeight: 300,
-                      fontSize: '13.2571px',
-                      lineHeight: '16px',
-                      color: recordButtonStyle.color,
                       flex: 'none'
                     }}
                   >
-                    Stop
-                  </span>
+                    <path d="M13.5 3.5C14.5938 3.5 15.5 4.40625 15.5 5.5V13.5C15.5 14.5938 14.5938 15.5 13.5 15.5H5.5C4.375 15.5 3.5 14.5938 3.5 13.5V5.5C3.5 4.40625 4.375 3.5 5.5 3.5H13.5ZM14.5 13.5V5.5C14.5 4.96875 14.0312 4.5 13.5 4.5H5.5C4.9375 4.5 4.5 4.96875 4.5 5.5V13.5C4.5 14.0625 4.9375 14.5 5.5 14.5H13.5C14.0312 14.5 14.5 14.0625 14.5 13.5Z" fill={recordButtonStyle.iconColor}/>
+                  </svg>
                 </div>
               </button>
             )}
 
-            {/* Send button - icon-button-small */}
+            {/* Send button - icon-button-medium */}
             <button
               onClick={onSend}
               disabled={isSendDisabled}
@@ -589,14 +552,10 @@ export default function InputWithSuggestions({
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
-                paddingTop: '7px',
-                paddingBottom: '7px',
-                paddingLeft: '0px',
-                paddingRight: '0px',
-                isolation: 'isolate',
-                width: '29px',
-                height: '29px',
-                background: sendButtonStyle.background,
+                padding: '8px',
+                width: '35px',
+                height: '35px',
+                background: isSendDisabled ? '#F3F3FC' : sendButtonStyle.background,
                 borderRadius: '100px',
                 flex: 'none',
                 cursor: isSendDisabled ? 'not-allowed' : 'pointer',
@@ -605,26 +564,315 @@ export default function InputWithSuggestions({
                 boxSizing: 'border-box',
               }}
             >
-              {/* icons/small-icon */}
-              <svg 
-                width="14" 
-                height="14" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke={sendButtonStyle.iconColor} 
-                strokeWidth="2" 
+              {/* icons/medium-icon */}
+              <div
                 style={{
-                  width: '14px',
-                  height: '14px',
-                  flex: 'none',
-                  transform: 'rotate(45deg)',
-                  marginLeft: '-3px'
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '19px',
+                  height: '19px'
                 }}
               >
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22,2 15,22 11,13 2,9"></polygon>
-              </svg>
+                <svg 
+                  width="16" 
+                  height="16" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke={isSendDisabled ? '#8D94A3' : sendButtonStyle.iconColor} 
+                  strokeWidth="2" 
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    flex: 'none',
+                    transform: 'rotate(45deg)',
+                    marginLeft: '-3px'
+                  }}
+                >
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                </svg>
+              </div>
             </button>
+          </div>
+        </div>
+
+      {/* Desktop: Vertical layout - Text field with buttons below */}
+      <div className="hidden md:flex flex-col w-full max-w-full">
+        {/* Text field container */}
+        <div 
+          className="flex flex-col w-full max-w-full"
+          style={{
+            gap: '10px',
+            borderRadius: '100px',
+            ...getInputContainerStyle()
+          }}
+          onMouseEnter={() => !isInputDisabled && !isRecording && setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          {/* Input text area */}
+          <div 
+            className="flex flex-row"
+            style={{
+              padding: '8px 15px',
+              gap: '4px',
+              borderRadius: '100px'
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', minHeight: 'auto' }}>
+              <textarea
+                ref={textareaRef}
+                rows={1}
+                tabIndex={1}
+                className={`w-full resize-none outline-none ${isInputDisabled && !isRecording ? 'input-disabled' : ''}`}
+                style={{ 
+                  fontFamily: 'Product Sans Light, system-ui, sans-serif', 
+                  fontWeight: 300,
+                  fontSize: '16px',
+                  lineHeight: '1.2130000591278076em',
+                  color: isInputDisabled && !isRecording ? '#A6AAB6' : '#061333',
+                  background: 'transparent',
+                  border: 'none',
+                  padding: 0,
+                  minHeight: '20px',
+                  height: 'auto',
+                  transition: 'height 0.2s ease-in-out',
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#CBD5E0 transparent',
+                  textAlign: 'left',
+                  verticalAlign: 'middle'
+                }}
+                placeholder={placeholder}
+                value={value}
+                onChange={(e) => handleInputChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    if (!isThinking && !isRecording) {
+                      onSend();
+                    }
+                  }
+                  if (e.key === "Escape") {
+                    hideSuggestions();
+                  }
+                }}
+                onFocus={() => {
+                  setIsFocused(true);
+                  if (suggestionsEnabled && value.trim().length > 0) {
+                    setShowSuggestions(true);
+                  } else if (suggestionsEnabled) {
+                    startInactivityTimer();
+                  }
+                }}
+                onBlur={() => {
+                  setIsFocused(false);
+                  setTimeout(() => {
+                    setShowSuggestions(false);
+                  }, 200);
+                }}
+                disabled={isInputDisabled}
+              />
+            </div>
+          </div>
+
+          {/* Actions bottom */}
+          <div
+            className="flex flex-row justify-end md:justify-between items-center"
+            style={{
+              padding: '0px 10px 0px 15px',
+              borderRadius: '0px 0px 100px 100px'
+            }}
+          >
+            {/* Empty space on left - only on desktop */}
+            <div className="hidden md:block" style={{ flex: 1 }} />
+            
+            {/* Buttons container */}
+            <div
+              className="flex flex-row justify-end items-center gap-2 md:gap-[5px]"
+            >
+              {/* Record button - Desktop */}
+              {(!isRecording && !localIsRecording) ? (
+                <button
+                  onClick={startRecording}
+                  disabled={isRecordDisabled}
+                  onMouseEnter={() => setHoverRecord(true)}
+                  onMouseLeave={() => setHoverRecord(false)}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
+                    padding: '7px 14px',
+                    gap: '8px',
+                    width: '88px',
+                    height: '30px',
+                    background: recordButtonStyle.background,
+                    borderRadius: '100px',
+                    flex: 'none',
+                    cursor: isRecordDisabled ? 'not-allowed' : 'pointer',
+                    border: 'none',
+                    opacity: isRecordDisabled ? 0.5 : 1,
+                    transition: 'background-color 0.2s ease'
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      padding: '0px',
+                      gap: '5px',
+                      width: '60px',
+                      height: '16px',
+                      borderRadius: '100px'
+                    }}
+                  >
+                    <svg 
+                      width="14" 
+                      height="14" 
+                      viewBox="0 0 14 15" 
+                      fill="none" 
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{
+                        width: '14px',
+                        height: '14px',
+                        flex: 'none'
+                      }}
+                    >
+                      <path d="M10.9375 5.25C11.1562 5.25 11.375 5.46875 11.375 5.6875V7C11.375 9.26953 9.625 11.1289 7.4375 11.3477V13.125H9.1875C9.40625 13.125 9.625 13.3438 9.625 13.5625C9.625 13.8086 9.40625 14 9.1875 14H4.8125C4.56641 14 4.375 13.8086 4.375 13.5625C4.375 13.3438 4.56641 13.125 4.8125 13.125H6.5625V11.3477C4.29297 11.1289 2.625 9.13281 2.625 6.86328V5.6875C2.625 5.46875 2.81641 5.25 3.0625 5.25C3.28125 5.25 3.5 5.46875 3.5 5.6875V6.89062C3.5 8.75 4.89453 10.3906 6.75391 10.5C8.77734 10.6367 10.5 9.02344 10.5 7V5.6875C10.5 5.46875 10.6914 5.25 10.9375 5.25ZM7 9.625C5.55078 9.625 4.375 8.44922 4.375 7V2.625C4.375 1.17578 5.55078 0 7 0C8.44922 0 9.625 1.20312 9.625 2.625V7C9.625 8.44922 8.44922 9.625 7 9.625ZM5.25 2.625V7C5.25 7.98438 6.01562 8.75 7 8.75C7.95703 8.75 8.75 7.98438 8.75 7V2.625C8.75 1.66797 7.95703 0.875 7 0.875C6.01562 0.875 5.25 1.66797 5.25 2.625Z" fill={recordButtonStyle.iconColor}/>
+                    </svg>
+                    <span
+                      style={{
+                        width: '41px',
+                        height: '16px',
+                        fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                        fontWeight: 300,
+                        fontSize: '13.2571px',
+                        lineHeight: '16px',
+                        color: recordButtonStyle.color,
+                        flex: 'none'
+                      }}
+                    >
+                      Record
+                    </span>
+                  </div>
+                </button>
+              ) : (
+                <button
+                  onClick={stopRecording}
+                  onMouseEnter={() => setHoverRecord(true)}
+                  onMouseLeave={() => setHoverRecord(false)}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
+                    padding: '7px 14px',
+                    gap: '8px',
+                    width: '88px',
+                    height: '30px',
+                    background: recordButtonStyle.background,
+                    borderRadius: '100px',
+                    flex: 'none',
+                    cursor: 'pointer',
+                    border: 'none',
+                    transition: 'background-color 0.2s ease'
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      padding: '0px',
+                      gap: '5px',
+                      width: '60px',
+                      height: '16px',
+                      borderRadius: '100px'
+                    }}
+                  >
+                    <svg 
+                      width="19" 
+                      height="19" 
+                      viewBox="0 0 19 19" 
+                      fill="none" 
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{
+                        width: '14px',
+                        height: '14px',
+                        flex: 'none'
+                      }}
+                    >
+                      <path d="M13.5 3.5C14.5938 3.5 15.5 4.40625 15.5 5.5V13.5C15.5 14.5938 14.5938 15.5 13.5 15.5H5.5C4.375 15.5 3.5 14.5938 3.5 13.5V5.5C3.5 4.40625 4.375 3.5 5.5 3.5H13.5ZM14.5 13.5V5.5C14.5 4.96875 14.0312 4.5 13.5 4.5H5.5C4.9375 4.5 4.5 4.96875 4.5 5.5V13.5C4.5 14.0625 4.9375 14.5 5.5 14.5H13.5C14.0312 14.5 14.5 14.0625 14.5 13.5Z" fill={recordButtonStyle.iconColor}/>
+                    </svg>
+                    <span
+                      style={{
+                        width: '41px',
+                        height: '16px',
+                        fontFamily: 'Product Sans Light, system-ui, sans-serif',
+                        fontWeight: 300,
+                        fontSize: '13.2571px',
+                        lineHeight: '16px',
+                        color: recordButtonStyle.color,
+                        flex: 'none'
+                      }}
+                    >
+                      Stop
+                    </span>
+                  </div>
+                </button>
+              )}
+
+              {/* Send button - Desktop */}
+              <button
+                onClick={onSend}
+                disabled={isSendDisabled}
+                onMouseEnter={() => !isSendDisabled && setHoverSend(true)}
+                onMouseLeave={() => setHoverSend(false)}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  paddingTop: '7px',
+                  paddingBottom: '7px',
+                  paddingLeft: '0px',
+                  paddingRight: '0px',
+                  isolation: 'isolate',
+                  width: '29px',
+                  height: '29px',
+                  background: sendButtonStyle.background,
+                  borderRadius: '100px',
+                  flex: 'none',
+                  cursor: isSendDisabled ? 'not-allowed' : 'pointer',
+                  border: 'none',
+                  transition: 'background-color 0.2s ease',
+                  boxSizing: 'border-box',
+                }}
+              >
+                <svg 
+                  width="14" 
+                  height="14" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke={sendButtonStyle.iconColor} 
+                  strokeWidth="2" 
+                  style={{
+                    width: '14px',
+                    height: '14px',
+                    flex: 'none',
+                    transform: 'rotate(45deg)',
+                    marginLeft: '-3px'
+                  }}
+                >
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>

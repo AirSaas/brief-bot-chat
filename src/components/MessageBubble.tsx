@@ -150,7 +150,7 @@ export function MessageBubble({
             className={`${base} ${userClasses} ${
               isAudio ? "flex flex-col gap-2" : ""
             }`}
-            style={{ padding: '20px', width: '400px' }}
+            style={{ padding: '20px', width: '250px', maxWidth: '250px' }}
           >
             {isAudio && audioFile ? (
               <div className="flex flex-col gap-2 min-h-[2rem] justify-center -my-4 -mx-4">
@@ -272,13 +272,13 @@ export function MessageBubble({
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
-                width: '30px',
-                height: '30px',
+                width: '24px',
+                height: '21.63px',
                 gap: '10px',
                 flexShrink: 0
               }}
             >
-              <svg width="30" height="30" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+              <svg width="24" height="21.63" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
                 <path opacity="0.4" d="M35.1855 9.45942L41.4551 7.03957L43.765 0.879946C43.875 0.32998 44.425 0 44.9749 0C45.4149 0 45.9649 0.32998 46.0749 0.879946L48.4947 7.03957L54.6544 9.45942C55.2044 9.56941 55.5343 10.1194 55.5343 10.5593C55.5343 11.1093 55.2044 11.6593 54.6544 11.7693L48.4947 14.0791L46.0749 20.3487C45.9649 20.7887 45.4149 21.1187 44.9749 21.1187C44.425 21.1187 43.875 20.7887 43.765 20.3487L41.4551 14.0791L35.1855 11.7693C34.7455 11.6593 34.4155 11.1093 34.4155 10.5593C34.4155 10.1194 34.7455 9.56941 35.1855 9.45942Z" fill="#3C51E2"/>
                 <path opacity="0.4" d="M5.21452 22.8817L6.92554 18.319C7.00701 17.9116 7.4144 17.6672 7.82178 17.6672C8.14769 17.6672 8.55508 17.9116 8.63655 18.319L10.429 22.8817L14.9918 24.6742C15.3991 24.7556 15.6436 25.163 15.6436 25.4889C15.6436 25.8963 15.3991 26.3037 14.9918 26.3852L10.429 28.0962L8.63655 32.7403C8.55508 33.0662 8.14769 33.3107 7.82178 33.3107C7.4144 33.3107 7.00701 33.0662 6.92554 32.7403L5.21452 28.0962L0.570338 26.3852C0.244431 26.3037 0 25.8963 0 25.4889C0 25.163 0.244431 24.7556 0.570338 24.6742L5.21452 22.8817Z" fill="#3C51E2"/>
                 <path d="M27.0839 17.6672L43.804 53.1412L26.561 47.8021L31.6504 44.7152L35.385 45.8817L27.0823 28.2685L19.7552 43.8142L29.0691 38.243L30.9827 42.2978L9.38818 55.2115L27.0839 17.6672Z" fill="#3C51E2"/>
@@ -299,7 +299,7 @@ export function MessageBubble({
               className={`${base} ${botClasses} ${
                 isAudio ? "flex flex-col gap-2" : ""
               } group relative bot-message-no-radius`}
-                style={{ borderRadius: "0", width: '400px', paddingTop: '5px' }}
+                style={{ borderRadius: "0", maxWidth: '400px', width: '100%', paddingTop: '5px' }}
             >
               {isAudio && audioFile ? (
                 <div className="flex flex-col gap-2">
@@ -551,6 +551,7 @@ export function MessageBubble({
           {/* Quick Answers for bot messages */}
           {quickAnswers && quickAnswers.length > 0 && onQuickAnswerClick && (
             <div 
+              className="quick-answers-container-wrapper"
               style={{
                 marginLeft: '30px',
                 display: 'flex',
@@ -624,6 +625,7 @@ export function MessageBubble({
                       return (
                         <div
                           key={index}
+                          className="quick-answer-item"
                           style={{
                             display: 'flex',
                             flexDirection: 'row',
@@ -637,6 +639,7 @@ export function MessageBubble({
                         >
                           {/* wrapper */}
                           <div
+                            className="quick-answer-wrapper"
                             style={{
                               display: 'flex',
                               flexDirection: 'row',
@@ -648,7 +651,8 @@ export function MessageBubble({
                               borderRadius: '10px',
                               flex: 1,
                               transition: 'all 0.2s ease',
-                              boxSizing: 'border-box'
+                              boxSizing: 'border-box',
+                              width: '100%'
                             }}
                           >
                             {/* Cont */}
@@ -815,15 +819,17 @@ export function MessageBubble({
                       );
                     })}
                     
-                    {/* Action buttons - in row */}
+                    {/* Action buttons - in column for mobile */}
                     {actionButtons.length > 0 && (
                       <div
+                        className="md:mt-[10px] -mt-[30px]"
                         style={{
                           display: 'flex',
-                          flexDirection: 'row',
+                          flexDirection: 'column',
                           gap: '5px',
-                          alignItems: 'center',
-                          marginTop: actionButtons.length > 0 && regularButtons.length > 0 ? '10px' : '0'
+                          alignItems: 'stretch',
+                          width: '100%',
+                          alignSelf: 'stretch'
                         }}
                       >
                         {actionButtons.map(({ answer, index }) => {
@@ -857,18 +863,20 @@ export function MessageBubble({
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 gap: '5px',
-                                padding: '7px 15px',
+                                padding: '7px 14px',
+                                alignSelf: 'stretch',
+                                minHeight: '29px',
                                 height: '29px',
                                 borderRadius: '100px',
                                 fontFamily: 'Product Sans Light, system-ui, sans-serif',
                                 fontWeight: 300,
                                 fontSize: '12px',
-                                lineHeight: '12px',
+                                lineHeight: '1.2130000591278076em',
                                 textAlign: 'center',
                                 transition: 'all 0.2s ease',
                                 cursor: 'pointer',
                                 background: isHovered ? '#061333' : (isPDFButton ? '#3C51E2' : 'transparent'),
-                                border: isNewBriefButton ? '1px solid #3C51E2' : 'none',
+                                border: isNewBriefButton ? '1px solid #3C51E2' : (isPDFButton ? 'none' : 'none'),
                                 color: isHovered ? '#FFFFFF' : (isPDFButton ? '#FFFFFF' : '#3C51E2'),
                                 boxSizing: 'border-box'
                               }}
@@ -882,7 +890,7 @@ export function MessageBubble({
                                   xmlns="http://www.w3.org/2000/svg"
                                   style={{ width: '14px', height: '14px', flex: 'none' }}
                                 >
-                                  <path d="M12.25 12.25C12.25 13.2344 11.457 14 10.5 14H3.5C2.51562 14 1.75 13.2344 1.75 12.25H2.625C2.625 12.7422 3.00781 13.125 3.5 13.125H10.5C10.9648 13.125 11.375 12.7422 11.375 12.25H12.25ZM8.3125 5.25C7.57422 5.25 7 4.67578 7 3.9375V0.875H3.5C3.00781 0.875 2.625 1.28516 2.625 1.75V6.125H1.75V1.75C1.75 0.792969 2.51562 0 3.5 0H7.76562C8.09375 0 8.44922 0.164062 8.69531 0.410156L11.8398 3.55469C12.0859 3.80078 12.25 4.15625 12.25 4.48438V6.125H11.375V5.25H8.3125ZM11.2383 4.18359L8.06641 1.01172C8.01172 0.957031 7.92969 0.929688 7.875 0.902344V3.9375C7.875 4.18359 8.06641 4.375 8.3125 4.375H11.3477C11.3203 4.32031 11.293 4.23828 11.2383 4.18359ZM4.15625 7C4.97656 7 5.6875 7.71094 5.6875 8.53125C5.6875 9.37891 4.97656 10.0625 4.15625 10.0625H3.9375V10.9375C3.9375 11.1836 3.71875 11.375 3.5 11.375C3.25391 11.375 3.0625 11.1836 3.0625 10.9375V7.4375C3.0625 7.21875 3.25391 7 3.5 7H4.15625ZM4.8125 8.53125C4.8125 8.17578 4.51172 7.875 4.15625 7.875H3.9375V9.1875H4.15625C4.51172 9.1875 4.8125 8.91406 4.8125 8.53125ZM6.125 7.4375C6.125 7.21875 6.31641 7 6.5625 7H7.21875C7.92969 7 8.53125 7.60156 8.53125 8.3125V10.0625C8.53125 10.8008 7.92969 11.375 7.21875 11.375H6.5625C6.31641 11.375 6.125 11.1836 6.125 10.9375V7.4375ZM7 10.5H7.21875C7.4375 10.5 7.65625 10.3086 7.65625 10.0625V8.3125C7.65625 8.09375 7.4375 7.875 7.21875 7.875H7V10.5ZM10.9375 7C11.1562 7 11.375 7.21875 11.375 7.4375C11.375 7.68359 11.1562 7.875 10.9375 7.875H10.0625V8.75H10.9375C11.1562 8.75 11.375 8.96875 11.375 9.1875C11.375 9.43359 11.1562 9.625 10.9375 9.625H10.0625V10.9375C10.0625 11.1836 9.84375 11.375 9.625 11.375C9.37891 11.375 9.1875 11.1836 9.1875 10.9375V7.4375C9.1875 7.21875 9.37891 7 9.625 7H10.9375Z" fill={isHovered ? '#FFFFFF' : '#FFFFFF'}/>
+                                  <path d="M12.25 12.25C12.25 13.2344 11.457 14 10.5 14H3.5C2.51562 14 1.75 13.2344 1.75 12.25H2.625C2.625 12.7422 3.00781 13.125 3.5 13.125H10.5C10.9648 13.125 11.375 12.7422 11.375 12.25H12.25ZM8.3125 5.25C7.57422 5.25 7 4.67578 7 3.9375V0.875H3.5C3.00781 0.875 2.625 1.28516 2.625 1.75V6.125H1.75V1.75C1.75 0.792969 2.51562 0 3.5 0H7.76562C8.09375 0 8.44922 0.164062 8.69531 0.410156L11.8398 3.55469C12.0859 3.80078 12.25 4.15625 12.25 4.48438V6.125H11.375V5.25H8.3125ZM11.2383 4.18359L8.06641 1.01172C8.01172 0.957031 7.92969 0.929688 7.875 0.902344V3.9375C7.875 4.18359 8.06641 4.375 8.3125 4.375H11.3477C11.3203 4.32031 11.293 4.23828 11.2383 4.18359ZM4.15625 7C4.97656 7 5.6875 7.71094 5.6875 8.53125C5.6875 9.37891 4.97656 10.0625 4.15625 10.0625H3.9375V10.9375C3.9375 11.1836 3.71875 11.375 3.5 11.375C3.25391 11.375 3.0625 11.1836 3.0625 10.9375V7.4375C3.0625 7.21875 3.25391 7 3.5 7H4.15625ZM4.8125 8.53125C4.8125 8.17578 4.51172 7.875 4.15625 7.875H3.9375V9.1875H4.15625C4.51172 9.1875 4.8125 8.91406 4.8125 8.53125ZM6.125 7.4375C6.125 7.21875 6.31641 7 6.5625 7H7.21875C7.92969 7 8.53125 7.60156 8.53125 8.3125V10.0625C8.53125 10.8008 7.92969 11.375 7.21875 11.375H6.5625C6.31641 11.375 6.125 11.1836 6.125 10.9375V7.4375ZM7 10.5H7.21875C7.4375 10.5 7.65625 10.3086 7.65625 10.0625V8.3125C7.65625 8.09375 7.4375 7.875 7.21875 7.875H7V10.5ZM10.9375 7C11.1562 7 11.375 7.21875 11.375 7.4375C11.375 7.68359 11.1562 7.875 10.9375 7.875H10.0625V8.75H10.9375C11.1562 8.75 11.375 8.96875 11.375 9.1875C11.375 9.43359 11.1562 9.625 10.9375 9.625H10.0625V10.9375C10.0625 11.1836 9.84375 11.375 9.625 11.375C9.37891 11.375 9.1875 11.1836 9.1875 10.9375V7.4375C9.1875 7.21875 9.37891 7 9.625 7H10.9375Z" fill="#FFFFFF"/>
                                 </svg>
                               )}
                               {isNewBriefButton && (
@@ -891,14 +899,11 @@ export function MessageBubble({
                                   height="14" 
                                   viewBox="0 0 24 24" 
                                   fill="none" 
-                                  stroke={isHovered ? '#FFFFFF' : '#3C51E2'} 
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
+                                  xmlns="http://www.w3.org/2000/svg"
                                   style={{ width: '14px', height: '14px', flex: 'none' }}
                                 >
-                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke={isHovered ? '#FFFFFF' : '#3C51E2'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke={isHovered ? '#FFFFFF' : '#3C51E2'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
                               )}
                               <span>{answer}</span>
@@ -908,15 +913,18 @@ export function MessageBubble({
                       </div>
                     )}
                     
-                    {/* Special buttons - in row */}
+                    {/* Special buttons - in column */}
                     {specialButtons.length > 0 && (
                       <div
+                        className="special-buttons-container"
                         style={{
                           display: 'flex',
                           flexDirection: 'row',
                           gap: '5px',
                           alignItems: 'center',
-                          marginTop: specialButtons.length > 0 && regularButtons.length > 0 ? '10px' : '0'
+                          marginTop: specialButtons.length > 0 && regularButtons.length > 0 ? '10px' : '0',
+                          width: '100%',
+                          alignSelf: 'stretch'
                         }}
                       >
                         {specialButtons.map(({ answer, index }) => {
@@ -950,19 +958,20 @@ export function MessageBubble({
                               onMouseEnter={() => !isClicked && setHoveredSpecialButton(answer)}
                               onMouseLeave={() => setHoveredSpecialButton(null)}
                               disabled={isClicked}
+                              className="special-button"
                               style={{
                                 display: 'flex',
                                 flexDirection: 'row',
                                 justifyContent: 'center',
                                 alignItems: 'center',
-                                gap: '5px',
-                                padding: '7px 15px',
+                                gap: '8px',
+                                padding: '7px 14px',
                                 height: '29px',
                                 borderRadius: '100px',
                                 fontFamily: 'Product Sans Light, system-ui, sans-serif',
                                 fontWeight: 300,
                                 fontSize: '12px',
-                                lineHeight: '12px',
+                                lineHeight: '1.2130000591278076em',
                                 textAlign: 'center',
                                 transition: 'all 0.2s ease',
                                 cursor: isClicked ? 'not-allowed' : 'pointer',
@@ -970,35 +979,37 @@ export function MessageBubble({
                                 border: isChangesButton ? '1px solid #3C51E2' : 'none',
                                 color: isHovered ? '#FFFFFF' : (isCorrectButton ? '#FFFFFF' : '#3C51E2'),
                                 opacity: isClicked ? 0.5 : 1,
-                                boxSizing: 'border-box'
+                                boxSizing: 'border-box',
+                                width: '100%',
+                                alignSelf: 'stretch'
                               }}
                             >
                               {isCorrectButton && (
                                 <svg 
-                                  width="19" 
-                                  height="19" 
+                                  width="14" 
+                                  height="14" 
                                   viewBox="0 0 24 24" 
                                   fill="none" 
                                   stroke={isHovered ? '#FFFFFF' : '#FFFFFF'} 
                                   strokeWidth="2"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
-                                  style={{ width: '19px', height: '19px' }}
+                                  style={{ width: '14px', height: '14px', flex: 'none' }}
                                 >
                                   <polyline points="20 6 9 17 4 12"/>
                                 </svg>
                               )}
                               {isChangesButton && (
                                 <svg 
-                                  width="19" 
-                                  height="19" 
+                                  width="14" 
+                                  height="14" 
                                   viewBox="0 0 24 24" 
                                   fill="none" 
                                   stroke={isHovered ? '#FFFFFF' : '#3C51E2'} 
                                   strokeWidth="2"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
-                                  style={{ width: '19px', height: '19px' }}
+                                  style={{ width: '14px', height: '14px', flex: 'none' }}
                                 >
                                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -1030,12 +1041,15 @@ export function MessageBubble({
                        lowerAnswer === "tout est correct";
               }) && (
                 <div
+                  className="fixed-buttons-container"
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
                     gap: '5px',
                     alignItems: 'center',
-                    marginTop: '10px'
+                    marginTop: '10px',
+                    width: '100%',
+                    alignSelf: 'stretch'
                   }}
                 >
                   {/* Generate other examples button - filled */}
@@ -1043,13 +1057,14 @@ export function MessageBubble({
                     onClick={() => onQuickAnswerClick(t('chat.quick_answers.give_examples'))}
                     onMouseEnter={() => setHoveredFixedButton('give_examples')}
                     onMouseLeave={() => setHoveredFixedButton(null)}
+                    className="fixed-button-examples"
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
                       justifyContent: 'center',
                       alignItems: 'center',
-                      gap: '5px',
-                      padding: '7px 15px',
+                      gap: '8px',
+                      padding: '7px 14px',
                       height: '29px',
                       borderRadius: '100px',
                       background: hoveredFixedButton === 'give_examples' ? '#061333' : '#3C51E2',
@@ -1057,7 +1072,7 @@ export function MessageBubble({
                       fontFamily: 'Product Sans Light, system-ui, sans-serif',
                       fontWeight: 300,
                       fontSize: '12px',
-                      lineHeight: '12px',
+                      lineHeight: '1.2130000591278076em',
                       color: '#FFFFFF',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
@@ -1082,13 +1097,14 @@ export function MessageBubble({
                     onClick={() => onQuickAnswerClick(t('chat.quick_answers.skip_question'))}
                     onMouseEnter={() => setHoveredFixedButton('skip_question')}
                     onMouseLeave={() => setHoveredFixedButton(null)}
+                    className="fixed-button-skip"
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
                       justifyContent: 'center',
                       alignItems: 'center',
-                      gap: '5px',
-                      padding: '7px 15px',
+                      gap: '8px',
+                      padding: '7px 14px',
                       height: '29px',
                       borderRadius: '100px',
                       background: hoveredFixedButton === 'skip_question' ? '#061333' : 'transparent',
@@ -1096,7 +1112,7 @@ export function MessageBubble({
                       fontFamily: 'Product Sans Light, system-ui, sans-serif',
                       fontWeight: 300,
                       fontSize: '12px',
-                      lineHeight: '12px',
+                      lineHeight: '1.2130000591278076em',
                       color: hoveredFixedButton === 'skip_question' ? '#FFFFFF' : '#3C51E2',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',

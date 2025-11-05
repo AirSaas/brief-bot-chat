@@ -511,13 +511,13 @@ div.button-group-container {
     min-height: 0; /* Allow flex shrinking */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    padding: 12px 16px;
+    padding: 10px 20px 40px !important;
   }
   
   /* Header mobile optimization */
   .chat-header-mobile {
     flex-shrink: 0;
-    padding: 12px 16px;
+    padding: 10px 20px 10px 21px !important;
     min-height: 60px;
   }
   
@@ -525,9 +525,8 @@ div.button-group-container {
   @media (max-width: 768px) {
     .chat-footer-mobile {
       flex-shrink: 0;
-      padding: 12px;
+      padding: 0px 20px 20px !important;
       background: white;
-      border-top: 1px solid #e5e7eb;
       width: 100%;
       max-width: 100%;
     }
@@ -535,29 +534,111 @@ div.button-group-container {
     /* Input area mobile optimization */
     .chat-input-mobile {
       min-height: 44px;
-      max-height: 120px;
+      max-height: 200px !important;
       width: 100%;
       max-width: 100%;
+    }
+    
+    /* Textarea expansion in mobile - allow dynamic height */
+    .chat-input-mobile textarea {
+      height: auto !important;
+      min-height: 20px !important;
+    }
+    
+    /* Container adjustments for mobile input expansion */
+    .chat-input-mobile > div {
+      max-height: none !important;
+      height: auto !important;
+    }
+    
+    .chat-input-mobile > div > div {
+      max-height: none !important;
+      min-height: auto !important;
+      height: auto !important;
+    }
+    
+    .chat-input-mobile > div > div > div {
+      max-height: none !important;
+      min-height: auto !important;
+      height: auto !important;
     }
   }
   
   /* Message bubbles mobile optimization */
   .message-bubble-mobile {
-    max-width: 85%;
+    max-width: calc(100% - 0px) !important;
     margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+  
+  /* Fixed buttons container - column layout in mobile */
+  @media (max-width: 768px) {
+    .fixed-buttons-container {
+      flex-direction: column !important;
+      gap: 5px !important;
+      align-items: stretch !important;
+      width: 100% !important;
+      align-self: stretch !important;
+      max-width: 100% !important;
+    }
+    
+    .fixed-button-examples,
+    .fixed-button-skip {
+      width: 100% !important;
+      align-self: stretch !important;
+      flex: 1 1 auto !important;
+      max-width: 100% !important;
+    }
+    
+    /* Quick answers mobile optimization */
+    .quick-answers-container-wrapper {
+      margin-left: 34px !important; /* 24px (logo) + 10px (gap) to align with bot text */
+      width: calc(100% - 34px) !important;
+      max-width: calc(100% - 34px) !important;
+      align-self: stretch !important;
+    }
+    
+    .quick-answer-item {
+      width: 100% !important;
+      align-self: stretch !important;
+    }
+    
+    .quick-answer-wrapper {
+      width: 100% !important;
+      align-self: stretch !important;
+      flex: 1 1 auto !important;
+    }
+    
+    /* Special buttons container - column layout in mobile */
+    .special-buttons-container {
+      flex-direction: column !important;
+      gap: 5px !important;
+      align-items: stretch !important;
+      width: 100% !important;
+      align-self: stretch !important;
+    }
+    
+    .special-button {
+      width: 100% !important;
+      align-self: stretch !important;
+      flex: 1 1 auto !important;
+    }
   }
   
   /* Bot message mobile optimization */
   .bot-message-mobile {
-    max-width: 90%;
+    max-width: 100% !important;
     margin-bottom: 16px;
+    box-sizing: border-box;
   }
   
   /* User message mobile optimization */
   .user-message-mobile {
-    max-width: 80%;
+    max-width: 250px !important;
+    width: 250px !important;
     margin-left: auto;
     margin-bottom: 12px;
+    box-sizing: border-box;
   }
   
   /* Mobile keyboard optimization */

@@ -64,8 +64,8 @@ export default function AudioRecorder({ onRecorded, disabled, onRecordingStateCh
           className="w-full px-[19px] py-2 bg-[#FEE8E8] text-[#E23C3C] font-light text-base rounded-full flex items-center justify-center gap-2 transition-all duration-300 hover:bg-[#FED8D8]"
           style={{ fontFamily: 'Product Sans Light, system-ui, sans-serif', lineHeight: '1.213em' }}
         >
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
-            <rect x="6" y="6" width="12" height="12" rx="2"/>
+          <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M13.5 3.5C14.5938 3.5 15.5 4.40625 15.5 5.5V13.5C15.5 14.5938 14.5938 15.5 13.5 15.5H5.5C4.375 15.5 3.5 14.5938 3.5 13.5V5.5C3.5 4.40625 4.375 3.5 5.5 3.5H13.5ZM14.5 13.5V5.5C14.5 4.96875 14.0312 4.5 13.5 4.5H5.5C4.9375 4.5 4.5 4.96875 4.5 5.5V13.5C4.5 14.0625 4.9375 14.5 5.5 14.5H13.5C14.0312 14.5 14.5 14.0625 14.5 13.5Z" fill="currentColor"/>
           </svg>
           <span>{t('chat.audio_button.stop_recording')}</span>
         </button>

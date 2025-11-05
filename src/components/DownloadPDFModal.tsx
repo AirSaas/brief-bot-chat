@@ -173,11 +173,8 @@ export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalPr
       }}
     >
       <div 
-        className="bg-white rounded-[10px] relative"
+        className="bg-white rounded-[10px] relative md:w-[602px] w-full md:max-w-[calc(100%-32px)] max-w-[calc(100%-32px)] md:p-[15px_10px_20px] p-[10px_16px_12px]"
         style={{
-          width: '602px',
-          maxWidth: 'calc(100% - 32px)',
-          padding: '15px 10px 20px',
           boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.2)',
           display: 'flex',
           flexDirection: 'column',
@@ -188,11 +185,8 @@ export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalPr
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute"
+          className="absolute md:top-[10px] md:right-[10px] top-[8px] right-[12px] md:p-[8px] p-[6px]"
           style={{
-            top: '10px',
-            right: '10px',
-            padding: '8px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -217,42 +211,32 @@ export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalPr
 
         {/* Title with icon */}
         <div 
+          className="md:gap-[10px] gap-[8px] md:pl-[10px] pl-0 md:mb-[10px] mb-[8px]"
           style={{
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            alignSelf: 'stretch',
-            gap: '10px',
-            padding: '0px 0px 0px 10px',
-            marginBottom: '10px'
+            alignSelf: 'stretch'
           }}
         >
-          <div style={{
+          <div className="md:gap-[5px] gap-[4px]" style={{
             display: 'flex',
             flexDirection: 'row',
-            alignItems: 'center',
-            gap: '5px'
+            alignItems: 'center'
           }}>
             {/* Icon - file duotone */}
-            <div style={{
-              width: '20px',
-              height: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative'
-            }}>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div className="md:w-[20px] md:h-[20px] w-[18px] h-[18px] flex items-center justify-center relative">
+              <svg className="md:w-[20px] md:h-[20px] w-[18px] h-[18px]" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M11.1875 0.875L17.125 6.8125H11.1875V0.875Z" fill="#6B7BE9"/>
                 <path opacity="0.4" d="M11.1875 0.875V6.8125H17.125V17.5C17.125 18.8359 16.0488 19.875 14.75 19.875H5.25C3.91406 19.875 2.875 18.8359 2.875 17.5V3.25C2.875 1.95117 3.91406 0.875 5.25 0.875H11.1875Z" fill="#6B7BE9"/>
               </svg>
             </div>
             {/* Title text */}
             <h2 
+              className="md:text-[18px] text-[14px]"
               style={{
                 fontFamily: 'Product Sans, system-ui, sans-serif',
                 fontWeight: 700,
-                fontSize: '18px',
                 lineHeight: '1.2130000856187608em',
                 color: '#061333',
                 margin: 0,
@@ -265,26 +249,22 @@ export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalPr
         </div>
 
         {/* Content container */}
-        <div style={{
+        <div className="md:gap-[10px] gap-[8px] md:px-[10px] px-0" style={{
           display: 'flex',
           flexDirection: 'column',
-          alignSelf: 'stretch',
-          gap: '10px',
-          padding: '0px 10px'
+          alignSelf: 'stretch'
         }}>
           {/* Description section */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
-            alignSelf: 'stretch',
-            gap: '10px'
+            alignSelf: 'stretch'
           }}>
             <p 
+              className="md:text-[14px] text-[11px] md:leading-[1.4285714285714286em] leading-[1.4em]"
               style={{
                 fontFamily: 'Product Sans Light, system-ui, sans-serif',
                 fontWeight: 300,
-                fontSize: '14px',
-                lineHeight: '1.4285714285714286em',
                 color: '#061333',
                 margin: 0,
                 textAlign: 'left'
@@ -295,25 +275,23 @@ export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalPr
           </div>
 
           {/* Buttons section */}
-          <div style={{
+          <div className="md:gap-[10px] gap-[8px]" style={{
             display: 'flex',
             flexDirection: 'column',
-            alignSelf: 'stretch',
-            gap: '10px'
+            alignSelf: 'stretch'
           }}>
             {/* Share on LinkedIn button */}
             <button
               onClick={handleShareLinkedIn}
+              className="md:h-[80px] h-[50px] md:py-[10px] py-[6px] md:px-[24px] px-[14px] md:gap-[8px] gap-[6px]"
               style={{
                 width: '100%',
                 background: '#3C51E2',
                 borderRadius: '10px',
-                padding: '10px 24px',
-                height: '80px',
                 display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                gap: '8px',
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
                 border: 'none',
                 cursor: 'pointer',
                 transition: 'background-color 0.2s ease',
@@ -326,55 +304,38 @@ export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalPr
                 e.currentTarget.style.background = '#3C51E2';
               }}
             >
-              <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                gap: '5px',
-                borderRadius: '100px'
-              }}>
-                {/* LinkedIn icon */}
-                <div style={{
-                  width: '23px',
-                  height: '23px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0
-                }}>
-                  <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18.25 3.375C18.8477 3.375 19.375 3.90234 19.375 4.53516V18C19.375 18.6328 18.8477 19.125 18.25 19.125H4.71484C4.11719 19.125 3.625 18.6328 3.625 18V4.53516C3.625 3.90234 4.11719 3.375 4.71484 3.375H18.25ZM8.37109 16.875V9.38672H6.05078V16.875H8.37109ZM7.21094 8.33203C7.94922 8.33203 8.54688 7.73438 8.54688 6.99609C8.54688 6.25781 7.94922 5.625 7.21094 5.625C6.4375 5.625 5.83984 6.25781 5.83984 6.99609C5.83984 7.73438 6.4375 8.33203 7.21094 8.33203ZM17.125 16.875V12.7617C17.125 10.7578 16.668 9.17578 14.3125 9.17578C13.1875 9.17578 12.4141 9.80859 12.0977 10.4062H12.0625V9.38672H9.84766V16.875H12.168V13.1836C12.168 12.1992 12.3438 11.25 13.5742 11.25C14.7695 11.25 14.7695 12.375 14.7695 13.2188V16.875H17.125Z" fill="white"/>
-                  </svg>
-                </div>
-                {/* Button text */}
-                <span style={{
+              {/* LinkedIn icon */}
+              <div className="md:w-[23px] md:h-[23px] w-[18px] h-[18px] flex items-center justify-center flex-shrink-0">
+                <svg className="md:w-[23px] md:h-[23px] w-[18px] h-[18px]" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18.25 3.375C18.8477 3.375 19.375 3.90234 19.375 4.53516V18C19.375 18.6328 18.8477 19.125 18.25 19.125H4.71484C4.11719 19.125 3.625 18.6328 3.625 18V4.53516C3.625 3.90234 4.11719 3.375 4.71484 3.375H18.25ZM8.37109 16.875V9.38672H6.05078V16.875H8.37109ZM7.21094 8.33203C7.94922 8.33203 8.54688 7.73438 8.54688 6.99609C8.54688 6.25781 7.94922 5.625 7.21094 5.625C6.4375 5.625 5.83984 6.25781 5.83984 6.99609C5.83984 7.73438 6.4375 8.33203 7.21094 8.33203ZM17.125 16.875V12.7617C17.125 10.7578 16.668 9.17578 14.3125 9.17578C13.1875 9.17578 12.4141 9.80859 12.0977 10.4062H12.0625V9.38672H9.84766V16.875H12.168V13.1836C12.168 12.1992 12.3438 11.25 13.5742 11.25C14.7695 11.25 14.7695 12.375 14.7695 13.2188V16.875H17.125Z" fill="white"/>
+                </svg>
+              </div>
+              {/* Button text */}
+              <span className="md:text-[18px] text-[13px]"
+                style={{
                   fontFamily: 'Product Sans Light, system-ui, sans-serif',
                   fontWeight: 300,
-                  fontSize: '18px',
                   lineHeight: '1.2130000856187608em',
                   color: '#FFFFFF',
                   textAlign: 'left'
                 }}>
-                  {t('pdf_modal.share_linkedin')}
-                </span>
-              </div>
+                {t('pdf_modal.share_linkedin')}
+              </span>
             </button>
 
             {/* Download as PDF button */}
             <button
               onClick={handleDownloadPDF}
               disabled={isDownloading}
+              className="md:h-[80px] h-[50px] md:py-[10px] py-[6px] md:px-[24px] px-[14px] md:gap-[8px] gap-[6px]"
               style={{
                 width: '100%',
                 background: '#3C51E2',
                 borderRadius: '10px',
-                padding: '10px 24px',
-                height: '80px',
                 display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                gap: '8px',
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
                 border: 'none',
                 cursor: isDownloading ? 'not-allowed' : 'pointer',
                 transition: 'background-color 0.2s ease',
@@ -392,57 +353,41 @@ export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalPr
                 }
               }}
             >
-              <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                gap: '5px',
-                borderRadius: '100px'
-              }}>
-                {isDownloading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current" style={{ flexShrink: 0 }}></div>
-                    <span style={{
+              {isDownloading ? (
+                <>
+                  <div className="animate-spin rounded-full md:h-5 md:w-5 h-4 w-4 border-b-2 border-current flex-shrink-0"></div>
+                  <span className="md:text-[18px] text-[13px]"
+                    style={{
                       fontFamily: 'Product Sans Light, system-ui, sans-serif',
                       fontWeight: 300,
-                      fontSize: '18px',
                       lineHeight: '1.2130000856187608em',
                       color: '#FFFFFF',
                       textAlign: 'left'
                     }}>
-                      {t('pdf_modal.downloading')}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    {/* Download icon */}
-                    <div style={{
-                      width: '23px',
-                      height: '23px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0
-                    }}>
-                      <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M11.0781 16.1719L6.01562 11.1094C5.80469 10.8984 5.80469 10.5117 6.01562 10.3008C6.22656 10.0898 6.61328 10.0898 6.82422 10.3008L10.9375 14.4141V3.9375C10.9375 3.65625 11.1836 3.375 11.5 3.375C11.7812 3.375 12.0625 3.65625 12.0625 3.9375V14.4141L16.1406 10.3008C16.3516 10.0898 16.7383 10.0898 16.9492 10.3008C17.1602 10.5117 17.1602 10.8984 16.9492 11.1094L11.8867 16.1719C11.7812 16.2773 11.6406 16.3125 11.5 16.3125C11.3242 16.3125 11.1836 16.2773 11.0781 16.1719ZM17.6875 18C17.9688 18 18.25 18.2812 18.25 18.5625C18.25 18.8789 17.9688 19.125 17.6875 19.125H5.3125C4.99609 19.125 4.75 18.8789 4.75 18.5625C4.75 18.2812 4.99609 18 5.3125 18H17.6875Z" fill="white"/>
-                      </svg>
-                    </div>
-                    {/* Button text */}
-                    <span style={{
+                    {t('pdf_modal.downloading')}
+                  </span>
+                </>
+              ) : (
+                <>
+                  {/* Download icon */}
+                  <div className="md:w-[23px] md:h-[23px] w-[18px] h-[18px] flex items-center justify-center flex-shrink-0">
+                    <svg className="md:w-[23px] md:h-[23px] w-[18px] h-[18px]" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M11.0781 16.1719L6.01562 11.1094C5.80469 10.8984 5.80469 10.5117 6.01562 10.3008C6.22656 10.0898 6.61328 10.0898 6.82422 10.3008L10.9375 14.4141V3.9375C10.9375 3.65625 11.1836 3.375 11.5 3.375C11.7812 3.375 12.0625 3.65625 12.0625 3.9375V14.4141L16.1406 10.3008C16.3516 10.0898 16.7383 10.0898 16.9492 10.3008C17.1602 10.5117 17.1602 10.8984 16.9492 11.1094L11.8867 16.1719C11.7812 16.2773 11.6406 16.3125 11.5 16.3125C11.3242 16.3125 11.1836 16.2773 11.0781 16.1719ZM17.6875 18C17.9688 18 18.25 18.2812 18.25 18.5625C18.25 18.8789 17.9688 19.125 17.6875 19.125H5.3125C4.99609 19.125 4.75 18.8789 4.75 18.5625C4.75 18.2812 4.99609 18 5.3125 18H17.6875Z" fill="white"/>
+                    </svg>
+                  </div>
+                  {/* Button text */}
+                  <span className="md:text-[18px] text-[13px]"
+                    style={{
                       fontFamily: 'Product Sans Light, system-ui, sans-serif',
                       fontWeight: 300,
-                      fontSize: '18px',
                       lineHeight: '1.2130000856187608em',
                       color: '#FFFFFF',
                       textAlign: 'left'
                     }}>
-                      {t('pdf_modal.download_pdf')}
-                    </span>
-                  </>
-                )}
-              </div>
+                    {t('pdf_modal.download_pdf')}
+                  </span>
+                </>
+              )}
             </button>
           </div>
         </div>

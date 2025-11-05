@@ -18,6 +18,7 @@ interface ChatWindowProps {
   setIsThinking?: React.Dispatch<React.SetStateAction<boolean>>;
   hasSelectedInitialOption?: boolean;
   setHasSelectedInitialOption?: React.Dispatch<React.SetStateAction<boolean>>;
+  onGoBack?: () => void;
 }
 
 export default function ChatWindow({ 
@@ -29,7 +30,8 @@ export default function ChatWindow({
   isThinking: externalIsThinking,
   setIsThinking: externalSetIsThinking,
   hasSelectedInitialOption: externalHasSelectedInitialOption,
-  setHasSelectedInitialOption: externalSetHasSelectedInitialOption
+  setHasSelectedInitialOption: externalSetHasSelectedInitialOption,
+  onGoBack
 }: ChatWindowProps) {
   const { t } = useTranslation();
   
@@ -402,8 +404,142 @@ export default function ChatWindow({
     }
   }
 
+  const handleGoBack = () => {
+    // If onGoBack callback is provided, use it to hide chat and show homepage
+    if (onGoBack) {
+      onGoBack();
+    } else {
+      // Fallback to browser history
+      if (typeof window !== 'undefined') {
+        window.history.back();
+      }
+    }
+  };
+
+  const handleCopyChat = () => {
+    // Copy all chat messages to clipboard
+    const chatText = messages.map(m => {
+      if (m.role === 'user') {
+        return `User: ${m.content}`;
+      } else {
+        return `Assistant: ${m.content}`;
+      }
+    }).join('\n\n');
+    
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(chatText);
+    }
+  };
+
   return (
     <div className={`h-full flex flex-col bg-white mobile-chat-container chat-window-mobile mobile-safe-area ${isKeyboardOpen ? 'mobile-keyboard-adjust' : ''}`}>
+      {/* Mobile Top Header - Back and Copy buttons */}
+      <div className="md:hidden flex flex-col bg-white" style={{ padding: '10px 20px', borderBottom: '1px solid #D2D6DC' }}>
+        <div className="flex flex-row justify-between items-center w-full" style={{ gap: '5px' }}>
+          {/* Back button */}
+          <button
+            onClick={handleGoBack}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '8px',
+              width: '35px',
+              height: '35px',
+              background: 'transparent',
+              borderRadius: '100px',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#E8EBFE';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '19px',
+                height: '19px'
+              }}
+            >
+              <svg 
+                width="19" 
+                height="19" 
+                viewBox="0 0 19 19" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+                style={{
+                  width: '19px',
+                  height: '19px',
+                  flex: 'none'
+                }}
+              >
+                <path d="M16.5 9.5C16.5 9.78125 16.25 10 15.9688 10H4.1875L8.5625 14.6875C8.75 14.875 8.75 15.1875 8.53125 15.375C8.4375 15.4688 8.3125 15.5 8.1875 15.5C8.03125 15.5 7.90625 15.4688 7.8125 15.3438L2.625 9.84375C2.4375 9.65625 2.4375 9.375 2.625 9.1875L7.8125 3.6875C8 3.46875 8.3125 3.46875 8.53125 3.65625C8.75 3.84375 8.75 4.15625 8.5625 4.34375L4.1875 9H15.9688C16.25 9 16.5 9.25 16.5 9.5Z" fill="#3C51E2"/>
+              </svg>
+            </div>
+          </button>
+
+          {/* Copy button */}
+          <button
+            onClick={handleCopyChat}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '8px',
+              width: '35px',
+              height: '35px',
+              background: 'transparent',
+              borderRadius: '100px',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#E8EBFE';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '19px',
+                height: '19px'
+              }}
+            >
+              <svg 
+                width="19" 
+                height="19" 
+                viewBox="0 0 19 19" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+                style={{
+                  width: '19px',
+                  height: '19px',
+                  flex: 'none'
+                }}
+              >
+                <path d="M10 14.5C10.25 14.5 10.5 14.75 10.5 15V15.5C10.5 16.625 9.59375 17.5 8.5 17.5H3.5C2.375 17.5 1.5 16.625 1.5 15.5L1.46875 7.5C1.46875 6.40625 2.375 5.5 3.46875 5.5H7C7.25 5.5 7.5 5.75 7.5 6C7.5 6.28125 7.25 6.5 7 6.5H3.5C2.9375 6.5 2.5 6.96875 2.5 7.5V15.5C2.5 16.0625 2.9375 16.5 3.5 16.5H8.5C9.03125 16.5 9.5 16.0625 9.5 15.5V15C9.5 14.75 9.71875 14.5 10 14.5ZM17.1875 4.21875C17.375 4.40625 17.5 4.65625 17.5 4.9375V11.5C17.5 12.625 16.5938 13.5 15.5 13.5H10.5C9.375 13.5 8.5 12.625 8.5 11.5V3.5C8.5 2.40625 9.375 1.5 10.5 1.5H14.0625C14.3438 1.5 14.5938 1.625 14.7812 1.8125L17.1875 4.21875ZM14.5 2.9375V4.5H16.0625L14.5 2.9375ZM16.5 11.5V5.5H14.5C13.9375 5.5 13.5 5.0625 13.5 4.5V2.5H10.5C9.9375 2.5 9.5 2.96875 9.5 3.5V11.5C9.5 12.0625 9.9375 12.5 10.5 12.5H15.5C16.0312 12.5 16.5 12.0625 16.5 11.5Z" fill="#3C51E2"/>
+              </svg>
+            </div>
+          </button>
+        </div>
+      </div>
+
       <header className="bg-white flex flex-col" style={{ padding: '10px 20px 10px 21px' }}>
         {/* Cont */}
         <div 
@@ -412,8 +548,7 @@ export default function ChatWindow({
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            alignSelf: 'stretch',
-            gap: '307px'
+            alignSelf: 'stretch'
           }}
         >
           {/* left */}
@@ -433,8 +568,7 @@ export default function ChatWindow({
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
-                gap: '10px',
-                width: '100%'
+                gap: '10px'
               }}
             >
               {/* icons/airsaas-ai */}
@@ -446,7 +580,8 @@ export default function ChatWindow({
                   alignItems: 'center',
                   width: '40px',
                   height: '40px',
-                  flexShrink: 0
+                  flexShrink: 0,
+                  padding: '1.74px 0px'
                 }}
               >
                 <svg width="40" height="40" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -460,14 +595,14 @@ export default function ChatWindow({
               <div 
                 style={{ 
                   fontFamily: 'Product Sans, system-ui, sans-serif',
-                fontWeight: 700,
+                  fontWeight: 700,
                   fontSize: '18px',
                   lineHeight: '1.2130000856187608em',
                   color: '#040D22',
                   textAlign: 'left'
-              }}
-            >
-              {t('chat.title')}
+                }}
+              >
+                {t('chat.title')}
               </div>
             </div>
           </div>
@@ -493,7 +628,8 @@ export default function ChatWindow({
         style={{
           flex: 1,
           overflowY: 'auto',
-          padding: '10px 20px 20px',
+          overflowX: 'hidden',
+          padding: '10px 20px 40px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: hasSelectedInitialOption ? 'flex-start' : 'flex-end',
@@ -502,7 +638,9 @@ export default function ChatWindow({
           zIndex: 10,
           backgroundColor: '#FFFFFF',
           borderRadius: '25px',
-          transition: 'justify-content 0.3s ease-in-out'
+          transition: 'justify-content 0.3s ease-in-out',
+          boxSizing: 'border-box',
+          width: '100%'
         }}
         className="chat-scrollbar chat-messages-mobile"
       >
@@ -569,7 +707,7 @@ export default function ChatWindow({
          
       </div>
 
-      <footer className="px-3 py-3 md:px-6 md:py-4 bg-transparent chat-footer-mobile">
+      <footer className="bg-transparent chat-footer-mobile" style={{ padding: '0px 20px 20px' }}>
         <div className="w-full max-w-full chat-input-mobile">
           <InputWithSuggestions
             value={input}
