@@ -416,18 +416,10 @@ export default function ChatWindow({
     }
   };
 
-  const handleCopyChat = () => {
-    // Copy all chat messages to clipboard
-    const chatText = messages.map(m => {
-      if (m.role === 'user') {
-        return `User: ${m.content}`;
-      } else {
-        return `Assistant: ${m.content}`;
-      }
-    }).join('\n\n');
-    
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(chatText);
+  const handleCopyLink = () => {
+    // Copy current page URL to clipboard
+    if (typeof window !== 'undefined' && typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href);
     }
   };
 
@@ -487,9 +479,9 @@ export default function ChatWindow({
             </div>
           </button>
 
-          {/* Copy button */}
+          {/* Copy link button */}
           <button
-            onClick={handleCopyChat}
+            onClick={handleCopyLink}
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -533,7 +525,7 @@ export default function ChatWindow({
                   flex: 'none'
                 }}
               >
-                <path d="M10 14.5C10.25 14.5 10.5 14.75 10.5 15V15.5C10.5 16.625 9.59375 17.5 8.5 17.5H3.5C2.375 17.5 1.5 16.625 1.5 15.5L1.46875 7.5C1.46875 6.40625 2.375 5.5 3.46875 5.5H7C7.25 5.5 7.5 5.75 7.5 6C7.5 6.28125 7.25 6.5 7 6.5H3.5C2.9375 6.5 2.5 6.96875 2.5 7.5V15.5C2.5 16.0625 2.9375 16.5 3.5 16.5H8.5C9.03125 16.5 9.5 16.0625 9.5 15.5V15C9.5 14.75 9.71875 14.5 10 14.5ZM17.1875 4.21875C17.375 4.40625 17.5 4.65625 17.5 4.9375V11.5C17.5 12.625 16.5938 13.5 15.5 13.5H10.5C9.375 13.5 8.5 12.625 8.5 11.5V3.5C8.5 2.40625 9.375 1.5 10.5 1.5H14.0625C14.3438 1.5 14.5938 1.625 14.7812 1.8125L17.1875 4.21875ZM14.5 2.9375V4.5H16.0625L14.5 2.9375ZM16.5 11.5V5.5H14.5C13.9375 5.5 13.5 5.0625 13.5 4.5V2.5H10.5C9.9375 2.5 9.5 2.96875 9.5 3.5V11.5C9.5 12.0625 9.9375 12.5 10.5 12.5H15.5C16.0312 12.5 16.5 12.0625 16.5 11.5Z" fill="#3C51E2"/>
+                <path d="M4.90625 5.625C6.4375 4.0625 8.96875 4.0625 10.5312 5.625C12.0312 7.09375 12.0938 9.46875 10.75 11.0625L10.5625 11.25C10.375 11.4688 10.0625 11.5 9.875 11.3125C9.65625 11.125 9.625 10.8125 9.8125 10.5938L9.96875 10.4062C11 9.21875 10.9375 7.4375 9.84375 6.34375C8.65625 5.15625 6.78125 5.15625 5.59375 6.34375L1.71875 10.2188C0.53125 11.4062 0.53125 13.2812 1.71875 14.4688C2.875 15.625 4.78125 15.625 5.9375 14.4688L6.65625 13.75C6.84375 13.5625 7.15625 13.5625 7.375 13.75C7.5625 13.9375 7.5625 14.2812 7.375 14.4688L6.65625 15.1562C5.09375 16.7188 2.5625 16.7188 1 15.1562C-0.5625 13.5938 -0.5625 11.0625 1 9.5L4.90625 5.625ZM14.0625 13.4062C12.5312 14.9688 10 14.9688 8.4375 13.4062C6.9375 11.9375 6.875 9.5625 8.21875 7.96875L8.40625 7.78125C8.59375 7.5625 8.90625 7.53125 9.09375 7.71875C9.3125 7.90625 9.34375 8.21875 9.15625 8.4375L9 8.625C7.96875 9.8125 8.03125 11.5938 9.125 12.6875C10.3125 13.875 12.1875 13.875 13.375 12.6875L17.25 8.8125C18.4375 7.625 18.4375 5.75 17.25 4.5625C16.0938 3.40625 14.1875 3.40625 13.0312 4.5625L12.3125 5.28125C12.125 5.46875 11.8125 5.46875 11.5938 5.28125C11.4062 5.0625 11.4062 4.75 11.5938 4.5625L12.3125 3.84375C13.875 2.28125 16.4062 2.28125 17.9688 3.84375C19.5312 5.40625 19.5312 7.9375 17.9688 9.5L14.0625 13.4062Z" fill="#3C51E2"/>
               </svg>
             </div>
           </button>
@@ -625,15 +617,14 @@ export default function ChatWindow({
 
       <div
         ref={listRef}
+        className="chat-scrollbar chat-messages-mobile md:gap-[10px] gap-[20px] md:p-[20px_40px_40px] p-[10px_20px_40px]"
         style={{
           flex: 1,
           overflowY: 'auto',
           overflowX: 'hidden',
-          padding: '10px 20px 40px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: hasSelectedInitialOption ? 'flex-start' : 'flex-end',
-          gap: '20px',
           position: 'relative',
           zIndex: 10,
           backgroundColor: '#FFFFFF',
@@ -642,7 +633,6 @@ export default function ChatWindow({
           boxSizing: 'border-box',
           width: '100%'
         }}
-        className="chat-scrollbar chat-messages-mobile"
       >
         {/* Background logo - Fixed position */}
         {/*<div className="fixed right-6 sm:right-6 bottom-16 sm:bottom-50 opacity-5 pointer-events-none z-0">

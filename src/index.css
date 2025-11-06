@@ -625,6 +625,55 @@ div.button-group-container {
     }
   }
   
+  /* Desktop: Special buttons in a row */
+  @media (min-width: 769px) {
+    .special-buttons-container {
+      flex-direction: row !important;
+      gap: 5px !important;
+      align-items: center !important;
+      width: auto !important;
+      align-self: flex-start !important;
+    }
+    
+    .special-button {
+      width: auto !important;
+      align-self: auto !important;
+      flex: none !important;
+    }
+    
+    /* Action buttons container - row layout in desktop */
+    .action-buttons-container {
+      flex-direction: row !important;
+      gap: 5px !important;
+      align-items: center !important;
+      width: auto !important;
+      align-self: flex-start !important;
+    }
+    
+    .action-button {
+      width: auto !important;
+      align-self: auto !important;
+      flex: none !important;
+    }
+  }
+  
+  /* Mobile: Action buttons in column */
+  @media (max-width: 768px) {
+    .action-buttons-container {
+      flex-direction: column !important;
+      gap: 5px !important;
+      align-items: stretch !important;
+      width: 100% !important;
+      align-self: stretch !important;
+    }
+    
+    .action-button {
+      width: 100% !important;
+      align-self: stretch !important;
+      flex: 1 1 auto !important;
+    }
+  }
+  
   /* Bot message mobile optimization */
   .bot-message-mobile {
     max-width: 100% !important;

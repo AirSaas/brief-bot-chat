@@ -359,7 +359,7 @@ export default function InputWithSuggestions({
         <div 
           className="flex flex-col flex-1"
           style={{
-            borderRadius: '100px',
+            borderRadius: '10px',
             minHeight: 'auto',
             maxHeight: 'none',
             ...getInputContainerStyle()
@@ -373,7 +373,7 @@ export default function InputWithSuggestions({
             style={{
               padding: '8px 15px',
               gap: '4px',
-              borderRadius: '100px',
+              borderRadius: '10px',
               justifyContent: 'stretch',
               alignSelf: 'stretch',
               minHeight: 'auto',
@@ -605,7 +605,7 @@ export default function InputWithSuggestions({
           className="flex flex-col w-full max-w-full"
           style={{
             gap: '10px',
-            borderRadius: '100px',
+            borderRadius: '10px',
             ...getInputContainerStyle()
           }}
           onMouseEnter={() => !isInputDisabled && !isRecording && setIsHovered(true)}
@@ -617,7 +617,7 @@ export default function InputWithSuggestions({
             style={{
               padding: '8px 15px',
               gap: '4px',
-              borderRadius: '100px'
+              borderRadius: '10px'
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', minHeight: 'auto' }}>
@@ -680,8 +680,8 @@ export default function InputWithSuggestions({
           <div
             className="flex flex-row justify-end md:justify-between items-center"
             style={{
-              padding: '0px 10px 0px 15px',
-              borderRadius: '0px 0px 100px 100px'
+              padding: '0px 10px 6px 15px',
+              borderRadius: '0px 0px 10px 10px'
             }}
           >
             {/* Empty space on left - only on desktop */}
@@ -837,10 +837,7 @@ export default function InputWithSuggestions({
                   flexDirection: 'row',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  paddingTop: '7px',
-                  paddingBottom: '7px',
-                  paddingLeft: '0px',
-                  paddingRight: '0px',
+                  padding: '7px',
                   isolation: 'isolate',
                   width: '29px',
                   height: '29px',

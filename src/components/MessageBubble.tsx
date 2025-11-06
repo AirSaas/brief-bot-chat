@@ -149,8 +149,8 @@ export function MessageBubble({
           <div
             className={`${base} ${userClasses} ${
               isAudio ? "flex flex-col gap-2" : ""
-            }`}
-            style={{ padding: '20px', width: '250px', maxWidth: '250px' }}
+            } md:w-[400px] md:max-w-[400px] w-[250px] max-w-[250px]`}
+            style={{ padding: '20px' }}
           >
             {isAudio && audioFile ? (
               <div className="flex flex-col gap-2 min-h-[2rem] justify-center -my-4 -mx-4">
@@ -298,8 +298,8 @@ export function MessageBubble({
             <div
               className={`${base} ${botClasses} ${
                 isAudio ? "flex flex-col gap-2" : ""
-              } group relative bot-message-no-radius`}
-                style={{ borderRadius: "0", maxWidth: '400px', width: '100%', paddingTop: '5px' }}
+              } group relative bot-message-no-radius md:max-w-[600px] max-w-[400px]`}
+                style={{ borderRadius: "0", width: '100%', paddingTop: '5px' }}
             >
               {isAudio && audioFile ? (
                 <div className="flex flex-col gap-2">
@@ -822,14 +822,10 @@ export function MessageBubble({
                     {/* Action buttons - in column for mobile */}
                     {actionButtons.length > 0 && (
                       <div
-                        className="md:mt-[10px] -mt-[30px]"
+                        className="action-buttons-container md:mt-[10px] -mt-[30px]"
                         style={{
                           display: 'flex',
-                          flexDirection: 'column',
-                          gap: '5px',
-                          alignItems: 'stretch',
-                          width: '100%',
-                          alignSelf: 'stretch'
+                          gap: '5px'
                         }}
                       >
                         {actionButtons.map(({ answer, index }) => {
@@ -857,6 +853,7 @@ export function MessageBubble({
                               }}
                               onMouseEnter={() => setHoveredActionButton(answer)}
                               onMouseLeave={() => setHoveredActionButton(null)}
+                              className="action-button"
                               style={{
                                 display: 'flex',
                                 flexDirection: 'row',
@@ -864,7 +861,6 @@ export function MessageBubble({
                                 alignItems: 'center',
                                 gap: '5px',
                                 padding: '7px 14px',
-                                alignSelf: 'stretch',
                                 minHeight: '29px',
                                 height: '29px',
                                 borderRadius: '100px',
@@ -878,7 +874,8 @@ export function MessageBubble({
                                 background: isHovered ? '#061333' : (isPDFButton ? '#3C51E2' : 'transparent'),
                                 border: isNewBriefButton ? '1px solid #3C51E2' : (isPDFButton ? 'none' : 'none'),
                                 color: isHovered ? '#FFFFFF' : (isPDFButton ? '#FFFFFF' : '#3C51E2'),
-                                boxSizing: 'border-box'
+                                boxSizing: 'border-box',
+                                whiteSpace: 'nowrap'
                               }}
                             >
                               {isPDFButton && (
@@ -922,9 +919,7 @@ export function MessageBubble({
                           flexDirection: 'row',
                           gap: '5px',
                           alignItems: 'center',
-                          marginTop: specialButtons.length > 0 && regularButtons.length > 0 ? '10px' : '0',
-                          width: '100%',
-                          alignSelf: 'stretch'
+                          marginTop: specialButtons.length > 0 && regularButtons.length > 0 ? '10px' : '0'
                         }}
                       >
                         {specialButtons.map(({ answer, index }) => {
@@ -933,6 +928,7 @@ export function MessageBubble({
                           const isChangesButton = lowerAnswer.includes("i need to make") || 
                                                  lowerAnswer.includes("i would like to make") ||
                                                  lowerAnswer.includes("i want to make") ||
+                                                 lowerAnswer.includes("I want to make") ||
                                                  lowerAnswer.includes("i want to make some changes") ||
                                                  lowerAnswer.includes("i need to make some changes") ||
                                                  lowerAnswer.includes("je souhaite apporter") ||
@@ -980,8 +976,7 @@ export function MessageBubble({
                                 color: isHovered ? '#FFFFFF' : (isCorrectButton ? '#FFFFFF' : '#3C51E2'),
                                 opacity: isClicked ? 0.5 : 1,
                                 boxSizing: 'border-box',
-                                width: '100%',
-                                alignSelf: 'stretch'
+                                whiteSpace: 'nowrap'
                               }}
                             >
                               {isCorrectButton && (

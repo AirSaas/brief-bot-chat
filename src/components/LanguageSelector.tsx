@@ -14,6 +14,7 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[1];
 
@@ -76,7 +77,7 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
             className="absolute top-full right-0 mt-[5px] bg-white rounded-[10px] z-50 overflow-hidden"
           style={{
             width: '213px',
-            padding: '0px 0px 10px',
+            padding: '10px 0px',
             boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.2)'
           }}
         >
@@ -84,8 +85,8 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
           <div 
             className="flex flex-col"
             style={{
-              width: '214px',
-              padding: '10px 0px 0px',
+              width: '100%',
+              padding: '0px',
               gap: '5px'
             }}
           >
@@ -98,27 +99,30 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '5px',
-                    padding: '0px 10px',
-                    width: '214px'
+                    padding: '0px',
+                    width: '100%'
                   }}
                 >
                   {/* item */}
                   <button
                     onClick={() => handleLanguageChange(lang.code)}
+                    onMouseEnter={() => setHoveredItem(lang.code)}
+                    onMouseLeave={() => setHoveredItem(null)}
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       height: '35px',
-                      background: isSelected ? '#F3F3FC' : '#FFFFFF',
+                      background: hoveredItem === lang.code ? '#E8EBFE' : (isSelected ? '#F3F3FC' : '#FFFFFF'),
                       borderRadius: '10px',
-                      padding: '4px 0px',
+                      padding: '4px 10px',
                       border: 'none',
                       cursor: 'pointer',
-                      width: '100%'
-                  }}
-                >
+                      width: '100%',
+                      transition: 'background-color 0.2s ease'
+                    }}
+                  >
                     {/* state-layer */}
                     <div
                       style={{
@@ -127,7 +131,7 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         gap: '5px',
-                        padding: '0px 10px',
+                        padding: '0px',
                         width: '100%',
                         height: '100%'
                       }}
