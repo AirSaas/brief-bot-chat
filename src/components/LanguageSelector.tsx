@@ -115,12 +115,12 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
                       alignItems: 'center',
                       height: '35px',
                       background: hoveredItem === lang.code ? '#E8EBFE' : (isSelected ? '#F3F3FC' : '#FFFFFF'),
-                      borderRadius: '10px',
+                      borderRadius: hoveredItem === lang.code ? '0px' : '10px',
                       padding: '4px 10px',
                       border: 'none',
                       cursor: 'pointer',
                       width: '100%',
-                      transition: 'background-color 0.2s ease'
+                      transition: 'background-color 0.2s ease, border-radius 0.2s ease'
                     }}
                   >
                     {/* state-layer */}
