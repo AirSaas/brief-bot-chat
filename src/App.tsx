@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import HomePage from "./components/HomePage";
+import HomePage from "./components/HomePage/HomePage";
 import type { ChatMessage } from "./lib/api";
 
 export default function App() {
