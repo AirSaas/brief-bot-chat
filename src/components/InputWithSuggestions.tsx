@@ -39,7 +39,18 @@ export default function InputWithSuggestions({
   const [isHovered, setIsHovered] = useState(false);
   const [hoverRecord, setHoverRecord] = useState(false);
   const [hoverSend, setHoverSend] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isMobileView, setIsMobileView] = useState(false);
+  const mobileTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const desktopTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const setMobileTextareaRef = useCallback((element: HTMLTextAreaElement | null) => {
+    mobileTextareaRef.current = element;
+  }, []);
+  const setDesktopTextareaRef = useCallback((element: HTMLTextAreaElement | null) => {
+    desktopTextareaRef.current = element;
+  }, []);
+  const getActiveTextarea = useCallback(() => {
+    return isMobileView ? mobileTextareaRef.current : desktopTextareaRef.current;
+  }, [isMobileView]);
   const [localIsRecording, setLocalIsRecording] = useState(false);
   const [rec, setRec] = useState<MediaRecorder | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -132,13 +143,13 @@ export default function InputWithSuggestions({
 
   // Function to set cursor to end of textarea
   const setCursorToEnd = useCallback(() => {
-    const textarea = textareaRef.current;
+    const textarea = getActiveTextarea();
     if (textarea) {
       const length = textarea.value.length;
       textarea.setSelectionRange(length, length);
       textarea.focus();
     }
-  }, []);
+  }, [getActiveTextarea]);
 
   // Expose the setCursorToEnd function to parent component
   useEffect(() => {
@@ -147,21 +158,33 @@ export default function InputWithSuggestions({
     }
   }, [onRef, setCursorToEnd]);
 
+  useEffect(() => {
+    const updateView = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
+
+    updateView();
+    window.addEventListener('resize', updateView);
+    return () => window.removeEventListener('resize', updateView);
+  }, []);
+
   // Auto-resize textarea based on content
   const adjustTextareaHeight = useCallback(() => {
-    const textarea = textareaRef.current;
+    const textarea = getActiveTextarea();
     if (textarea) {
       const previousHeight = textarea.style.height;
       // Reset height to auto to get the correct scrollHeight
       textarea.style.height = 'auto';
       // Set height to scrollHeight (content height)
       // Allow expansion up to 200px on mobile, 120px on desktop
-      const isMobile = window.innerWidth < 768;
-      const maxHeight = isMobile ? 200 : 120; // Max height 200px on mobile (~6-7 lines), 120px on desktop (~4 lines)
+      const isMobile = isMobileView;
+      const maxHeight = isMobile ? 320 : 220; // Max height 320px on mobile (~10-11 lines), 220px on desktop (~7-8 lines)
+      const minHeight = isMobile ? 72 : 28; // Ensure a taller base height on mobile/desktop
       
       // Get the actual scroll height
       const scrollHeight = textarea.scrollHeight;
-      const newHeight = Math.min(scrollHeight, maxHeight);
+      const boundedHeight = Math.min(scrollHeight, maxHeight);
+      const newHeight = Math.max(boundedHeight, minHeight);
       
       // Apply the new height
       textarea.style.height = `${newHeight}px`;
@@ -180,7 +203,7 @@ export default function InputWithSuggestions({
         onHeightChange();
       }
     }
-  }, [onHeightChange]);
+  }, [getActiveTextarea, isMobileView, onHeightChange]);
 
   // Re-adjust height on window resize (for mobile/desktop switch)
   useEffect(() => {
@@ -197,9 +220,16 @@ export default function InputWithSuggestions({
     adjustTextareaHeight();
   }, [value, adjustTextareaHeight]);
 
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [isMobileView, adjustTextareaHeight]);
+
   // Function to handle input debounce
   const handleInputChange = (inputValue: string) => {
     onChange(inputValue);
+    requestAnimationFrame(() => {
+      adjustTextareaHeight();
+    });
     
     // Clear previous timeout
     if (inputTimeout) {
@@ -382,8 +412,8 @@ export default function InputWithSuggestions({
           >
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', flex: 1, minHeight: 'auto' }}>
               <textarea
-                ref={textareaRef}
-                rows={1}
+                ref={setMobileTextareaRef}
+                rows={3}
                 tabIndex={1}
                 className={`w-full resize-none outline-none ${isInputDisabled && !isRecording ? 'input-disabled' : ''}`}
                 style={{ 
@@ -395,7 +425,6 @@ export default function InputWithSuggestions({
                   background: 'transparent',
                   border: 'none',
                   padding: 0,
-                  minHeight: '20px',
                   height: 'auto',
                   transition: 'height 0.2s ease-in-out',
                   scrollbarWidth: 'thin',
@@ -408,6 +437,9 @@ export default function InputWithSuggestions({
                 onChange={(e) => handleInputChange(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
+                    if (isMobileView) {
+                      return;
+                    }
                     e.preventDefault();
                     if (!isThinking && !isRecording) {
                       onSend();
@@ -622,7 +654,7 @@ export default function InputWithSuggestions({
           >
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', minHeight: 'auto' }}>
               <textarea
-                ref={textareaRef}
+                ref={setDesktopTextareaRef}
                 rows={1}
                 tabIndex={1}
                 className={`w-full resize-none outline-none ${isInputDisabled && !isRecording ? 'input-disabled' : ''}`}
@@ -635,7 +667,6 @@ export default function InputWithSuggestions({
                   background: 'transparent',
                   border: 'none',
                   padding: 0,
-                  minHeight: '20px',
                   height: 'auto',
                   transition: 'height 0.2s ease-in-out',
                   scrollbarWidth: 'thin',
@@ -648,6 +679,9 @@ export default function InputWithSuggestions({
                 onChange={(e) => handleInputChange(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
+                    if (isMobileView) {
+                      return;
+                    }
                     e.preventDefault();
                     if (!isThinking && !isRecording) {
                       onSend();
