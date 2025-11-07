@@ -6,11 +6,11 @@
     "cta_button": "Tester Notre Assistant IA Brief Project gratuitement",
     "features": {
       "question_title": "Se poser les bonnes questions",
-      "question_description": "Notre assistant <strong>pose les bonnes questions</strong> pour cadrer objectifs, risques, livrables et parties prenantes.",
+      "question_description": "<strong>Notre assistant pose les bonnes questions</strong> pour cadrer objectifs, risques, livrables et parties prenantes.",
       "time_title": "Gain de temps",
-      "time_description": "<strong>Gagnez du temps</strong> en répondant par la voix ou par écrit. L'assistant créera la fiche projet en quelques secondes.",
+      "time_description": "<strong>Gagnez du temps en répondant par la voix ou par écrit.</strong> L'assistant créera la fiche projet en quelques secondes.",
       "quality_title": "Résultat de niveau professionnel",
-      "quality_description": "Profitez d'un <strong>résultat de niveau professionnel</strong> avec une fiche claire, structurée et directement utilisable par vos équipes."
+      "quality_description": "<strong>Profitez d'un résultat de niveau professionnel</strong> avec une fiche claire, structurée et directement utilisable par vos équipes."
     },
     "share_link": {
       "label": "Partagez le lien avec vos coéquipiers"

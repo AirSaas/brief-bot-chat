@@ -6,11 +6,11 @@
     "cta_button": "Test Our Brief Project AI Assistant for free",
     "features": {
       "question_title": "Ask the right questions",
-      "question_description": "Our assistant <strong>asks the right questions</strong> to frame objectives, risks, deliverables and stakeholders.",
+      "question_description": "<strong>Our assistant asks the right questions</strong> to frame objectives, risks, deliverables and stakeholders.",
       "time_title": "Time saving",
-      "time_description": "<strong>Save time</strong> answering by voice or in writing. The assistant will create the project brief in seconds.",
+      "time_description": "<strong>Save time answering by voice or in writing.</strong> The assistant will create the project brief in seconds.",
       "quality_title": "Professional level result",
-      "quality_description": "Enjoy a <strong>profesional level result</strong> with a clear, structured brief directly usable by your teams."
+      "quality_description": "<strong>Enjoy a profesional level result</strong> with a clear, structured brief directly usable by your teams."
     },
     "share_link": {
       "label": "Share the link to your teammates"
