@@ -40,6 +40,7 @@ export default function InputWithSuggestions({
   const [hoverRecord, setHoverRecord] = useState(false);
   const [hoverSend, setHoverSend] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
+  const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const mobileTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const desktopTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const setMobileTextareaRef = useCallback((element: HTMLTextAreaElement | null) => {
@@ -172,38 +173,58 @@ export default function InputWithSuggestions({
   const adjustTextareaHeight = useCallback(() => {
     const textarea = getActiveTextarea();
     if (textarea) {
-      const previousHeight = textarea.style.height;
+      const currentHeightPx = `${textarea.offsetHeight}px`;
       // Reset height to auto to get the correct scrollHeight
       textarea.style.height = 'auto';
       // Set height to scrollHeight (content height)
       // Allow expansion up to 200px on mobile, 120px on desktop
       const isMobile = isMobileView;
       const maxHeight = isMobile ? 320 : 220; // Max height 320px on mobile (~10-11 lines), 220px on desktop (~7-8 lines)
-      const minHeight = isMobile ? 72 : 28; // Ensure a taller base height on mobile/desktop
+      const baseMobileMinHeight = 35;
+      const expandedMobileMinHeight = 72;
       
       // Get the actual scroll height
       const scrollHeight = textarea.scrollHeight;
+      const shouldExpandMobile = isMobile && scrollHeight > baseMobileMinHeight + 2; // allow slight tolerance for rounding
+      const minHeight = isMobile ? (shouldExpandMobile ? expandedMobileMinHeight : baseMobileMinHeight) : 28; // Ensure a taller base height on mobile/desktop
       const boundedHeight = Math.min(scrollHeight, maxHeight);
       const newHeight = Math.max(boundedHeight, minHeight);
-      
-      // Apply the new height
-      textarea.style.height = `${newHeight}px`;
-      
-      // Enable scroll when content exceeds max height
-      if (scrollHeight > maxHeight) {
-        textarea.style.overflowY = 'auto';
-        textarea.style.maxHeight = `${maxHeight}px`;
+      const newHeightPx = `${newHeight}px`;
+      const hasHeightChanged = currentHeightPx !== newHeightPx;
+
+      const applyFinalHeight = () => {
+        textarea.style.height = newHeightPx;
+        if (scrollHeight > maxHeight) {
+          textarea.style.overflowY = 'auto';
+          textarea.style.maxHeight = `${maxHeight}px`;
+        } else {
+          textarea.style.overflowY = 'hidden';
+          textarea.style.maxHeight = 'none';
+        }
+        if (hasHeightChanged && onHeightChange) {
+          onHeightChange();
+        }
+      };
+
+      if (hasHeightChanged) {
+        textarea.style.height = currentHeightPx;
+        requestAnimationFrame(() => {
+          applyFinalHeight();
+        });
       } else {
-        textarea.style.overflowY = 'hidden';
-        textarea.style.maxHeight = 'none';
+        applyFinalHeight();
       }
       
-      // Notify parent if height changed
-      if (previousHeight !== `${newHeight}px` && onHeightChange) {
-        onHeightChange();
+      if (isMobile) {
+        if (isMobileExpanded !== shouldExpandMobile) {
+          setIsMobileExpanded(shouldExpandMobile);
+        }
+      } else if (isMobileExpanded) {
+        setIsMobileExpanded(false);
       }
+      
     }
-  }, [getActiveTextarea, isMobileView, onHeightChange]);
+  }, [getActiveTextarea, isMobileView, onHeightChange, isMobileExpanded]);
 
   // Re-adjust height on window resize (for mobile/desktop switch)
   useEffect(() => {
@@ -219,6 +240,21 @@ export default function InputWithSuggestions({
   useEffect(() => {
     adjustTextareaHeight();
   }, [value, adjustTextareaHeight]);
+
+  useEffect(() => {
+    if (!isMobileView) {
+      return;
+    }
+    if (!isFocused && !isHovered && !value.trim()) {
+      setIsMobileExpanded(false);
+    }
+  }, [isMobileView, isFocused, isHovered, value]);
+
+  useEffect(() => {
+    if (isMobileView) {
+      adjustTextareaHeight();
+    }
+  }, [isMobileExpanded, isMobileView, adjustTextareaHeight]);
 
   useEffect(() => {
     adjustTextareaHeight();
@@ -384,55 +420,74 @@ export default function InputWithSuggestions({
   return (
     <div className="flex flex-col md:flex-col gap-[5px] w-full max-w-full">
       {/* Mobile: Horizontal layout - Text field and buttons in same row */}
-      <div className="flex md:hidden flex-row items-center gap-[5px] w-full">
+      <div className="flex md:hidden flex-row items-start gap-[5px] w-full">
         {/* Text field container */}
         <div 
           className="flex flex-col flex-1"
           style={{
-            borderRadius: '10px',
+            borderRadius: isMobileExpanded ? '10px' : '100px',
             minHeight: 'auto',
             maxHeight: 'none',
             ...getInputContainerStyle()
           }}
-          onMouseEnter={() => !isInputDisabled && !isRecording && setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onMouseEnter={() => {
+            if (!isInputDisabled && !isRecording) {
+              setIsHovered(true);
+            }
+          }}
+          onMouseLeave={() => {
+            setIsHovered(false);
+            if (!isFocused && !value.trim()) {
+              setIsMobileExpanded(false);
+            }
+          }}
         >
           {/* Input text area */}
           <div 
-            className="flex flex-row items-stretch"
+            className="relative flex flex-row items-stretch"
             style={{
               padding: '8px 15px',
               gap: '4px',
-              borderRadius: '10px',
+              borderRadius: isMobileExpanded ? '10px' : '100px',
               justifyContent: 'stretch',
               alignSelf: 'stretch',
               minHeight: 'auto',
-              maxHeight: 'none'
+              maxHeight: 'none',
+              height: isMobileExpanded ? 'auto' : '35px'
             }}
           >
+            {isMobileView && !isMobileExpanded && !value && (
+              <span
+                className="absolute left-[15px] top-1/2 -translate-y-1/2 pointer-events-none w-[calc(100%-30px)] truncate text-[16px] leading-[19px] font-light text-[#A6AAB6]"
+              >
+                {placeholder}
+              </span>
+            )}
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', flex: 1, minHeight: 'auto' }}>
               <textarea
                 ref={setMobileTextareaRef}
-                rows={3}
+                rows={isMobileExpanded ? 3 : 1}
                 tabIndex={1}
-                className={`w-full resize-none outline-none ${isInputDisabled && !isRecording ? 'input-disabled' : ''}`}
+                className={`w-full resize-none outline-none will-change-[height] motion-reduce:transition-none !transition-[height] !duration-300 !ease-in-out ${isInputDisabled && !isRecording ? 'input-disabled' : ''} ${isMobileExpanded ? '!min-h-[72px]' : '!min-h-[35px]'} ${isMobileView && !isMobileExpanded && !value ? 'overflow-hidden text-ellipsis whitespace-nowrap' : 'whitespace-pre-wrap'}`}
                 style={{ 
                   fontFamily: 'Product Sans Light, system-ui, sans-serif', 
                   fontWeight: 300,
                   fontSize: '16px',
-                  lineHeight: '1.2130000591278076em',
+                  lineHeight: '19px',
                   color: isInputDisabled && !isRecording ? '#A6AAB6' : '#061333',
                   background: 'transparent',
                   border: 'none',
                   padding: 0,
                   height: 'auto',
-                  transition: 'height 0.2s ease-in-out',
+                  paddingTop: isMobileView && !isMobileExpanded ? '8px' : 0,
+                  paddingBottom: isMobileView && !isMobileExpanded ? '8px' : 0,
                   scrollbarWidth: 'thin',
                   scrollbarColor: '#CBD5E0 transparent',
                   textAlign: 'left',
                   verticalAlign: 'middle'
                 }}
-                placeholder={placeholder}
+                placeholder={isMobileView && !isMobileExpanded ? '' : placeholder}
+                aria-label={placeholder}
                 value={value}
                 onChange={(e) => handleInputChange(e.target.value)}
                 onKeyDown={(e) => {
@@ -461,6 +516,9 @@ export default function InputWithSuggestions({
                   setIsFocused(false);
                   setTimeout(() => {
                     setShowSuggestions(false);
+                    if (!value.trim()) {
+                      setIsMobileExpanded(false);
+                    }
                   }, 200);
                 }}
                 disabled={isInputDisabled}
@@ -470,7 +528,7 @@ export default function InputWithSuggestions({
         </div>
 
         {/* Buttons container - Mobile */}
-        <div className="flex flex-row items-center gap-[5px] flex-shrink-0">
+        <div className="flex flex-row items-end gap-[5px] flex-shrink-0 self-end">
             {/* Record button - icon-button-medium */}
             {(!isRecording && !localIsRecording) ? (
               <button

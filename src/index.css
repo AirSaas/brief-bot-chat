@@ -220,6 +220,8 @@ audio::-webkit-media-controls-time-remaining-display {
 /* Markdown styling for chat messages */
 .markdown-content {
   line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .markdown-content h1,
