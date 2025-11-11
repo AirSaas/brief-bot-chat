@@ -15,6 +15,7 @@ export type ChatPayload = {
   sessionId: string;
   metadata?: Record<string, unknown>;
   audio_url?: string;
+  language?: string;
 };
 
 export async function sendToChat(payload: ChatPayload) {

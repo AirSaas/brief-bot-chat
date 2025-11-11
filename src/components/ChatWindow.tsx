@@ -38,7 +38,7 @@ export default function ChatWindow({
   setHasSelectedInitialOption: externalSetHasSelectedInitialOption,
   onGoBack,
 }: ChatWindowProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // Use external state if provided, otherwise use local state (for backward compatibility)
   const [localMessages, setLocalMessages] = useState<ChatMessage[]>([]);
@@ -176,7 +176,11 @@ export default function ChatWindow({
     setIsThinking(true);
 
     try {
-      const json = await sendToChat({ message: userMsg.content, sessionId });
+      const json = await sendToChat({
+        message: userMsg.content,
+        sessionId,
+        language: i18n.language,
+      });
       const text = json?.output ?? json?.data ?? JSON.stringify(json);
 
       // Extract quick_answers from the message content
@@ -220,7 +224,7 @@ export default function ChatWindow({
     setIsThinking(true);
 
     // Send template selection to chat
-    sendToChat({ message: template, sessionId })
+    sendToChat({ message: template, sessionId, language: i18n.language })
       .then((json) => {
         const text = json?.output ?? json?.data ?? JSON.stringify(json);
 
@@ -320,6 +324,7 @@ export default function ChatWindow({
         message: "",
         sessionId,
         audio_url,
+        language: i18n.language,
       });
 
       const text = json?.output ?? json?.data ?? JSON.stringify(json);
