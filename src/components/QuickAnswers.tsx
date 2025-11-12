@@ -101,7 +101,7 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
                     ? 'bg-blue-50 text-blue-700 border-2 border-blue-500'
                     : isDefaultButton
                     ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                    : 'bg-gray-100 hover:bg-blue-50 hover:border-2 hover:border-blue-500 hover:text-blue-700 text-gray-700'
+                    : 'bg-gray-100 hover:bg-blue-50 hover:border-2 hover:border-[#040D22] hover:text-[#040D22] text-gray-700'
                 }`}
                 style={isSmallButton ? {
                   display: 'flex',
@@ -193,7 +193,7 @@ export default function QuickAnswers({ onAnswerClick, onDownloadPDF, disabled = 
                   ? 'bg-blue-50 text-blue-700 border-2 border-blue-500'
                   : isDefaultButton
                   ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  : 'bg-gray-100 hover:bg-blue-50 hover:border-2 hover:border-blue-500 hover:text-blue-700 text-gray-700'
+                    : 'bg-gray-100 hover:bg-blue-50 hover:border-2 hover:border-[#040D22] hover:text-[#040D22] text-gray-700'
               }`}
               style={isSmallButton ? {
                 display: 'flex',

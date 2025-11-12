@@ -556,9 +556,9 @@ div.button-group-container {
     /* Input area mobile optimization */
     .chat-input-mobile {
       min-height: 44px;
-      max-height: 200px !important;
       width: 100%;
       max-width: 100%;
+      max-height: none !important;
     }
     
     /* Textarea expansion in mobile - allow dynamic height */
