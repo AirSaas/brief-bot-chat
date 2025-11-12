@@ -367,7 +367,7 @@ export default function ChatWindow({
 
   return (
     <div
-      className={`h-full flex flex-col bg-white mobile-chat-container chat-window-mobile mobile-safe-area ${
+      className={`h-full flex flex-col bg-white mobile-chat-container chat-window-mobile mobile-safe-area font-[var(--font-mobile)] md:font-[var(--font-desktop)] ${
         isKeyboardOpen ? "mobile-keyboard-adjust" : ""
       }`}
     >
@@ -456,7 +456,7 @@ export default function ChatWindow({
               </div>
 
               {/* panel name */}
-              <div className="text-left text-[18px] font-bold leading-[1.2130000856187608em] text-[#040D22]">
+              <div className="text-left text-[18px] font-medium md:font-bold leading-[1.2130000856187608em] text-[#040D22]">
                 {t("chat.title")}
               </div>
             </div>

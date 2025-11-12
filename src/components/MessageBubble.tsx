@@ -260,13 +260,7 @@ export function MessageBubble({
               <div
                 className={`markdown-content ${
                   isThinking ? "thinking-message" : ""
-                }`}
-                style={{
-                  fontFamily: "Product Sans Light, system-ui, sans-serif",
-                  fontWeight: 300,
-                  fontSize: "14px",
-                  lineHeight: "1.4285714285714286em",
-                }}
+                } text-[14px] leading-[1.4285714286em] font-normal md:font-light text-[#040D22]`}
               >
                 {isThinking ? (
                   <div className="thinking-status-message">
@@ -391,14 +385,7 @@ export function MessageBubble({
                 </div>
               ) : (
                 <div
-                    className={`markdown-content ${isThinking ? "thinking-message" : ""}`}
-                  style={{
-                    fontFamily: "Product Sans Light, system-ui, sans-serif",
-                    fontWeight: 300,
-                    fontSize: "14px",
-                    lineHeight: "1.4285714285714286em",
-                      color: "#000000",
-                  }}
+                    className={`markdown-content ${isThinking ? "thinking-message" : ""} text-[14px] leading-[1.4285714286em] font-normal md:font-light text-[#000000]`}
                 >
                     {isThinking ? (
                     <div className="thinking-status-message">
@@ -626,7 +613,7 @@ export function MessageBubble({
                           }}
                           disabled={isClicked}
                         className={cx(
-                          "w-full bg-transparent text-left font-sans font-bold text-[#040D22]",
+                          "w-full bg-transparent text-left font-bold text-[#040D22]",
                           "leading-[1.2130000250680106em]",
                           isClicked && !isSelected ? "cursor-not-allowed" : "cursor-pointer"
                         )}
