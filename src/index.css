@@ -291,6 +291,7 @@ audio::-webkit-media-controls-time-remaining-display {
   font-style: italic;
   animation: thinkingFadeInOut 1.5s ease-in-out infinite;
   display: inline-block;
+  margin-top: -8px !important;
 }
 
 /* Fade animation for thinking messages */

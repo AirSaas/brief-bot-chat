@@ -369,7 +369,7 @@ export function MessageBubble({
             <div
               className={`${base} ${botClasses} ${
                 isAudio ? "flex flex-col gap-2" : ""
-                } group relative max-w-[400px] rounded-none pt-[5px] md:max-w-[600px]`}
+                } group relative max-w-[400px] rounded-none pt-[5px] md:max-w-[600px] md:pt-[0px]`}
             >
               {isAudio && audioFile ? (
                 <div className="flex flex-col gap-2">
