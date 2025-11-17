@@ -103,8 +103,16 @@
     }
   },
   "pdf_modal": {
-    "title": "Thank you for using this tool!",
-    "description": "This tool is free. If it helped you, share it on LinkedIn!",
+    "title": "Your brief is ready!",
+    "subtitle": "Ready to take it further?",
+    "description": "This free tool just generated a brief for you. Imagine a version that:",
+    "features": [
+      "Automatically adapts to your company's tone and methods",
+      "Creates shareable links in one click for your whole team",
+      "Syncs directly with your project management tool",
+      "Includes your own instructions and templates"
+    ],
+    "demo_cta": "See AirSaas in action",
     "share_linkedin": "Share on LinkedIn",
     "download_pdf": "Download as PDF",
     "downloading": "Downloading...",

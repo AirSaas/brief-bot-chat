@@ -11,6 +11,9 @@ interface DownloadPDFModalProps {
 export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalProps) {
   const { t } = useTranslation();
   const [isDownloading, setIsDownloading] = useState(false);
+  const rawFeatures = t('pdf_modal.features', { returnObjects: true }) as string[] | string;
+  const features = Array.isArray(rawFeatures) ? rawFeatures : [];
+  const demoUrl = 'https://www.airsaas.io/fr/demo';
 
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
@@ -168,236 +171,119 @@ export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalPr
   };
 
   return (
-    <div 
-      className="flex items-center justify-center z-50"
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#061333]/75 px-5 py-0 sm:px-5 sm:py-5"
       onClick={handleOverlayClick}
-      style={{
-        position: 'fixed',
-        left: '0%',
-        right: '0%',
-        top: '0%',
-        bottom: '0%',
-        background: 'rgba(6, 19, 51, 0.74)'
-      }}
     >
-      <div 
-        className="bg-white rounded-[10px] relative md:w-[602px] w-full md:max-w-[calc(100%-32px)] max-w-[calc(100%-32px)] md:p-[15px_10px_20px] p-[10px_16px_12px]"
+      <div
+        className="w-full h-full sm:h-auto sm:max-w-[580px] flex items-stretch sm:items-center"
         onClick={(e) => e.stopPropagation()}
-        style={{
-          boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.2)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '5px'
-        }}
       >
-        {/* Close button - hidden on mobile */}
-        <button
-          onClick={onClose}
-          className="absolute hidden md:flex md:top-[10px] md:right-[10px] md:p-[8px]"
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            borderRadius: '100px'
-          }}
-        >
-          <div style={{
-            width: '19px',
-            height: '19px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M14.3438 14.375C14.1562 14.5625 13.8125 14.5625 13.625 14.375L9.5 10.2188L5.34375 14.375C5.15625 14.5625 4.8125 14.5625 4.625 14.375C4.4375 14.1875 4.4375 13.8438 4.625 13.6562L8.78125 9.5L4.625 5.375C4.4375 5.1875 4.4375 4.84375 4.625 4.65625C4.8125 4.46875 5.15625 4.46875 5.34375 4.65625L9.5 8.8125L13.625 4.65625C13.8125 4.46875 14.1562 4.46875 14.3438 4.65625C14.5312 4.84375 14.5312 5.1875 14.3438 5.375L10.1875 9.5L14.3438 13.6562C14.5312 13.8438 14.5312 14.1875 14.3438 14.375Z" fill="#061333"/>
+        <div className="relative flex flex-col w-full h-full sm:h-auto sm:max-h-none overflow-hidden rounded-[12px] sm:rounded-[16px] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
+          <button
+            onClick={onClose}
+            className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            aria-label="Close modal"
+            type="button"
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path
+                d="M15 5L5 15M5 5L15 15"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
-          </div>
-        </button>
+          </button>
 
-        {/* Title with icon */}
-        <div 
-          className="md:gap-[10px] gap-[8px] md:pl-[10px] pl-0 md:mb-[10px] mb-[8px]"
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            alignSelf: 'stretch'
-          }}
-        >
-          <div className="md:gap-[5px] gap-[4px]" style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center'
-          }}>
-            {/* Icon - file duotone */}
-            <div className="md:w-[20px] md:h-[20px] w-[18px] h-[18px] flex items-center justify-center relative">
-              <svg className="md:w-[20px] md:h-[20px] w-[18px] h-[18px]" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.1875 0.875L17.125 6.8125H11.1875V0.875Z" fill="#6B7BE9"/>
-                <path opacity="0.4" d="M11.1875 0.875V6.8125H17.125V17.5C17.125 18.8359 16.0488 19.875 14.75 19.875H5.25C3.91406 19.875 2.875 18.8359 2.875 17.5V3.25C2.875 1.95117 3.91406 0.875 5.25 0.875H11.1875Z" fill="#6B7BE9"/>
+          <div 
+            className="flex-1 overflow-y-auto sm:overflow-visible [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-100 [&::-webkit-scrollbar-thumb]:bg-indigo-600 [&::-webkit-scrollbar-thumb]:rounded-full"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#4F46E5 #f1f5f9'
+            }}
+          >
+            <div className="px-6 pt-5 pb-5 text-center sm:px-10 sm:pt-10 sm:pb-6">
+            <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-500 text-white shadow-[0_8px_24px_rgba(79,70,229,0.35)] sm:h-16 sm:w-16 sm:mb-6">
+              <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7 stroke-white stroke-[2.5]">
+                <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            {/* Title text */}
-            <h2 
-              className="md:text-[18px] text-[18px]"
-              style={{
-                fontFamily: 'Product Sans, system-ui, sans-serif',
-                fontWeight: 700,
-                fontSize: '18px',
-                lineHeight: '1.2130000856187608em',
-                color: '#061333',
-                margin: 0,
-                textAlign: 'left'
-              }}
-            >
+            <h2 className="text-[22px] font-bold leading-[1.3] text-slate-900 sm:text-[26px]">
               {t('pdf_modal.title')}
+              <span className="block text-indigo-600">{t('pdf_modal.subtitle')}</span>
             </h2>
-          </div>
-        </div>
-
-        {/* Content container */}
-        <div className="md:gap-[10px] gap-[8px] md:px-[10px] px-0" style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignSelf: 'stretch'
-        }}>
-          {/* Description section */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignSelf: 'stretch'
-          }}>
-            <p 
-              className="md:text-[14px] text-[14px] md:leading-[1.4285714285714286em] leading-[1.4em]"
-              style={{
-                fontFamily: 'Product Sans Light, system-ui, sans-serif',
-                fontWeight: 300,
-                fontSize: '14px',
-                color: '#061333',
-                margin: 0,
-                textAlign: 'left'
-              }}
-            >
+            <p className="mt-3 text-base leading-[1.5] text-slate-500 sm:mt-4">
               {t('pdf_modal.description')}
             </p>
           </div>
 
-          {/* Buttons section */}
-          <div className="md:gap-[10px] gap-[8px]" style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignSelf: 'stretch'
-          }}>
-            {/* Share on LinkedIn button */}
-            <button
-              onClick={handleShareLinkedIn}
-              className="md:h-[80px] h-[50px] md:py-[10px] py-[6px] md:px-[24px] px-[14px] md:gap-[8px] gap-[6px]"
-              style={{
-                width: '100%',
-                background: '#3C51E2',
-                borderRadius: '10px',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s ease',
-                boxSizing: 'border-box'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#3041B5';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#3C51E2';
-              }}
-            >
-                {/* LinkedIn icon */}
-              <div className="md:w-[23px] md:h-[23px] w-[18px] h-[18px] flex items-center justify-center flex-shrink-0">
-                <svg className="md:w-[23px] md:h-[23px] w-[18px] h-[18px]" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18.25 3.375C18.8477 3.375 19.375 3.90234 19.375 4.53516V18C19.375 18.6328 18.8477 19.125 18.25 19.125H4.71484C4.11719 19.125 3.625 18.6328 3.625 18V4.53516C3.625 3.90234 4.11719 3.375 4.71484 3.375H18.25ZM8.37109 16.875V9.38672H6.05078V16.875H8.37109ZM7.21094 8.33203C7.94922 8.33203 8.54688 7.73438 8.54688 6.99609C8.54688 6.25781 7.94922 5.625 7.21094 5.625C6.4375 5.625 5.83984 6.25781 5.83984 6.99609C5.83984 7.73438 6.4375 8.33203 7.21094 8.33203ZM17.125 16.875V12.7617C17.125 10.7578 16.668 9.17578 14.3125 9.17578C13.1875 9.17578 12.4141 9.80859 12.0977 10.4062H12.0625V9.38672H9.84766V16.875H12.168V13.1836C12.168 12.1992 12.3438 11.25 13.5742 11.25C14.7695 11.25 14.7695 12.375 14.7695 13.2188V16.875H17.125Z" fill="white"/>
-                  </svg>
-                </div>
-                {/* Button text */}
-              <span className="md:text-[18px] text-[13px]"
-                style={{
-                  fontFamily: 'Product Sans Light, system-ui, sans-serif',
-                  fontWeight: 300,
-                  lineHeight: '1.2130000856187608em',
-                  color: '#FFFFFF',
-                  textAlign: 'left'
-                }}>
-                  {t('pdf_modal.share_linkedin')}
-                </span>
-            </button>
+          <div className="px-6 pb-6 sm:px-10 sm:pb-8">
+            <div className="mb-7 rounded-xl bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100 p-5 sm:py-6 sm:px-7">
+              <div>
+                {features.map((feature, index) => (
+                  <div key={feature} className={`flex items-start text-sm font-medium leading-[1.6] sm:text-[15px] ${index !== features.length - 1 ? 'mb-4' : ''}`} style={{ color: '#334155' }}>
+                    <span className="mr-3 mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-indigo-600 text-white shadow-[0_8px_16px_rgba(79,70,229,0.25)]">
+                      <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3 stroke-white stroke-[3]">
+                        <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </span>
+                    <span className="leading-[1.6]" style={{ color: '#334155' }}>{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-            {/* Download as PDF button */}
-            <button
-              onClick={handleDownloadPDF}
-              disabled={isDownloading}
-              className="md:h-[80px] h-[50px] md:py-[10px] py-[6px] md:px-[24px] px-[14px] md:gap-[8px] gap-[6px]"
-              style={{
-                width: '100%',
-                background: '#3C51E2',
-                borderRadius: '10px',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                border: 'none',
-                cursor: isDownloading ? 'not-allowed' : 'pointer',
-                transition: 'background-color 0.2s ease',
-                boxSizing: 'border-box',
-                opacity: isDownloading ? 0.6 : 1
-              }}
-              onMouseEnter={(e) => {
-                if (!isDownloading) {
-                  e.currentTarget.style.background = '#3041B5';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isDownloading) {
-                  e.currentTarget.style.background = '#3C51E2';
-                }
-              }}
-            >
+            <div className="mt-6 flex flex-col gap-3">
+              <a
+                href={demoUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-gradient-to-r from-indigo-600 via-indigo-500 to-indigo-400 px-6 py-3.5 text-[15px] font-semibold text-white shadow-[0_4px_12px_rgba(79,70,229,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(79,70,229,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="stroke-white stroke-[2.5]">
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span>{t('pdf_modal.demo_cta')}</span>
+              </a>
+
+              <button
+                onClick={handleDownloadPDF}
+                disabled={isDownloading}
+                type="button"
+                className="inline-flex items-center justify-center gap-2 rounded-[10px] border-2 border-slate-200 bg-white px-6 py-3.5 text-[15px] font-semibold text-indigo-600 shadow-[0_4px_12px_rgba(15,23,42,0.08)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 hover:text-indigo-700 hover:shadow-[0_8px_20px_rgba(15,23,42,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+              >
                 {isDownloading ? (
                   <>
-                  <div className="animate-spin rounded-full md:h-5 md:w-5 h-4 w-4 border-b-2 border-current flex-shrink-0"></div>
-                  <span className="md:text-[18px] text-[13px]"
-                    style={{
-                      fontFamily: 'Product Sans Light, system-ui, sans-serif',
-                      fontWeight: 300,
-                      lineHeight: '1.2130000856187608em',
-                      color: '#FFFFFF',
-                      textAlign: 'left'
-                    }}>
-                      {t('pdf_modal.downloading')}
-                    </span>
+                    <span className="inline-flex h-5 w-5 animate-spin rounded-full border-2 border-indigo-600 border-b-transparent" />
+                    <span>{t('pdf_modal.downloading')}</span>
                   </>
                 ) : (
                   <>
-                    {/* Download icon */}
-                  <div className="md:w-[23px] md:h-[23px] w-[18px] h-[18px] flex items-center justify-center flex-shrink-0">
-                    <svg className="md:w-[23px] md:h-[23px] w-[18px] h-[18px]" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M11.0781 16.1719L6.01562 11.1094C5.80469 10.8984 5.80469 10.5117 6.01562 10.3008C6.22656 10.0898 6.61328 10.0898 6.82422 10.3008L10.9375 14.4141V3.9375C10.9375 3.65625 11.1836 3.375 11.5 3.375C11.7812 3.375 12.0625 3.65625 12.0625 3.9375V14.4141L16.1406 10.3008C16.3516 10.0898 16.7383 10.0898 16.9492 10.3008C17.1602 10.5117 17.1602 10.8984 16.9492 11.1094L11.8867 16.1719C11.7812 16.2773 11.6406 16.3125 11.5 16.3125C11.3242 16.3125 11.1836 16.2773 11.0781 16.1719ZM17.6875 18C17.9688 18 18.25 18.2812 18.25 18.5625C18.25 18.8789 17.9688 19.125 17.6875 19.125H5.3125C4.99609 19.125 4.75 18.8789 4.75 18.5625C4.75 18.2812 4.99609 18 5.3125 18H17.6875Z" fill="white"/>
-                      </svg>
-                    </div>
-                    {/* Button text */}
-                  <span className="md:text-[18px] text-[13px]"
-                    style={{
-                      fontFamily: 'Product Sans Light, system-ui, sans-serif',
-                      fontWeight: 300,
-                      lineHeight: '1.2130000856187608em',
-                      color: '#FFFFFF',
-                      textAlign: 'left'
-                    }}>
-                      {t('pdf_modal.download_pdf')}
-                    </span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="stroke-current stroke-[2]">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" strokeLinecap="round" strokeLinejoin="round" />
+                      <polyline points="7 10 12 15 17 10" strokeLinecap="round" strokeLinejoin="round" />
+                      <line x1="12" y1="15" x2="12" y2="3" strokeLinecap="round" />
+                    </svg>
+                    <span>{t('pdf_modal.download_pdf')}</span>
                   </>
                 )}
+              </button>
+            </div>
+          </div>
+          </div>
+
+          <div className="flex-shrink-0 border-t border-slate-100 px-6 pb-6 pt-4 text-center sm:px-10 sm:pb-8 sm:pt-5 bg-white">
+            <button
+              onClick={handleShareLinkedIn}
+              type="button"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-[#0A66C2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+              {t('pdf_modal.share_linkedin')}
             </button>
           </div>
         </div>
