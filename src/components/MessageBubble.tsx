@@ -777,11 +777,11 @@ export function MessageBubble({
                     )}
 
               {shouldShowFixedButtons && (
-                <div className="mt-[10px] flex w-full flex-col gap-[5px]">
+                <div className="mt-[10px] flex w-full flex-col gap-[5px] md:flex-row md:w-auto md:items-center">
                   <button
                     type="button"
                     onClick={() => onQuickAnswerClick(t('chat.quick_answers.give_examples'))}
-                    className="flex h-[29px] items-center justify-center gap-2 rounded-full bg-[#3C51E2] px-[14px] py-[7px] text-xs font-light text-white transition-all hover:bg-[#061333]"
+                    className="flex h-[29px] items-center justify-center gap-2 rounded-full bg-[#3C51E2] px-[14px] py-[7px] text-xs font-light text-white transition-all hover:bg-[#061333] whitespace-nowrap"
                   >
                     <svg 
                       width="14" 
@@ -799,7 +799,7 @@ export function MessageBubble({
                   <button
                     type="button"
                     onClick={() => onQuickAnswerClick(t('chat.quick_answers.skip_question'))}
-                    className="flex h-[29px] items-center justify-center gap-2 rounded-full border border-[#3C51E2] px-[14px] py-[7px] text-xs font-light text-[#3C51E2] transition-all hover:bg-[#061333] hover:text-white"
+                    className="flex h-[29px] items-center justify-center gap-2 rounded-full border border-[#3C51E2] px-[14px] py-[7px] text-xs font-light text-[#3C51E2] transition-all hover:bg-[#061333] hover:text-white whitespace-nowrap"
                   >
                     <svg 
                       width="14" 
