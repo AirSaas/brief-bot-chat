@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useTranslation } from 'react-i18next';
 import Markdown from "react-markdown";
+import { extractBriefTextFromContent as extractBriefTextFromContentUtil } from "../utils/chat";
 
 // Function to hide language instruction text between equals signs for display
 const hideLanguageInstruction = (text: string): string => {
@@ -49,6 +50,183 @@ const NEW_BRIEF_QUICK_ANSWERS = new Set([
   "Create a new brief",
   "Créer un nouveau brief",
 ]);
+
+// Use the shared utility function
+const extractBriefTextFromContent = extractBriefTextFromContentUtil;
+
+// Function to detect if content contains a JSON with brief_text or starts with brief patterns
+const hasBriefTextPattern = (content: string): boolean => {
+  try {
+    const contentStr = String(content).trim();
+    
+    // First, check if content directly starts with brief patterns
+    if (contentStr.startsWith('### Project Brief:') || 
+        contentStr.startsWith('### Project Context') ||
+        contentStr.startsWith('### Fiche Projet:') ||
+        contentStr.startsWith('### Brief Projet:') ||
+        contentStr.startsWith('### Contexte du Projet')) {
+      return true;
+    }
+    
+    // Check for JSON block with brief_text
+    const briefText = extractBriefTextFromContent(contentStr);
+    if (briefText) {
+      // Check if brief_text contains brief patterns (English or French)
+      const hasEnglishPattern = 
+        briefText.startsWith('### Project Brief:') ||
+        briefText.startsWith('### Project Context') ||
+        briefText.includes('### Project Brief:') ||
+        briefText.includes('### Project Context') ||
+        briefText.includes('#### Context') ||
+        briefText.includes('#### Protagonists') ||
+        briefText.includes('#### Main Challenge') ||
+        briefText.includes('### Desired Transformation') ||
+        briefText.includes('### Obstacles') ||
+        briefText.includes('### Consequences') ||
+        briefText.includes('### Available Resources') ||
+        briefText.includes('### Timeline') ||
+        briefText.includes('### Success Metrics') ||
+        briefText.includes('### Deliverables');
+      
+      const hasFrenchPattern = 
+        briefText.startsWith('### Fiche Projet:') ||
+        briefText.startsWith('### Brief Projet:') ||
+        briefText.startsWith('### Contexte du Projet') ||
+        briefText.includes('### Contexte du Projet') ||
+        briefText.includes('### Fiche Projet:') ||
+        briefText.includes('#### Contexte') ||
+        briefText.includes('#### Protagonistes') ||
+        briefText.includes('#### Défi') ||
+        briefText.includes('#### Importance');
+      
+      if (hasEnglishPattern || hasFrenchPattern) {
+        return true;
+      }
+      
+      // Also check for common brief structure indicators
+      const hasBriefStructure = 
+        briefText.includes('#### Context') ||
+        briefText.includes('#### Contexte') ||
+        briefText.includes('#### Protagonists') ||
+        briefText.includes('#### Protagonistes') ||
+        briefText.includes('#### Main Challenge') ||
+        briefText.includes('#### Défi') ||
+        briefText.includes('#### Défi Central') ||
+        briefText.includes('#### Budget') ||
+        briefText.includes('#### Importance') ||
+        briefText.includes('#### Messages Clés') ||
+        briefText.includes('#### Conclusion') ||
+        briefText.includes('### Project Context') ||
+        briefText.includes('### Desired Transformation') ||
+        briefText.includes('### Obstacles') ||
+        briefText.includes('### Consequences') ||
+        briefText.includes('### Available Resources') ||
+        briefText.includes('### Timeline') ||
+        briefText.includes('### Success Metrics') ||
+        briefText.includes('### Deliverables');
+      
+      if (hasBriefStructure) {
+        return true;
+      }
+    }
+    
+    // Check if content directly contains the pattern (for resilience)
+    if (contentStr.includes('"brief_text"')) {
+      const hasBriefPattern = 
+        contentStr.includes('### Project Brief:') || 
+        contentStr.includes('### Project Context') ||
+        contentStr.includes('### Fiche Projet:') ||
+        contentStr.includes('### Brief Projet:') ||
+        contentStr.includes('### Contexte du Projet') ||
+        contentStr.includes('#### Context') ||
+        contentStr.includes('#### Contexte') ||
+        contentStr.includes('#### Protagonists') ||
+        contentStr.includes('#### Protagonistes') ||
+        contentStr.includes('### Desired Transformation') ||
+        contentStr.includes('### Obstacles') ||
+        contentStr.includes('### Consequences') ||
+        contentStr.includes('### Available Resources') ||
+        contentStr.includes('### Timeline') ||
+        contentStr.includes('### Success Metrics') ||
+        contentStr.includes('### Deliverables');
+      
+      if (hasBriefPattern) {
+        return true;
+      }
+    }
+    
+    // Also check if content contains brief patterns anywhere
+    if (contentStr.includes('### Project Brief:') || 
+        contentStr.includes('### Project Context') ||
+        contentStr.includes('### Fiche Projet:') ||
+        contentStr.includes('### Brief Projet:') ||
+        contentStr.includes('### Contexte du Projet')) {
+      // Additional check: make sure it looks like a brief
+      const hasBriefStructure = 
+        contentStr.includes('#### Context') ||
+        contentStr.includes('#### Contexte') ||
+        contentStr.includes('#### Protagonists') ||
+        contentStr.includes('#### Protagonistes') ||
+        contentStr.includes('#### Main Challenge') ||
+        contentStr.includes('#### Défi') ||
+        contentStr.includes('#### Budget') ||
+        contentStr.includes('#### Importance') ||
+        contentStr.includes('#### Messages Clés') ||
+        contentStr.includes('#### Conclusion') ||
+        contentStr.includes('### Desired Transformation') ||
+        contentStr.includes('### Obstacles') ||
+        contentStr.includes('### Consequences') ||
+        contentStr.includes('### Available Resources') ||
+        contentStr.includes('### Timeline') ||
+        contentStr.includes('### Success Metrics') ||
+        contentStr.includes('### Deliverables');
+      
+      if (hasBriefStructure) {
+        return true;
+      }
+    }
+    
+    return false;
+  } catch {
+    // If parsing fails, check for direct pattern match as fallback
+    const contentStr = String(content).trim();
+    
+    // Check if it starts with the pattern
+    if (contentStr.startsWith('### Project Brief:') || 
+        contentStr.startsWith('### Project Context') ||
+        contentStr.startsWith('### Fiche Projet:') ||
+        contentStr.startsWith('### Brief Projet:') ||
+        contentStr.startsWith('### Contexte du Projet')) {
+      return true;
+    }
+    
+    // Check if it contains the pattern and has brief structure
+    if (contentStr.includes('### Project Brief:') || 
+        contentStr.includes('### Project Context') ||
+        contentStr.includes('### Fiche Projet:') ||
+        contentStr.includes('### Brief Projet:') ||
+        contentStr.includes('### Contexte du Projet')) {
+      const hasBriefStructure = 
+        contentStr.includes('#### Context') ||
+        contentStr.includes('#### Contexte') ||
+        contentStr.includes('#### Protagonists') ||
+        contentStr.includes('#### Protagonistes') ||
+        contentStr.includes('#### Défi') ||
+        contentStr.includes('#### Importance') ||
+        contentStr.includes('### Desired Transformation') ||
+        contentStr.includes('### Obstacles') ||
+        contentStr.includes('### Consequences') ||
+        contentStr.includes('### Available Resources') ||
+        contentStr.includes('### Timeline') ||
+        contentStr.includes('### Success Metrics') ||
+        contentStr.includes('### Deliverables');
+      
+      return hasBriefStructure;
+    }
+    
+    return false;
+  }
+};
 
 export function MessageBubble({
   role,
@@ -161,7 +339,7 @@ export function MessageBubble({
 
   const copyToClipboard = async () => {
     try {
-      const text = hideLanguageInstruction(trimmedChildren);
+      const text = hideLanguageInstruction(displayContent);
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000); // Hide after 2 seconds
@@ -171,6 +349,26 @@ export function MessageBubble({
   };
 
   const selectedAnswerSet = useMemo(() => new Set(selectedAnswers), [selectedAnswers]);
+
+  // Check if content has brief_text pattern
+  const hasBriefText = useMemo(() => {
+    return hasBriefTextPattern(String(children));
+  }, [children]);
+
+  // Extract brief_text from JSON if pattern is detected, otherwise use original content
+  const displayContent = useMemo(() => {
+    const contentStr = String(children).trim();
+    
+    if (hasBriefText && role === "assistant") {
+      const extractedBriefText = extractBriefTextFromContent(contentStr);
+      if (extractedBriefText) {
+        // Convert \n escape sequences to actual newlines for proper markdown rendering
+        return extractedBriefText.replace(/\\n/g, '\n');
+      }
+    }
+    
+    return contentStr;
+  }, [children, hasBriefText, role]);
 
   const quickAnswerGroups = useMemo(() => {
     const regular: Array<{ answer: string; index: number }> = [];
@@ -207,10 +405,35 @@ export function MessageBubble({
       regular.push({ answer, index });
     });
 
+    // If brief_text pattern is detected, add PDF and New Brief buttons if not already present
+    if (hasBriefText && role === "assistant") {
+      const hasPdfButton = action.some(item => item.type === "pdf");
+      const hasNewBriefButton = action.some(item => item.type === "newBrief");
+      
+      // Use a large offset to ensure unique indices for auto-added buttons
+      const autoButtonIndexOffset = 10000;
+      let autoButtonIndex = autoButtonIndexOffset;
+      
+      if (!hasPdfButton) {
+        const pdfText = t('chat.quick_answers.download_pdf');
+        action.push({ answer: pdfText, index: autoButtonIndex++, type: "pdf" });
+      }
+      
+      if (!hasNewBriefButton) {
+        const newBriefText = t('chat.quick_answers.create_new_brief');
+        action.push({ answer: newBriefText, index: autoButtonIndex++, type: "newBrief" });
+      }
+    }
+
     return { regular, special, action };
-  }, [quickAnswers]);
+  }, [quickAnswers, hasBriefText, role, t]);
 
   const shouldShowFixedButtons = useMemo(() => {
+    // If brief_text pattern is detected, don't show fixed buttons (action buttons will be shown instead)
+    if (hasBriefText && role === "assistant") {
+      return false;
+    }
+
     if (!quickAnswers || quickAnswers.length === 0) {
       return true;
     }
@@ -220,7 +443,7 @@ export function MessageBubble({
       NEW_BRIEF_QUICK_ANSWERS.has(answer) ||
       isEverythingCorrectAnswer(answer)
     );
-  }, [quickAnswers]);
+  }, [quickAnswers, hasBriefText, role]);
 
   const handleAnswerSelection = (answer: string, shouldSelect: boolean) => {
     setClickedAnswers((previous) => new Set(previous).add(answer));
@@ -324,7 +547,7 @@ export function MessageBubble({
                       ),
                     }}
                   >
-                    {hideLanguageInstruction(trimmedChildren)}
+                    {hideLanguageInstruction(displayContent)}
                   </Markdown>
                 )}
               </div>
@@ -549,7 +772,7 @@ export function MessageBubble({
                         ),
                       }}
                     >
-                        {hideLanguageInstruction(trimmedChildren)}
+                        {hideLanguageInstruction(displayContent)}
                     </Markdown>
                   )}
                 </div>
@@ -558,16 +781,17 @@ export function MessageBubble({
               {showCopyButton && !isAudio && (
                 <button
                   onClick={copyToClipboard}
-                    className="absolute bottom-0.5 right-0.5 cursor-pointer p-1 text-gray-400 transition-colors duration-200 hover:text-gray-600 opacity-0 group-hover:opacity-100"
+                    className="absolute bottom-0.5 right-0.5 cursor-pointer p-1 transition-colors duration-200 opacity-0 group-hover:opacity-100"
                   title="Copy message"
                 >
                   <svg
-                    width="16"
-                    height="16"
+                    width="14"
+                    height="14"
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke="currentColor"
+                    stroke="#3C51E2"
                     strokeWidth="2"
+                    className="h-[14px] w-[14px]"
                   >
                       <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -585,7 +809,7 @@ export function MessageBubble({
           </div>
 
           {/* Quick Answers for bot messages */}
-          {quickAnswers && quickAnswers.length > 0 && onQuickAnswerClick && (
+          {((quickAnswers && quickAnswers.length > 0 && onQuickAnswerClick) || (hasBriefText && role === "assistant" && onQuickAnswerClick)) && (
             <div className="ml-[30px] flex w-[calc(100%-30px)] max-w-[calc(100%-30px)] flex-col gap-[10px]">
               {quickAnswerGroups.regular.map(({ answer, index }) => {
                 const isDefaultButton = DEFAULT_QUICK_ANSWERS.has(answer);
@@ -614,6 +838,7 @@ export function MessageBubble({
                           disabled={isClicked}
                         className={cx(
                           "w-full bg-transparent text-left font-bold text-[#040D22]",
+                          "md:text-[14px]",
                           "leading-[1.2130000250680106em]",
                           isClicked && !isSelected ? "cursor-not-allowed" : "cursor-pointer"
                         )}

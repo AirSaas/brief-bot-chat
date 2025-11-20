@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { jsPDF } from 'jspdf';
+import { extractBriefTextFromContent } from '../utils/chat';
 
 interface DownloadPDFModalProps {
   isOpen: boolean;
@@ -34,12 +35,19 @@ export default function DownloadPDFModal({ isOpen, onClose }: DownloadPDFModalPr
 
           let content = lastAssistantMessage.content;
           
-          // Extract content between markdown separators (---\n\n)
-          const separatorPattern = /---\s*\n\s*\n([\s\S]*?)\n\s*\n---/;
-          const match = content.match(separatorPattern);
-          
-          if (match && match[1]) {
-            content = match[1].trim();
+          // First, try to extract brief_text from JSON if present
+          const extractedBriefText = extractBriefTextFromContent(content);
+          if (extractedBriefText) {
+            // Convert \n escape sequences to actual newlines for proper processing
+            content = extractedBriefText.replace(/\\n/g, '\n');
+          } else {
+            // Extract content between markdown separators (---\n\n) if no JSON brief_text found
+            const separatorPattern = /---\s*\n\s*\n([\s\S]*?)\n\s*\n---/;
+            const match = content.match(separatorPattern);
+            
+            if (match && match[1]) {
+              content = match[1].trim();
+            }
           }
           
       // jsPDF is already imported at the top
