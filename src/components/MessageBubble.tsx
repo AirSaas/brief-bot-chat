@@ -60,7 +60,9 @@ const hasBriefTextPattern = (content: string): boolean => {
     const contentStr = String(content).trim();
     
     // First, check if content directly starts with brief patterns
-    if (contentStr.startsWith('### Project Brief:') || 
+    if (contentStr.startsWith('## Project Context') ||
+        contentStr.startsWith('## Project Brief') ||
+        contentStr.startsWith('### Project Brief:') || 
         contentStr.startsWith('### Project Context') ||
         contentStr.startsWith('### Fiche Projet:') ||
         contentStr.startsWith('### Brief Projet:') ||
@@ -72,7 +74,19 @@ const hasBriefTextPattern = (content: string): boolean => {
     const briefText = extractBriefTextFromContent(contentStr);
     if (briefText) {
       // Check if brief_text contains brief patterns (English or French)
-      const hasEnglishPattern = 
+      // Check for patterns with ## (two #) for English briefs
+      const hasEnglishPatternTwoHash = 
+        briefText.startsWith('## Project Context') ||
+        briefText.startsWith('## Project Brief') ||
+        briefText.includes('## Project Context') ||
+        briefText.includes('## Project Brief') ||
+        briefText.includes('## Protagonist') ||
+        briefText.includes('## Challenge') ||
+        briefText.includes('## Resolution') ||
+        briefText.includes('## Importance');
+      
+      // Check for patterns with ### (three #) for English briefs
+      const hasEnglishPatternThreeHash = 
         briefText.startsWith('### Project Brief:') ||
         briefText.startsWith('### Project Context') ||
         briefText.includes('### Project Brief:') ||
@@ -99,12 +113,17 @@ const hasBriefTextPattern = (content: string): boolean => {
         briefText.includes('#### Défi') ||
         briefText.includes('#### Importance');
       
-      if (hasEnglishPattern || hasFrenchPattern) {
+      if (hasEnglishPatternTwoHash || hasEnglishPatternThreeHash || hasFrenchPattern) {
         return true;
       }
       
-      // Also check for common brief structure indicators
+      // Also check for common brief structure indicators (including ## patterns)
       const hasBriefStructure = 
+        briefText.includes('## Project Context') ||
+        briefText.includes('## Protagonist') ||
+        briefText.includes('## Challenge') ||
+        briefText.includes('## Resolution') ||
+        briefText.includes('## Importance') ||
         briefText.includes('#### Context') ||
         briefText.includes('#### Contexte') ||
         briefText.includes('#### Protagonists') ||
@@ -133,6 +152,12 @@ const hasBriefTextPattern = (content: string): boolean => {
     // Check if content directly contains the pattern (for resilience)
     if (contentStr.includes('"brief_text"')) {
       const hasBriefPattern = 
+        contentStr.includes('## Project Context') ||
+        contentStr.includes('## Project Brief') ||
+        contentStr.includes('## Protagonist') ||
+        contentStr.includes('## Challenge') ||
+        contentStr.includes('## Resolution') ||
+        contentStr.includes('## Importance') ||
         contentStr.includes('### Project Brief:') || 
         contentStr.includes('### Project Context') ||
         contentStr.includes('### Fiche Projet:') ||
@@ -156,13 +181,20 @@ const hasBriefTextPattern = (content: string): boolean => {
     }
     
     // Also check if content contains brief patterns anywhere
-    if (contentStr.includes('### Project Brief:') || 
+    if (contentStr.includes('## Project Context') ||
+        contentStr.includes('## Project Brief') ||
+        contentStr.includes('### Project Brief:') || 
         contentStr.includes('### Project Context') ||
         contentStr.includes('### Fiche Projet:') ||
         contentStr.includes('### Brief Projet:') ||
         contentStr.includes('### Contexte du Projet')) {
       // Additional check: make sure it looks like a brief
       const hasBriefStructure = 
+        contentStr.includes('## Project Context') ||
+        contentStr.includes('## Protagonist') ||
+        contentStr.includes('## Challenge') ||
+        contentStr.includes('## Resolution') ||
+        contentStr.includes('## Importance') ||
         contentStr.includes('#### Context') ||
         contentStr.includes('#### Contexte') ||
         contentStr.includes('#### Protagonists') ||
@@ -192,7 +224,9 @@ const hasBriefTextPattern = (content: string): boolean => {
     const contentStr = String(content).trim();
     
     // Check if it starts with the pattern
-    if (contentStr.startsWith('### Project Brief:') || 
+    if (contentStr.startsWith('## Project Context') ||
+        contentStr.startsWith('## Project Brief') ||
+        contentStr.startsWith('### Project Brief:') || 
         contentStr.startsWith('### Project Context') ||
         contentStr.startsWith('### Fiche Projet:') ||
         contentStr.startsWith('### Brief Projet:') ||
@@ -201,12 +235,19 @@ const hasBriefTextPattern = (content: string): boolean => {
     }
     
     // Check if it contains the pattern and has brief structure
-    if (contentStr.includes('### Project Brief:') || 
+    if (contentStr.includes('## Project Context') ||
+        contentStr.includes('## Project Brief') ||
+        contentStr.includes('### Project Brief:') || 
         contentStr.includes('### Project Context') ||
         contentStr.includes('### Fiche Projet:') ||
         contentStr.includes('### Brief Projet:') ||
         contentStr.includes('### Contexte du Projet')) {
       const hasBriefStructure = 
+        contentStr.includes('## Project Context') ||
+        contentStr.includes('## Protagonist') ||
+        contentStr.includes('## Challenge') ||
+        contentStr.includes('## Resolution') ||
+        contentStr.includes('## Importance') ||
         contentStr.includes('#### Context') ||
         contentStr.includes('#### Contexte') ||
         contentStr.includes('#### Protagonists') ||
