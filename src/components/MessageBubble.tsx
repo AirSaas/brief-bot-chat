@@ -623,7 +623,7 @@ export function MessageBubble({
           <div
             className={`${base} ${userClasses} ${
               isAudio ? "flex flex-col gap-2" : ""
-            } w-full max-w-[250px] sm:w-auto md:w-[400px] md:max-w-[400px] p-5`}
+            } w-full max-w-[250px] sm:w-auto md:w-auto md:max-w-[400px] p-5`}
           >
             {isAudio && audioFile ? (
               <div className="-mx-4 -my-4 flex min-h-[2rem] flex-col justify-center gap-2">

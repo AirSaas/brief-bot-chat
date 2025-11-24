@@ -68,13 +68,13 @@ export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessag
           >
             {/* wrapper */}
             <div
-              className="flex flex-row items-start flex-1 bg-[#F8F9FF] rounded-[10px] transition-all duration-200"
+              className="flex flex-row items-center flex-1 bg-[#F8F9FF] rounded-[10px] transition-all duration-200 md:h-[95px]"
               style={{
                 padding: '0px',
                 gap: '5px',
                 boxSizing: 'border-box',
                 border: '1px solid transparent',
-                width: '100%'
+                width: '100%',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#F3F3FC';
@@ -109,6 +109,7 @@ export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessag
                   >
                     {/* title */}
                     <div
+                      className="md:mb-[5px]"
                       style={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -152,7 +153,7 @@ export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessag
                           fontFamily: 'Product Sans Light, system-ui, sans-serif',
                           fontWeight: 300,
                           fontSize: '12px',
-                          lineHeight: '1.2130000591278076em'
+                          lineHeight: '1.2130000591278076em',
                         }}
                       >
                         {template.description}

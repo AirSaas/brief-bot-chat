@@ -79,13 +79,13 @@ export default function HomePageDesktopView({
             {/* Text Section - Check items and Share link */}
             <section className="flex w-full flex-col items-center gap-[30px]">
               {/* Features Section - Check items */}
-              <ul className="flex w-full flex-col gap-5">
+              <ul className="flex w-full flex-col gap-[20px]">
                 {featureKeys.map((featureKey) => (
                   <li key={featureKey} className="flex w-full items-start gap-[10px]">
                     <span className="flex h-[28px] w-[12px] items-center justify-center">
                       <span className="h-[9px] w-[9px] rounded-full bg-[#03E26B]" />
                     </span>
-                    <p className="flex-1 pt-[3.4px] text-[18px] leading-[1.2130000856187608em] text-[#475467] font-normal">
+                    <p className="flex-1 pt-[3.4px] text-[18px] leading-[1.2130000856187608em] text-[#475467] font-normal min-h-[50px]">
                       {parseBoldText(t(featureKey))}
                     </p>
                   </li>
