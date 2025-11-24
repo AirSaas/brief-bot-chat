@@ -14,6 +14,7 @@ interface HomePageProps {
   setIsThinking: React.Dispatch<React.SetStateAction<boolean>>;
   hasSelectedInitialOption: boolean;
   setHasSelectedInitialOption: React.Dispatch<React.SetStateAction<boolean>>;
+  onResetChat?: () => void;
 }
 
 export default function HomePage({
@@ -26,6 +27,7 @@ export default function HomePage({
   setIsThinking,
   hasSelectedInitialOption,
   setHasSelectedInitialOption,
+  onResetChat,
 }: HomePageProps) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
@@ -96,6 +98,7 @@ export default function HomePage({
         setIsThinking={setIsThinking}
         hasSelectedInitialOption={hasSelectedInitialOption}
         setHasSelectedInitialOption={setHasSelectedInitialOption}
+        onResetChat={onResetChat}
         t={t}
       />
       <HomePageDesktopView
@@ -113,6 +116,7 @@ export default function HomePage({
         setIsThinking={setIsThinking}
         hasSelectedInitialOption={hasSelectedInitialOption}
         setHasSelectedInitialOption={setHasSelectedInitialOption}
+        onResetChat={onResetChat}
         t={t}
       />
     </div>

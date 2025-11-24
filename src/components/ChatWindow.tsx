@@ -24,6 +24,7 @@ interface ChatWindowProps {
   hasSelectedInitialOption?: boolean;
   setHasSelectedInitialOption?: React.Dispatch<React.SetStateAction<boolean>>;
   onGoBack?: () => void;
+  onResetChat?: () => void;
 }
 
 export default function ChatWindow({
@@ -37,6 +38,7 @@ export default function ChatWindow({
   hasSelectedInitialOption: externalHasSelectedInitialOption,
   setHasSelectedInitialOption: externalSetHasSelectedInitialOption,
   onGoBack,
+  onResetChat,
 }: ChatWindowProps) {
   const { t, i18n } = useTranslation();
 
@@ -255,6 +257,18 @@ export default function ChatWindow({
   }
 
   function handleQuickAnswerClick(answer: string) {
+    // Check if it's the "create_new_brief" button
+    const isNewBriefButton =
+      answer === t("chat.quick_answers.create_new_brief") ||
+      answer === "Start a new brief" ||
+      answer === "Commencer un nouveau brief";
+
+    if (isNewBriefButton && onResetChat) {
+      // Reset chat with a new session ID
+      onResetChat();
+      return;
+    }
+
     // Check if it's a default button (give_examples or skip_question in both languages)
     const lowerAnswer = answer.toLowerCase();
     const isDefaultButton =

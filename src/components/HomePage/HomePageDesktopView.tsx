@@ -19,6 +19,7 @@ interface HomePageDesktopViewProps {
   setIsThinking: Dispatch<SetStateAction<boolean>>;
   hasSelectedInitialOption: boolean;
   setHasSelectedInitialOption: Dispatch<SetStateAction<boolean>>;
+  onResetChat?: () => void;
   t: TFunction;
 }
 
@@ -37,6 +38,7 @@ export default function HomePageDesktopView({
   setIsThinking,
   hasSelectedInitialOption,
   setHasSelectedInitialOption,
+  onResetChat,
   t,
 }: HomePageDesktopViewProps) {
   const featureKeys = [
@@ -171,6 +173,7 @@ export default function HomePageDesktopView({
             setHasSelectedInitialOption={setHasSelectedInitialOption}
             isPanel={true}
             onGoBack={onGoBack}
+            onResetChat={onResetChat}
           />
         </div>
       </div>

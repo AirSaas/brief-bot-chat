@@ -22,6 +22,7 @@ interface HomePageMobileViewProps {
   setIsThinking: Dispatch<SetStateAction<boolean>>;
   hasSelectedInitialOption: boolean;
   setHasSelectedInitialOption: Dispatch<SetStateAction<boolean>>;
+  onResetChat?: () => void;
   t: TFunction;
 }
 
@@ -42,6 +43,7 @@ export default function HomePageMobileView({
   setIsThinking,
   hasSelectedInitialOption,
   setHasSelectedInitialOption,
+  onResetChat,
   t,
 }: HomePageMobileViewProps) {
   const featureKeys = [
@@ -182,6 +184,7 @@ export default function HomePageMobileView({
             setHasSelectedInitialOption={setHasSelectedInitialOption}
             isPanel={false}
             onGoBack={onGoBack}
+            onResetChat={onResetChat}
           />
         </div>
       )}

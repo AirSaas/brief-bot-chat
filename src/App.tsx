@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import HomePage from "./components/HomePage/HomePage";
 import type { ChatMessage } from "./lib/api";
 
@@ -9,14 +9,22 @@ export default function App() {
   const [hasSelectedInitialOption, setHasSelectedInitialOption] = useState(false);
   
   // Generate a new session ID on every page load/refresh
-  const sessionId = useMemo(() => {
-    return crypto.randomUUID();
-  }, []);
+  const [sessionId, setSessionId] = useState(() => crypto.randomUUID());
 
   // Clear sessionStorage on page load to ensure a fresh chat
   useEffect(() => {
     sessionStorage.removeItem('chatMessages');
   }, []);
+
+  // Function to reset chat with a new session ID
+  const resetChat = () => {
+    setMessages([]);
+    setInput("");
+    setIsThinking(false);
+    setHasSelectedInitialOption(false);
+    setSessionId(crypto.randomUUID());
+    sessionStorage.removeItem('chatMessages');
+  };
 
   return (
     <div className="h-screen">
@@ -30,6 +38,7 @@ export default function App() {
         setIsThinking={setIsThinking}
         hasSelectedInitialOption={hasSelectedInitialOption}
         setHasSelectedInitialOption={setHasSelectedInitialOption}
+        onResetChat={resetChat}
       />
     </div>
   );
