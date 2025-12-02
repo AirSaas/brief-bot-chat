@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 interface InitialBotMessageProps {
-  onTemplateSelect: (template: string) => void;
+  onTemplateSelect: (template: string, templateValue: string) => void;
 }
 
 // Function to hide language instruction text between equals signs for display
@@ -16,11 +16,13 @@ export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessag
   const TEMPLATES = [
     {
       id: "basic-storytelling",
+      value: "basic",
       title: t('initial_message.templates.basic_storytelling.title'),
       description: t('initial_message.templates.basic_storytelling.description')
     },
     {
-      id: "emotional-storytelling", 
+      id: "emotional-storytelling",
+      value: "emotional",
       title: t('initial_message.templates.emotional_storytelling.title'),
       description: t('initial_message.templates.emotional_storytelling.description')
     }
@@ -58,7 +60,7 @@ export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessag
         {TEMPLATES.map((template) => (
           <button
             key={template.id}
-            onClick={() => onTemplateSelect(t('initial_message.lets_start_template', { template: template.title }))}
+            onClick={() => onTemplateSelect(t('initial_message.lets_start_template', { template: template.title }), template.value)}
             className="flex flex-row items-end w-full bg-transparent border-none cursor-pointer self-stretch transition-all duration-200 group"
             style={{
               padding: '0px',

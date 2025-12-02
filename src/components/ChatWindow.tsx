@@ -214,7 +214,7 @@ export default function ChatWindow({
     await sendMessageDirectly(messageToSend);
   }
 
-  function handleTemplateSelect(template: string) {
+  function handleTemplateSelect(template: string, templateValue: string) {
     if (isThinking) return;
 
     // Mark that user has selected an initial option
@@ -225,8 +225,13 @@ export default function ChatWindow({
     setMessages((m) => [...m, userMsg]);
     setIsThinking(true);
 
-    // Send template selection to chat
-    sendToChat({ message: template, sessionId, language: i18n.language })
+    // Send template selection to chat with selected_template parameter
+    sendToChat({ 
+      message: template, 
+      sessionId, 
+      language: i18n.language,
+      selected_template: templateValue 
+    })
       .then((json) => {
         const text = json?.output ?? json?.data ?? JSON.stringify(json);
 
