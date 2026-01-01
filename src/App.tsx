@@ -15,7 +15,7 @@ export default function App() {
   
   // Store sessionIds and preloaded responses for each template
   const templateSessionIdsRef = useRef<Map<string, string>>(new Map());
-  const preloadedResponsesRef = useRef<Map<string, any>>(new Map());
+  const preloadedResponsesRef = useRef<Map<string, { output?: string; quick_answers?: string[]; [key: string]: unknown }>>(new Map());
   const preloadInProgressRef = useRef<Set<string>>(new Set());
   const preloadAbortControllersRef = useRef<Map<string, AbortController>>(new Map());
 
@@ -28,7 +28,20 @@ export default function App() {
 
   // Silently preload both templates when page loads
   useEffect(() => {
-    const preloadTemplate = async (templateValue: string, templateTitle: string) => {
+    // Get current language (default to 'en' if not available)
+    const currentLang = i18n.language || localStorage.getItem('i18nextLng') || 'en';
+    const isFrench = currentLang === 'fr' || currentLang.startsWith('fr');
+    
+    // Hardcoded template messages based on language
+    const basicMessage = isFrench 
+      ? "Commençons un Récit de Base, pose-moi ta première question pour guider le brief ! =ma langue est le français, gardons cette conversation entièrement en français="
+      : "Let's start a Basic Story Telling, start your first question to me for guiding the brief! =my language is English, let's keep this conversation completely in English=";
+    
+    const emotionalMessage = isFrench
+      ? "Commençons un Récit Émotionnel, pose-moi ta première question pour guider le brief ! =ma langue est le français, gardons cette conversation entièrement en français="
+      : "Let's start an Emotional Story Telling, start your first question to me for guiding the brief! =my language is English, let's keep this conversation completely in English=";
+
+    const preloadTemplate = async (templateValue: string, templateMessage: string) => {
       // Skip if already preloading or already loaded
       if (preloadInProgressRef.current.has(templateValue) || preloadedResponsesRef.current.has(templateValue)) {
         return;
@@ -45,14 +58,11 @@ export default function App() {
       preloadAbortControllersRef.current.set(templateValue, abortController);
 
       try {
-        // Get the template message text (same as what user would send)
-        const templateMessage = i18n.t('initial_message.lets_start_template', { template: templateTitle });
-
-        // Silently call the API with abort signal
+        // Silently call the API with abort signal using hardcoded message
         const response = await sendToChat({
           message: templateMessage,
           sessionId: templateSessionId,
-          language: i18n.language,
+          language: isFrench ? 'fr' : 'en',
           selected_template: templateValue,
           signal: abortController.signal
         });
@@ -61,9 +71,9 @@ export default function App() {
         if (!abortController.signal.aborted) {
           preloadedResponsesRef.current.set(templateValue, response);
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Ignore abort errors silently
-        if (error.name !== 'AbortError') {
+        if (error instanceof Error && error.name !== 'AbortError') {
           console.error(`Error preloading template ${templateValue}:`, error);
         }
       } finally {
@@ -72,12 +82,9 @@ export default function App() {
       }
     };
 
-    // Preload both templates
-    const basicTitle = i18n.t('initial_message.templates.basic_storytelling.title');
-    const emotionalTitle = i18n.t('initial_message.templates.emotional_storytelling.title');
-    
-    preloadTemplate('basic', basicTitle);
-    preloadTemplate('emotional', emotionalTitle);
+    // Preload both templates with hardcoded messages
+    preloadTemplate('basic', basicMessage);
+    preloadTemplate('emotional', emotionalMessage);
   }, [i18n]);
 
   // Function to reset chat with a new session ID
@@ -100,11 +107,20 @@ export default function App() {
     preloadInProgressRef.current.clear();
     preloadAbortControllersRef.current.clear();
     
-    // Re-preload templates
-    const basicTitle = i18n.t('initial_message.templates.basic_storytelling.title');
-    const emotionalTitle = i18n.t('initial_message.templates.emotional_storytelling.title');
+    // Re-preload templates with hardcoded messages
+    const currentLang = i18n.language || localStorage.getItem('i18nextLng') || 'en';
+    const isFrench = currentLang === 'fr' || currentLang.startsWith('fr');
     
-    const preloadTemplate = async (templateValue: string, templateTitle: string) => {
+    // Hardcoded template messages based on language
+    const basicMessage = isFrench 
+      ? "Commençons un Récit de Base, pose-moi ta première question pour guider le brief ! =ma langue est le français, gardons cette conversation entièrement en français="
+      : "Let's start a Basic Story Telling, start your first question to me for guiding the brief! =my language is English, let's keep this conversation completely in English=";
+    
+    const emotionalMessage = isFrench
+      ? "Commençons un Récit Émotionnel, pose-moi ta première question pour guider le brief ! =ma langue est le français, gardons cette conversation entièrement en français="
+      : "Let's start an Emotional Story Telling, start your first question to me for guiding the brief! =my language is English, let's keep this conversation completely in English=";
+    
+    const preloadTemplate = async (templateValue: string, templateMessage: string) => {
       if (preloadInProgressRef.current.has(templateValue) || preloadedResponsesRef.current.has(templateValue)) {
         return;
       }
@@ -118,19 +134,18 @@ export default function App() {
       preloadAbortControllersRef.current.set(templateValue, abortController);
 
       try {
-        const templateMessage = i18n.t('initial_message.lets_start_template', { template: templateTitle });
         const response = await sendToChat({
           message: templateMessage,
           sessionId: templateSessionId,
-          language: i18n.language,
+          language: isFrench ? 'fr' : 'en',
           selected_template: templateValue,
           signal: abortController.signal
         });
         if (!abortController.signal.aborted) {
           preloadedResponsesRef.current.set(templateValue, response);
         }
-      } catch (error: any) {
-        if (error.name !== 'AbortError') {
+      } catch (error: unknown) {
+        if (error instanceof Error && error.name !== 'AbortError') {
           console.error(`Error preloading template ${templateValue}:`, error);
         }
       } finally {
@@ -139,8 +154,8 @@ export default function App() {
       }
     };
     
-    preloadTemplate('basic', basicTitle);
-    preloadTemplate('emotional', emotionalTitle);
+    preloadTemplate('basic', basicMessage);
+    preloadTemplate('emotional', emotionalMessage);
   };
 
   return (

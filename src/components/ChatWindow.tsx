@@ -249,8 +249,43 @@ export default function ChatWindow({
     // Mark that user has selected an initial option
     setHasSelectedInitialOption(true);
 
-    // Create user message with selected template
-    const userMsg: ChatMessage = { role: "user", content: template };
+    // Get the template title for translation (ensure we use current language)
+    const templateTitle = templateValue === 'basic' 
+      ? t('initial_message.templates.basic_storytelling.title')
+      : t('initial_message.templates.emotional_storytelling.title');
+    
+    // Generate the template message using current translation
+    // Use i18n.t() directly to ensure we get the translated text
+    let templateMessage = i18n.t('initial_message.lets_start_template', { template: templateTitle });
+    
+    // If translation returns the key (translation not loaded), use hardcoded strings based on language
+    if (templateMessage === 'initial_message.lets_start_template' || !templateMessage || templateMessage.startsWith('initial_message.')) {
+      // Check if the passed template parameter is already translated
+      if (template && template !== 'initial_message.lets_start_template' && !template.startsWith('initial_message.')) {
+        templateMessage = template;
+      } else {
+        // Fallback: use hardcoded strings from translation files based on current language
+        const currentLang = i18n.language || 'en';
+        if (currentLang === 'fr') {
+          // French translation from translation.json
+          if (templateValue === 'basic') {
+            templateMessage = "Commençons un Récit de Base, pose-moi ta première question pour guider le brief ! =ma langue est le français, gardons cette conversation entièrement en français=";
+          } else {
+            templateMessage = "Commençons un Récit Émotionnel, pose-moi ta première question pour guider le brief ! =ma langue est le français, gardons cette conversation entièrement en français=";
+          }
+        } else {
+          // English translation from translation.json
+          if (templateValue === 'basic') {
+            templateMessage = "Let's start a Basic Story Telling, start your first question to me for guiding the brief! =my language is English, let's keep this conversation completely in English=";
+          } else {
+            templateMessage = "Let's start an Emotional Story Telling, start your first question to me for guiding the brief! =my language is English, let's keep this conversation completely in English=";
+          }
+        }
+      }
+    }
+
+    // Create user message with selected template (use translated message)
+    const userMsg: ChatMessage = { role: "user", content: templateMessage };
     setMessages((m) => [...m, userMsg]);
 
     // Get template sessionId
@@ -285,7 +320,7 @@ export default function ChatWindow({
       ]);
     } else if (isPreloading && templateSessionId) {
       // Wait for the preload to complete instead of making a new call
-      setIsThinking(true);
+    setIsThinking(true);
       
       // Clear any existing interval
       if (preloadCheckIntervalRef.current) {
@@ -330,7 +365,7 @@ export default function ChatWindow({
           // Fallback: make the API call if preload takes too long
           const sessionIdToUse = templateSessionId ?? sessionId;
           sendToChat({ 
-            message: template, 
+            message: templateMessage, 
             sessionId: sessionIdToUse, 
             language: i18n.language,
             selected_template: templateValue 
@@ -368,38 +403,38 @@ export default function ChatWindow({
 
       // Send template selection to chat with selected_template parameter
       sendToChat({ 
-        message: template, 
+        message: templateMessage, 
         sessionId: sessionIdToUse, 
         language: i18n.language,
         selected_template: templateValue 
       })
-        .then((json) => {
-          const text = json?.output ?? json?.data ?? JSON.stringify(json);
+      .then((json) => {
+        const text = json?.output ?? json?.data ?? JSON.stringify(json);
 
-          // Extract quick_answers from message content
-          const { cleanContent, quickAnswers } = extractQuickAnswers(
-            String(text)
-          );
+        // Extract quick_answers from message content
+        const { cleanContent, quickAnswers } = extractQuickAnswers(
+          String(text)
+        );
 
-          setMessages((m) => [
-            ...m,
-            {
-              role: "assistant",
-              content: cleanContent,
-              quickAnswers: quickAnswers,
-            },
-          ]);
-        })
-        .catch((error) => {
-          console.error(error);
-          setMessages((m) => [
-            ...m,
-            { role: "assistant", content: t("chat.error_message") },
-          ]);
-        })
-        .finally(() => {
-          setIsThinking(false);
-        });
+        setMessages((m) => [
+          ...m,
+          {
+            role: "assistant",
+            content: cleanContent,
+            quickAnswers: quickAnswers,
+          },
+        ]);
+      })
+      .catch((error) => {
+        console.error(error);
+        setMessages((m) => [
+          ...m,
+          { role: "assistant", content: t("chat.error_message") },
+        ]);
+      })
+      .finally(() => {
+        setIsThinking(false);
+      });
     }
   }
 
