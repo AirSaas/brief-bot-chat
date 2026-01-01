@@ -11,7 +11,7 @@ export default function App() {
   const [hasSelectedInitialOption, setHasSelectedInitialOption] = useState(false);
   
   // Generate a new session ID on every page load/refresh
-  const [sessionId, setSessionId] = useState(() => crypto.randomUUID());
+  const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID());
   
   // Store sessionIds and preloaded responses for each template
   const templateSessionIdsRef = useRef<Map<string, string>>(new Map());
