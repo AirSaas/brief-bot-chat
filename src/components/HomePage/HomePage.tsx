@@ -10,11 +10,16 @@ interface HomePageProps {
   input: string;
   setInput: React.Dispatch<React.SetStateAction<string>>;
   sessionId: string;
+  setSessionId: React.Dispatch<React.SetStateAction<string>>;
   isThinking: boolean;
   setIsThinking: React.Dispatch<React.SetStateAction<boolean>>;
   hasSelectedInitialOption: boolean;
   setHasSelectedInitialOption: React.Dispatch<React.SetStateAction<boolean>>;
   onResetChat?: () => void;
+  templateSessionIds: Map<string, string>;
+  preloadedResponses: Map<string, any>;
+  preloadInProgress: Set<string>;
+  abortOtherTemplatePreload: (selectedTemplate: string) => void;
 }
 
 export default function HomePage({
@@ -23,11 +28,16 @@ export default function HomePage({
   input,
   setInput,
   sessionId,
+  setSessionId,
   isThinking,
   setIsThinking,
   hasSelectedInitialOption,
   setHasSelectedInitialOption,
   onResetChat,
+  templateSessionIds,
+  preloadedResponses,
+  preloadInProgress,
+  abortOtherTemplatePreload,
 }: HomePageProps) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
@@ -94,11 +104,16 @@ export default function HomePage({
         input={input}
         setInput={setInput}
         sessionId={sessionId}
+        setSessionId={setSessionId}
         isThinking={isThinking}
         setIsThinking={setIsThinking}
         hasSelectedInitialOption={hasSelectedInitialOption}
         setHasSelectedInitialOption={setHasSelectedInitialOption}
         onResetChat={onResetChat}
+        templateSessionIds={templateSessionIds}
+        preloadedResponses={preloadedResponses}
+        preloadInProgress={preloadInProgress}
+        abortOtherTemplatePreload={abortOtherTemplatePreload}
         t={t}
       />
       <HomePageDesktopView
@@ -112,11 +127,16 @@ export default function HomePage({
         input={input}
         setInput={setInput}
         sessionId={sessionId}
+        setSessionId={setSessionId}
         isThinking={isThinking}
         setIsThinking={setIsThinking}
         hasSelectedInitialOption={hasSelectedInitialOption}
         setHasSelectedInitialOption={setHasSelectedInitialOption}
         onResetChat={onResetChat}
+        templateSessionIds={templateSessionIds}
+        preloadedResponses={preloadedResponses}
+        preloadInProgress={preloadInProgress}
+        abortOtherTemplatePreload={abortOtherTemplatePreload}
         t={t}
       />
     </div>

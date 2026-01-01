@@ -17,20 +17,34 @@ export type ChatPayload = {
   audio_url?: string;
   language?: string;
   selected_template?: string;
+  signal?: AbortSignal;
 };
 
 export async function sendToChat(payload: ChatPayload) {
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 600000); // 10 minutes
+    let controller: AbortController | null = null;
+    let timeout: NodeJS.Timeout | null = null;
+    
+    // If no signal provided, create our own controller with timeout
+    if (!payload.signal) {
+      controller = new AbortController();
+      timeout = setTimeout(() => controller!.abort(), 600000); // 10 minutes
+    }
+    
+    const signal = payload.signal || controller!.signal;
     const url = `${BASE}/webhook/${CHAT_ID}/chat`;
+    
+    // Remove signal from payload before stringifying (it's not JSON serializable)
+    const { signal: _, ...payloadWithoutSignal } = payload;
+    
     const r = await fetch(url, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
+      body: JSON.stringify(payloadWithoutSignal),
+      signal: signal,
     });
-    clearTimeout(timeout);
+    
+    if (timeout) clearTimeout(timeout);
 
     if (!r.ok) throw new Error(`Chat error ${r.status}`);
     return r.json() as Promise<{ output?: string; quick_answers?: string[]; [key: string]: any }>;

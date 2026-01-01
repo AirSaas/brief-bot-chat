@@ -28,7 +28,7 @@ export default function InitialBotMessage({ onTemplateSelect }: InitialBotMessag
     }
   ];
   return (
-    <div className="flex flex-col gap-[10px] my-4 md:my-5 px-3 md:px-0">
+    <div className="flex flex-col gap-[10px] my-4 md:my-5 px-3 md:px-0 animate-fade-in-delay-2 opacity-0">
       {/* Bot Message */}
       <div className="flex items-start gap-[10px]">
         <div className="flex-shrink-0" style={{ width: '24px', height: '21.63px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

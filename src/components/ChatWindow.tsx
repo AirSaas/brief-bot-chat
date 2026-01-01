@@ -19,12 +19,17 @@ interface ChatWindowProps {
   input?: string;
   setInput?: React.Dispatch<React.SetStateAction<string>>;
   sessionId?: string;
+  setSessionId?: React.Dispatch<React.SetStateAction<string>>;
   isThinking?: boolean;
   setIsThinking?: React.Dispatch<React.SetStateAction<boolean>>;
   hasSelectedInitialOption?: boolean;
   setHasSelectedInitialOption?: React.Dispatch<React.SetStateAction<boolean>>;
   onGoBack?: () => void;
   onResetChat?: () => void;
+  templateSessionIds?: Map<string, string>;
+  preloadedResponses?: Map<string, any>;
+  preloadInProgress?: Set<string>;
+  abortOtherTemplatePreload?: (selectedTemplate: string) => void;
 }
 
 export default function ChatWindow({
@@ -33,19 +38,24 @@ export default function ChatWindow({
   input: externalInput,
   setInput: externalSetInput,
   sessionId: externalSessionId,
+  setSessionId: externalSetSessionId,
   isThinking: externalIsThinking,
   setIsThinking: externalSetIsThinking,
   hasSelectedInitialOption: externalHasSelectedInitialOption,
   setHasSelectedInitialOption: externalSetHasSelectedInitialOption,
   onGoBack,
   onResetChat,
+  templateSessionIds,
+  preloadedResponses,
+  preloadInProgress,
+  abortOtherTemplatePreload,
 }: ChatWindowProps) {
   const { t, i18n } = useTranslation();
 
   // Use external state if provided, otherwise use local state (for backward compatibility)
   const [localMessages, setLocalMessages] = useState<ChatMessage[]>([]);
   const [localInput, setLocalInput] = useState("");
-  const [localSessionId] = useState(() => crypto.randomUUID());
+  const [localSessionId, setLocalSessionId] = useState(() => crypto.randomUUID());
   const [localIsThinking, setLocalIsThinking] = useState(false);
   const [localHasSelectedInitialOption, setLocalHasSelectedInitialOption] =
     useState(false);
@@ -55,6 +65,9 @@ export default function ChatWindow({
   const input = externalInput ?? localInput;
   const setInput = externalSetInput ?? setLocalInput;
   const sessionId = externalSessionId ?? localSessionId;
+  const setSessionId = externalSetSessionId 
+    ? (id: string) => externalSetSessionId(id) 
+    : setLocalSessionId;
   const isThinking = externalIsThinking ?? localIsThinking;
   const setIsThinking = externalSetIsThinking ?? setLocalIsThinking;
   const hasSelectedInitialOption =
@@ -70,6 +83,7 @@ export default function ChatWindow({
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<{ setCursorToEnd: () => void } | null>(null);
+  const preloadCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
@@ -139,6 +153,16 @@ export default function ChatWindow({
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleResize);
+    };
+  }, []);
+
+  // Cleanup interval on unmount
+  useEffect(() => {
+    return () => {
+      if (preloadCheckIntervalRef.current) {
+        clearInterval(preloadCheckIntervalRef.current);
+        preloadCheckIntervalRef.current = null;
+      }
     };
   }, []);
 
@@ -217,48 +241,166 @@ export default function ChatWindow({
   function handleTemplateSelect(template: string, templateValue: string) {
     if (isThinking) return;
 
+    // Abort the other template's preload
+    if (abortOtherTemplatePreload) {
+      abortOtherTemplatePreload(templateValue);
+    }
+
     // Mark that user has selected an initial option
     setHasSelectedInitialOption(true);
 
     // Create user message with selected template
     const userMsg: ChatMessage = { role: "user", content: template };
     setMessages((m) => [...m, userMsg]);
-    setIsThinking(true);
 
-    // Send template selection to chat with selected_template parameter
-    sendToChat({ 
-      message: template, 
-      sessionId, 
-      language: i18n.language,
-      selected_template: templateValue 
-    })
-      .then((json) => {
-        const text = json?.output ?? json?.data ?? JSON.stringify(json);
+    // Get template sessionId
+    const templateSessionId = templateSessionIds?.get(templateValue);
+    
+    // Switch to the template's sessionId if available
+    if (templateSessionId && setSessionId) {
+      (setSessionId as (id: string) => void)(templateSessionId);
+    }
 
-        // Extract quick_answers from message content
-        const { cleanContent, quickAnswers } = extractQuickAnswers(
-          String(text)
-        );
+    // Check if we have a preloaded response for this template
+    const preloadedResponse = preloadedResponses?.get(templateValue);
+    const isPreloading = preloadInProgress?.has(templateValue);
 
-        setMessages((m) => [
-          ...m,
-          {
-            role: "assistant",
-            content: cleanContent,
-            quickAnswers: quickAnswers,
-          },
-        ]);
+    if (preloadedResponse && templateSessionId) {
+      // Use the preloaded response immediately
+      const text = preloadedResponse?.output ?? preloadedResponse?.data ?? JSON.stringify(preloadedResponse);
+
+      // Extract quick_answers from message content
+      const { cleanContent, quickAnswers } = extractQuickAnswers(
+        String(text)
+      );
+
+      // Add the preloaded response
+      setMessages((m) => [
+        ...m,
+        {
+          role: "assistant",
+          content: cleanContent,
+          quickAnswers: quickAnswers,
+        },
+      ]);
+    } else if (isPreloading && templateSessionId) {
+      // Wait for the preload to complete instead of making a new call
+      setIsThinking(true);
+      
+      // Clear any existing interval
+      if (preloadCheckIntervalRef.current) {
+        clearInterval(preloadCheckIntervalRef.current);
+      }
+      
+      // Poll for the response to be ready
+      preloadCheckIntervalRef.current = setInterval(() => {
+        const response = preloadedResponses?.get(templateValue);
+        if (response) {
+          if (preloadCheckIntervalRef.current) {
+            clearInterval(preloadCheckIntervalRef.current);
+            preloadCheckIntervalRef.current = null;
+          }
+          setIsThinking(false);
+          
+          const text = response?.output ?? response?.data ?? JSON.stringify(response);
+          const { cleanContent, quickAnswers } = extractQuickAnswers(String(text));
+          
+          setMessages((m) => [
+            ...m,
+            {
+              role: "assistant",
+              content: cleanContent,
+              quickAnswers: quickAnswers,
+            },
+          ]);
+        }
+      }, 100); // Check every 100ms
+
+      // Timeout after 60 seconds to prevent infinite waiting
+      setTimeout(() => {
+        if (preloadCheckIntervalRef.current) {
+          clearInterval(preloadCheckIntervalRef.current);
+          preloadCheckIntervalRef.current = null;
+        }
+        
+        // Check if we still don't have a response
+        const response = preloadedResponses?.get(templateValue);
+        if (!response) {
+          setIsThinking(false);
+          // Fallback: make the API call if preload takes too long
+          const sessionIdToUse = templateSessionId ?? sessionId;
+          sendToChat({ 
+            message: template, 
+            sessionId: sessionIdToUse, 
+            language: i18n.language,
+            selected_template: templateValue 
+          })
+            .then((json) => {
+              const text = json?.output ?? json?.data ?? JSON.stringify(json);
+              const { cleanContent, quickAnswers } = extractQuickAnswers(String(text));
+              setMessages((m) => [
+                ...m,
+                {
+                  role: "assistant",
+                  content: cleanContent,
+                  quickAnswers: quickAnswers,
+                },
+              ]);
+            })
+            .catch((error) => {
+              console.error(error);
+              setMessages((m) => [
+                ...m,
+                { role: "assistant", content: t("chat.error_message") },
+              ]);
+            })
+            .finally(() => {
+              setIsThinking(false);
+            });
+        }
+      }, 60000);
+    } else {
+      // Fallback: make the API call if preload didn't complete or isn't available
+      setIsThinking(true);
+
+      // Use template's sessionId if available, otherwise use current sessionId
+      const sessionIdToUse = templateSessionId ?? sessionId;
+
+      // Send template selection to chat with selected_template parameter
+      sendToChat({ 
+        message: template, 
+        sessionId: sessionIdToUse, 
+        language: i18n.language,
+        selected_template: templateValue 
       })
-      .catch((error) => {
-        console.error(error);
-        setMessages((m) => [
-          ...m,
-          { role: "assistant", content: t("chat.error_message") },
-        ]);
-      })
-      .finally(() => {
-        setIsThinking(false);
-      });
+        .then((json) => {
+          const text = json?.output ?? json?.data ?? JSON.stringify(json);
+
+          // Extract quick_answers from message content
+          const { cleanContent, quickAnswers } = extractQuickAnswers(
+            String(text)
+          );
+
+          setMessages((m) => [
+            ...m,
+            {
+              role: "assistant",
+              content: cleanContent,
+              quickAnswers: quickAnswers,
+            },
+          ]);
+        })
+        .catch((error) => {
+          console.error(error);
+          setMessages((m) => [
+            ...m,
+            { role: "assistant", content: t("chat.error_message") },
+          ]);
+        })
+        .finally(() => {
+          setIsThinking(false);
+        });
+    }
   }
 
   function handleQuickAnswerClick(answer: string) {

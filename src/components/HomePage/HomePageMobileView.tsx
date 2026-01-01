@@ -18,11 +18,16 @@ interface HomePageMobileViewProps {
   input: string;
   setInput: Dispatch<SetStateAction<string>>;
   sessionId: string;
+  setSessionId: Dispatch<SetStateAction<string>>;
   isThinking: boolean;
   setIsThinking: Dispatch<SetStateAction<boolean>>;
   hasSelectedInitialOption: boolean;
   setHasSelectedInitialOption: Dispatch<SetStateAction<boolean>>;
   onResetChat?: () => void;
+  templateSessionIds: Map<string, string>;
+  preloadedResponses: Map<string, any>;
+  preloadInProgress: Set<string>;
+  abortOtherTemplatePreload: (selectedTemplate: string) => void;
   t: TFunction;
 }
 
@@ -39,11 +44,16 @@ export default function HomePageMobileView({
   input,
   setInput,
   sessionId,
+  setSessionId,
   isThinking,
   setIsThinking,
   hasSelectedInitialOption,
   setHasSelectedInitialOption,
   onResetChat,
+  templateSessionIds,
+  preloadedResponses,
+  preloadInProgress,
+  abortOtherTemplatePreload,
   t,
 }: HomePageMobileViewProps) {
   const featureKeys = [
@@ -55,7 +65,7 @@ export default function HomePageMobileView({
   return (
     <>
       {!showChat ? (
-        <div className="md:hidden flex min-h-screen h-screen max-h-screen flex-col overflow-y-auto bg-white">
+        <div className="md:hidden flex min-h-screen h-screen max-h-screen flex-col overflow-y-auto bg-white animate-fade-in opacity-0">
           {/* Language Selector - Mobile */}
           <div className="absolute top-[10px] right-[20px] z-50">
             <LanguageSelector />
@@ -171,13 +181,14 @@ export default function HomePageMobileView({
         </div>
       ) : (
         /* Mobile Chat View - Full Screen */
-        <div className="md:hidden w-full h-full bg-white overflow-hidden">
+        <div className="md:hidden w-full h-full bg-white overflow-hidden animate-fade-in opacity-0">
           <ChatWindow
             messages={messages}
             setMessages={setMessages}
             input={input}
             setInput={setInput}
             sessionId={sessionId}
+            setSessionId={setSessionId}
             isThinking={isThinking}
             setIsThinking={setIsThinking}
             hasSelectedInitialOption={hasSelectedInitialOption}
@@ -185,6 +196,10 @@ export default function HomePageMobileView({
             isPanel={false}
             onGoBack={onGoBack}
             onResetChat={onResetChat}
+            templateSessionIds={templateSessionIds}
+            preloadedResponses={preloadedResponses}
+            preloadInProgress={preloadInProgress}
+            abortOtherTemplatePreload={abortOtherTemplatePreload}
           />
         </div>
       )}

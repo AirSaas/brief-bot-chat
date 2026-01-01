@@ -15,11 +15,16 @@ interface HomePageDesktopViewProps {
   input: string;
   setInput: Dispatch<SetStateAction<string>>;
   sessionId: string;
+  setSessionId: Dispatch<SetStateAction<string>>;
   isThinking: boolean;
   setIsThinking: Dispatch<SetStateAction<boolean>>;
   hasSelectedInitialOption: boolean;
   setHasSelectedInitialOption: Dispatch<SetStateAction<boolean>>;
   onResetChat?: () => void;
+  templateSessionIds: Map<string, string>;
+  preloadedResponses: Map<string, any>;
+  preloadInProgress: Set<string>;
+  abortOtherTemplatePreload: (selectedTemplate: string) => void;
   t: TFunction;
 }
 
@@ -34,11 +39,16 @@ export default function HomePageDesktopView({
   input,
   setInput,
   sessionId,
+  setSessionId,
   isThinking,
   setIsThinking,
   hasSelectedInitialOption,
   setHasSelectedInitialOption,
   onResetChat,
+  templateSessionIds,
+  preloadedResponses,
+  preloadInProgress,
+  abortOtherTemplatePreload,
   t,
 }: HomePageDesktopViewProps) {
   const featureKeys = [
@@ -50,7 +60,7 @@ export default function HomePageDesktopView({
   return (
     <div className="hidden md:flex h-screen bg-white overflow-hidden">
       {/* Left side - Homepage content */}
-      <div className="hidden md:flex w-1/2 bg-gradient-to-br from-white via-brand-50 to-brand-100 flex-col overflow-y-auto">
+      <div className="hidden md:flex w-1/2 bg-gradient-to-br from-white via-brand-50 to-brand-100 flex-col overflow-y-auto animate-fade-in opacity-0">
         {/* Main Content */}
         <main className="flex-1 flex items-center justify-start px-10">
           <div className="flex w-full flex-col items-end gap-14">
@@ -153,7 +163,7 @@ export default function HomePageDesktopView({
       </div>
 
       {/* Right side - Chat Panel */}
-      <div className="w-full md:w-1/2 md:border-l border-[#E5E7EA] flex flex-col bg-white relative">
+      <div className="w-full md:w-1/2 md:border-l border-[#E5E7EA] flex flex-col bg-white relative animate-fade-in-delay-1">
         {/* Language Selector - Only visible on desktop */}
         <div className="hidden md:block absolute top-[10px] right-[10px] md:left-[-140px] z-50">
           <LanguageSelector />
@@ -167,6 +177,7 @@ export default function HomePageDesktopView({
             input={input}
             setInput={setInput}
             sessionId={sessionId}
+            setSessionId={setSessionId}
             isThinking={isThinking}
             setIsThinking={setIsThinking}
             hasSelectedInitialOption={hasSelectedInitialOption}
@@ -174,6 +185,10 @@ export default function HomePageDesktopView({
             isPanel={true}
             onGoBack={onGoBack}
             onResetChat={onResetChat}
+            templateSessionIds={templateSessionIds}
+            preloadedResponses={preloadedResponses}
+            preloadInProgress={preloadInProgress}
+            abortOtherTemplatePreload={abortOtherTemplatePreload}
           />
         </div>
       </div>
