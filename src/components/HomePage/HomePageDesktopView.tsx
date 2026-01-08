@@ -23,7 +23,6 @@ interface HomePageDesktopViewProps {
   onResetChat?: () => void;
   templateSessionIds: Map<string, string>;
   preloadedResponses: Map<string, any>;
-  preloadInProgress: Set<string>;
   abortOtherTemplatePreload: (selectedTemplate: string) => void;
   t: TFunction;
 }
@@ -47,7 +46,6 @@ export default function HomePageDesktopView({
   onResetChat,
   templateSessionIds,
   preloadedResponses,
-  preloadInProgress,
   abortOtherTemplatePreload,
   t,
 }: HomePageDesktopViewProps) {
@@ -187,7 +185,6 @@ export default function HomePageDesktopView({
             onResetChat={onResetChat}
             templateSessionIds={templateSessionIds}
             preloadedResponses={preloadedResponses}
-            preloadInProgress={preloadInProgress}
             abortOtherTemplatePreload={abortOtherTemplatePreload}
           />
         </div>

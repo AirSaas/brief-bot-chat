@@ -26,7 +26,6 @@ interface HomePageMobileViewProps {
   onResetChat?: () => void;
   templateSessionIds: Map<string, string>;
   preloadedResponses: Map<string, any>;
-  preloadInProgress: Set<string>;
   abortOtherTemplatePreload: (selectedTemplate: string) => void;
   t: TFunction;
 }
@@ -52,7 +51,6 @@ export default function HomePageMobileView({
   onResetChat,
   templateSessionIds,
   preloadedResponses,
-  preloadInProgress,
   abortOtherTemplatePreload,
   t,
 }: HomePageMobileViewProps) {
@@ -198,7 +196,6 @@ export default function HomePageMobileView({
             onResetChat={onResetChat}
             templateSessionIds={templateSessionIds}
             preloadedResponses={preloadedResponses}
-            preloadInProgress={preloadInProgress}
             abortOtherTemplatePreload={abortOtherTemplatePreload}
           />
         </div>

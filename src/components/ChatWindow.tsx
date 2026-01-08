@@ -6,7 +6,7 @@ import {
   handleGoBack as goBack,
   handleCopyLink as copyLink,
 } from "../utils/navigation";
-import { sendToChat, uploadAudio, type ChatMessage } from "../lib/api";
+import { sendToChat, uploadAudio, getFirstAIMessage, insertInitialChatHistory, getInitialMessages, type ChatMessage } from "../lib/api";
 import { MessageBubble } from "./MessageBubble";
 import InputWithSuggestions from "./InputWithSuggestions";
 import InitialBotMessage from "./InitialBotMessage";
@@ -28,7 +28,6 @@ interface ChatWindowProps {
   onResetChat?: () => void;
   templateSessionIds?: Map<string, string>;
   preloadedResponses?: Map<string, any>;
-  preloadInProgress?: Set<string>;
   abortOtherTemplatePreload?: (selectedTemplate: string) => void;
 }
 
@@ -47,7 +46,6 @@ export default function ChatWindow({
   onResetChat,
   templateSessionIds,
   preloadedResponses,
-  preloadInProgress,
   abortOtherTemplatePreload,
 }: ChatWindowProps) {
   const { t, i18n } = useTranslation();
@@ -238,7 +236,13 @@ export default function ChatWindow({
     await sendMessageDirectly(messageToSend);
   }
 
-  function handleTemplateSelect(template: string, templateValue: string) {
+  // Function to hide language instruction text between equals signs for display
+  const hideLanguageInstruction = (text: string): string => {
+    return text.replace(/\s*=my language is English, let's keep this conversation completely in English=\s*/g, '')
+               .replace(/\s*=ma langue est le français, gardons cette conversation entièrement en français=\s*/g, '');
+  };
+
+  async function handleTemplateSelect(template: string, templateValue: string) {
     if (isThinking) return;
 
     // Abort the other template's preload
@@ -249,173 +253,59 @@ export default function ChatWindow({
     // Mark that user has selected an initial option
     setHasSelectedInitialOption(true);
 
-    // Get the template title for translation (ensure we use current language)
-    const templateTitle = templateValue === 'basic' 
-      ? t('initial_message.templates.basic_storytelling.title')
-      : t('initial_message.templates.emotional_storytelling.title');
+    // Generate unique sessionId for this template selection
+    const templateSessionId = crypto.randomUUID();
     
-    // Generate the template message using current translation
-    // Use i18n.t() directly to ensure we get the translated text
-    let templateMessage = i18n.t('initial_message.lets_start_template', { template: templateTitle });
-    
-    // If translation returns the key (translation not loaded), use hardcoded strings based on language
-    if (templateMessage === 'initial_message.lets_start_template' || !templateMessage || templateMessage.startsWith('initial_message.')) {
-      // Check if the passed template parameter is already translated
-      if (template && template !== 'initial_message.lets_start_template' && !template.startsWith('initial_message.')) {
-        templateMessage = template;
-      } else {
-        // Fallback: use hardcoded strings from translation files based on current language
-        const currentLang = i18n.language || 'en';
-        if (currentLang === 'fr') {
-          // French translation from translation.json
-          if (templateValue === 'basic') {
-            templateMessage = "Commençons un Récit de Base, pose-moi ta première question pour guider le brief ! =ma langue est le français, gardons cette conversation entièrement en français=";
-          } else {
-            templateMessage = "Commençons un Récit Émotionnel, pose-moi ta première question pour guider le brief ! =ma langue est le français, gardons cette conversation entièrement en français=";
-          }
-        } else {
-          // English translation from translation.json
-          if (templateValue === 'basic') {
-            templateMessage = "Let's start a Basic Story Telling, start your first question to me for guiding the brief! =my language is English, let's keep this conversation completely in English=";
-          } else {
-            templateMessage = "Let's start an Emotional Story Telling, start your first question to me for guiding the brief! =my language is English, let's keep this conversation completely in English=";
-          }
-        }
-      }
+    // Store the sessionId for this template
+    if (templateSessionIds) {
+      templateSessionIds.set(templateValue, templateSessionId);
     }
-
-    // Create user message with selected template (use translated message)
-    const userMsg: ChatMessage = { role: "user", content: templateMessage };
-    setMessages((m) => [...m, userMsg]);
-
-    // Get template sessionId
-    const templateSessionId = templateSessionIds?.get(templateValue);
     
-    // Switch to the template's sessionId if available
-    if (templateSessionId && setSessionId) {
+    // Switch to the template's sessionId
+    if (setSessionId) {
       (setSessionId as (id: string) => void)(templateSessionId);
     }
 
-    // Check if we have a preloaded response for this template
-    const preloadedResponse = preloadedResponses?.get(templateValue);
-    const isPreloading = preloadInProgress?.has(templateValue);
+    // Clean the template message (remove language instructions) and add user's message first
+    const cleanTemplateMessage = hideLanguageInstruction(template).trim();
+    const userMsg: ChatMessage = { role: "user", content: cleanTemplateMessage };
+    setMessages((m) => [...m, userMsg]);
 
-    if (preloadedResponse && templateSessionId) {
-      // Use the preloaded response immediately
-      const text = preloadedResponse?.output ?? preloadedResponse?.data ?? JSON.stringify(preloadedResponse);
+    // Show thinking indicator while inserting messages into Supabase
+    setIsThinking(true);
 
-      // Extract quick_answers from message content
-      const { cleanContent, quickAnswers } = extractQuickAnswers(
-        String(text)
+    try {
+      // Get current language
+      const currentLang = i18n.language || 'en';
+      const isFrench = currentLang === 'fr' || currentLang.startsWith('fr');
+      
+      // Get initial messages for this template and language
+      const initialMessages = getInitialMessages(templateValue, isFrench ? 'fr' : 'en');
+      
+      if (!initialMessages) {
+        throw new Error(`No initial messages found for template ${templateValue} and language ${isFrench ? 'fr' : 'en'}`);
+      }
+
+      // Silently insert initial chat history into Supabase
+      await insertInitialChatHistory(
+        templateSessionId,
+        initialMessages.human,
+        initialMessages.ai
       );
 
-      // Add the preloaded response
-      setMessages((m) => [
-        ...m,
-        {
-          role: "assistant",
-          content: cleanContent,
-          quickAnswers: quickAnswers,
-        },
-      ]);
-    } else if (isPreloading && templateSessionId) {
-      // Wait for the preload to complete instead of making a new call
-    setIsThinking(true);
-      
-      // Clear any existing interval
-      if (preloadCheckIntervalRef.current) {
-        clearInterval(preloadCheckIntervalRef.current);
+      // Mark as preloaded (optional, for tracking purposes)
+      if (preloadedResponses) {
+        preloadedResponses.set(templateValue, { preloaded: true });
       }
+
+      // Get the first AI message from Supabase and display it
+      const aiContent = await getFirstAIMessage(templateSessionId);
       
-      // Poll for the response to be ready
-      preloadCheckIntervalRef.current = setInterval(() => {
-        const response = preloadedResponses?.get(templateValue);
-        if (response) {
-          if (preloadCheckIntervalRef.current) {
-            clearInterval(preloadCheckIntervalRef.current);
-            preloadCheckIntervalRef.current = null;
-          }
-          setIsThinking(false);
-          
-          const text = response?.output ?? response?.data ?? JSON.stringify(response);
-          const { cleanContent, quickAnswers } = extractQuickAnswers(String(text));
-          
-          setMessages((m) => [
-            ...m,
-            {
-              role: "assistant",
-              content: cleanContent,
-              quickAnswers: quickAnswers,
-            },
-          ]);
-        }
-      }, 100); // Check every 100ms
-
-      // Timeout after 60 seconds to prevent infinite waiting
-      setTimeout(() => {
-        if (preloadCheckIntervalRef.current) {
-          clearInterval(preloadCheckIntervalRef.current);
-          preloadCheckIntervalRef.current = null;
-        }
-        
-        // Check if we still don't have a response
-        const response = preloadedResponses?.get(templateValue);
-        if (!response) {
-          setIsThinking(false);
-          // Fallback: make the API call if preload takes too long
-          const sessionIdToUse = templateSessionId ?? sessionId;
-          sendToChat({ 
-            message: templateMessage, 
-            sessionId: sessionIdToUse, 
-            language: i18n.language,
-            selected_template: templateValue 
-          })
-            .then((json) => {
-              const text = json?.output ?? json?.data ?? JSON.stringify(json);
-              const { cleanContent, quickAnswers } = extractQuickAnswers(String(text));
-              setMessages((m) => [
-                ...m,
-                {
-                  role: "assistant",
-                  content: cleanContent,
-                  quickAnswers: quickAnswers,
-                },
-              ]);
-            })
-            .catch((error) => {
-              console.error(error);
-              setMessages((m) => [
-                ...m,
-                { role: "assistant", content: t("chat.error_message") },
-              ]);
-            })
-            .finally(() => {
-              setIsThinking(false);
-            });
-        }
-      }, 60000);
-    } else {
-      // Fallback: make the API call if preload didn't complete or isn't available
-      setIsThinking(true);
-
-      // Use template's sessionId if available, otherwise use current sessionId
-      const sessionIdToUse = templateSessionId ?? sessionId;
-
-      // Send template selection to chat with selected_template parameter
-      sendToChat({ 
-        message: templateMessage, 
-        sessionId: sessionIdToUse, 
-        language: i18n.language,
-        selected_template: templateValue 
-      })
-      .then((json) => {
-        const text = json?.output ?? json?.data ?? JSON.stringify(json);
-
+      if (aiContent) {
         // Extract quick_answers from message content
-        const { cleanContent, quickAnswers } = extractQuickAnswers(
-          String(text)
-        );
+        const { cleanContent, quickAnswers } = extractQuickAnswers(String(aiContent));
 
+        // Add the assistant's first question
         setMessages((m) => [
           ...m,
           {
@@ -424,17 +314,17 @@ export default function ChatWindow({
             quickAnswers: quickAnswers,
           },
         ]);
-      })
-      .catch((error) => {
-        console.error(error);
-        setMessages((m) => [
-          ...m,
-          { role: "assistant", content: t("chat.error_message") },
-        ]);
-      })
-      .finally(() => {
-        setIsThinking(false);
-      });
+      } else {
+        throw new Error("No AI message found in Supabase");
+      }
+    } catch (error) {
+      console.error("Error setting up template:", error);
+      setMessages((m) => [
+        ...m,
+        { role: "assistant", content: t("chat.error_message") },
+      ]);
+    } finally {
+      setIsThinking(false);
     }
   }
 
@@ -673,7 +563,7 @@ export default function ChatWindow({
         style={{ transition: "justify-content 0.3s ease-in-out" }}
       >
         {/* Initial bot message with template selection */}
-        {messages.length === 0 && (
+        {messages.length === 0 && !hasSelectedInitialOption && (
           <InitialBotMessage onTemplateSelect={handleTemplateSelect} />
         )}
 

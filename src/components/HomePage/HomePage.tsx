@@ -18,7 +18,6 @@ interface HomePageProps {
   onResetChat?: () => void;
   templateSessionIds: Map<string, string>;
   preloadedResponses: Map<string, any>;
-  preloadInProgress: Set<string>;
   abortOtherTemplatePreload: (selectedTemplate: string) => void;
 }
 
@@ -36,7 +35,6 @@ export default function HomePage({
   onResetChat,
   templateSessionIds,
   preloadedResponses,
-  preloadInProgress,
   abortOtherTemplatePreload,
 }: HomePageProps) {
   const { t } = useTranslation();
@@ -112,7 +110,6 @@ export default function HomePage({
         onResetChat={onResetChat}
         templateSessionIds={templateSessionIds}
         preloadedResponses={preloadedResponses}
-        preloadInProgress={preloadInProgress}
         abortOtherTemplatePreload={abortOtherTemplatePreload}
         t={t}
       />
@@ -135,7 +132,6 @@ export default function HomePage({
         onResetChat={onResetChat}
         templateSessionIds={templateSessionIds}
         preloadedResponses={preloadedResponses}
-        preloadInProgress={preloadInProgress}
         abortOtherTemplatePreload={abortOtherTemplatePreload}
         t={t}
       />
